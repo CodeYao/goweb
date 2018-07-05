@@ -33,7 +33,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		h := md5.New()
 		io.WriteString(h, strconv.FormatInt(crutime, 10))
 		token := fmt.Sprintf("%x", h.Sum(nil))
-		t, _ := template.ParseFiles("web/login.html")
+		t, _ := template.ParseFiles("webui/login.html")
 		t.Execute(w, token)
 		//t.Execute(w, nil)
 	} else {
@@ -66,7 +66,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	//fmt.Println(32 << 20)
+	fmt.Println(32 << 20)
 	http.HandleFunc("/", sayhelloName)
 	http.HandleFunc("/login", login)
 	err := http.ListenAndServe(":50000", nil)

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Bootstrap</title>
+    <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
+    <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+    body {
+        text-align: center;
+    }
+</style>
+
+<body>
+    <div class="col-sm-3" style="margin-left:37%;margin-top: 15%">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="background: #333333; color: #dddddd;">CA管理系统</div>
+            <div class="panel-body">
+                <form class="form-horizontal" action="login">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="账号">
+                            <div id="errorcode_username">
+                                <span class="help-block">账号不能为空</span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                            <div id="errorcode_password">
+                                <span class="help-block">密码不能为空</span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <button id="loginbtn" type="button" class="btn form-control" style="background: #333333; color: #dddddd;">登录</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    $("#errorcode_username").hide()
+    $("#errorcode_password").hide()
+    $("#loginbtn").click(function() {
+        var username = $("#username").val()
+        var password = $("#password").val()
+        if (username == "") {
+            $("#errorcode_username").show()
+            $("#errorcode_username").parent().addClass("has-error has-feedback")
+        } else {
+            $("#errorcode_username").hide()
+            $("#errorcode_username").parent().removeClass("has-error has-feedback")
+        }
+        if (password == "") {
+            $("#errorcode_password").show()
+            $("#errorcode_password").parent().addClass("has-error has-feedback")
+        } else {
+            $("#errorcode_password").hide()
+            $("#errorcode_password").parent().removeClass("has-error has-feedback")
+        }
+        $.ajax({
+            type: "POST",
+            url: "/login",
+            data: {
+                username: username,
+                password: password
+            },
+            success: function(data) {
+                alert(data)
+            }
+        });
+    })
+</script>
+
+</html>

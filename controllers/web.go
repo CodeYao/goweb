@@ -18,7 +18,12 @@ func init() {
 	globalSessions, _ = utils.NewManager("memory", "gosessionid", 3600)
 	go globalSessions.GC()
 }
-
+func logout(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		sess := globalSessions.SessionStart(w, r)
+		sess.Delete("username")
+	}
+}
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) //获取请求的方法
 	r.ParseForm()
@@ -92,6 +97,7 @@ func removeip(w http.ResponseWriter, r *http.Request) {
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
 	http.HandleFunc("/login", login)                                                           //设置访问的路由
+	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/index_ca", index_ca)
 	http.HandleFunc("/index_peer", index_peer)
 	http.HandleFunc("/addip", addip)

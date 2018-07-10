@@ -1,7 +1,7 @@
 package main
 
-import "ca/goweb/web"
+import "ca/goweb/controllers"
 
 func main() {
-	web.RunWeb()
+	controllers.RunWeb()
 }

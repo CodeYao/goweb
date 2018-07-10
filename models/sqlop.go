@@ -7,13 +7,13 @@ import (
 
 var db mysql_db
 
-func TestSelect() {
+func QueryiplistByAccountId(accountId string) []map[string]string {
 	db.mysql_open()
 	//查询数据，取所有字段
-	rows2, _ := db.db.Query("select * from t_test")
+	rows, _ := db.db.Query("select * from iplist where accountId = ?", accountId)
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows2.Columns()
+	cols, _ := rows.Columns()
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -24,10 +24,10 @@ func TestSelect() {
 	}
 
 	i := 0
-	result := make(map[int]map[string]string)
-	for rows2.Next() {
+	var result []map[string]string
+	for rows.Next() {
 		//填充数据
-		rows2.Scan(scans...)
+		rows.Scan(scans...)
 		//每行数据
 		row := make(map[string]string)
 		//把vals中的数据复制到row中
@@ -37,15 +37,23 @@ func TestSelect() {
 			row[key] = string(v)
 		}
 		//放入结果集
-		result[i] = row
+		result = append(result, row)
 		i++
 	}
-	fmt.Println(result)
+	return result
 }
-
-func insertData(tableName string, insertdata []string) {
+func DeleteDateById(tableName string, id string) {
 	db.mysql_open()
-	sql := "insert into " + tableName + " values(null," + strings.Join(insertdata, ",") + ")"
+	ret, _ := db.db.Exec("delete from "+tableName+" where id = ?", id)
+	//获取影响行数
+	db.mysql_close()
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println(del_nums)
+}
+func InsertData(tableName string, insertdata []string) {
+	db.mysql_open()
+	sql := "insert into " + tableName + " values(null,'" + strings.Join(insertdata, "','") + "')"
+	fmt.Println(sql)
 	ret, err := db.db.Exec(sql)
 	db.mysql_close()
 	if err != nil {
@@ -65,27 +73,11 @@ func queryDataById(tableName string, id string) {
 }
 
 //根据账号查询密码
-func QueryPasswordByAccount(accountId string) map[int]map[string]string {
+func QueryPasswordByAccount(accountId string) Account {
+	var account Account
 	db.mysql_open()
-	row, _ := db.db.Query("select * from account where accountId = '" + accountId + "'")
+	row := db.db.QueryRow("select accountId,accountPassword,accountLevel from account where accountId = '" + accountId + "'")
 	db.mysql_close()
-	cols, _ := row.Columns()
-	vals := make([][]byte, len(cols))
-	scans := make([]interface{}, len(cols))
-	for k, _ := range vals {
-		scans[k] = &vals[k]
-	}
-	i := 0
-	result := make(map[int]map[string]string)
-	for row.Next() {
-		row.Scan(scans...)
-		row := make(map[string]string)
-		for k, v := range vals {
-			key := cols[k]
-			row[key] = string(v)
-		}
-		result[i] = row
-		i++
-	}
-	return result
+	row.Scan(&account.AccountId, &account.AccountPassword, &account.AccountLevel)
+	return account
 }

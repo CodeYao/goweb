@@ -21,41 +21,259 @@
                     ca管理系统
                     </h>
             </div>
-            <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}</span> <a href="#" class="navbar-link">退出</a></p>
+            <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}</span> <a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
         </div>
     </nav>
     <div style="width: 70%;margin: 0 auto">
-        <table class="table table-bordered table-hover">
-            <caption>证书列表</caption>
-            <thead>
-                <tr>
-                    <th class="col-sm-1"><input type="checkbox">全选</th>
-                    <th>申请账号</th>
-                    <th>证书</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>张三</td>
-                    <td>证书1</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>李四</td>
-                    <td>证书2</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>王五</td>
-                    <td>证书3</td>
-                </tr>
-            </tbody>
-        </table>
-        <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看证书</button>
-        <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">吊销证书</button>
-    </div>
 
+
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active">
+                <a href="#certMG" data-toggle="tab">
+                             证书管理
+                        </a>
+            </li>
+            <li><a href="#accountMG" data-toggle="tab">账号管理</a></li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade in active" id="certMG">
+                <table class="table table-bordered table-hover">
+                    <caption>证书列表</caption>
+                    <thead>
+                        <tr>
+                            <th class="col-sm-1"><input type="checkbox">全选</th>
+                            <th>申请账号</th>
+                            <th>证书</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>张三</td>
+                            <td>证书1</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>李四</td>
+                            <td>证书2</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>王五</td>
+                            <td>证书3</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看证书</button> -->
+                <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">吊销证书</button>
+            </div>
+            <div class="tab-pane fade" id="accountMG">
+                <table class="table table-bordered table-hover">
+                    <caption>账号列表</caption>
+                    <thead>
+                        <tr>
+                            <th class="col-sm-1"><input type="checkbox" id="accselectAll">全选</th>
+                            <th>账号</th>
+                            <th>密码</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountlist">
+                        <!-- <tr>
+                            <td><input type="checkbox"></td>
+                            <td>张三</td>
+                            <td>123456</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>李四</td>
+                            <td>123456</td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>王五</td>
+                            <td>123456</td>
+                        </tr> -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addaccount" style="background: #333333; color: #dddddd;">添加账号</button>
+                <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="removeAccount">删除账号</button>
+            </div>
+        </div>
+    </div>
+    <!--添加账户 模态框（Modal） -->
+    <div class="modal fade" id="addaccount" tabindex="-1" role="dialog" aria-labelledby="addipModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                        </button>
+                    <h4 class="modal-title" id="addipModalLabel">
+                        请填写账户密码
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="accountId" name="accountId" placeholder="请输入账号名">
+                                <div id="errorcode_accountId">
+                                    <span class="help-block">账号名不能为空</span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="password" class="form-control" id="newpassword" name="newpassword" placeholder="请输入密码">
+                                <div id="errorcode_newpassword">
+                                    <span class="help-block" id="errortext_newpassword">密码不能为空</span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="password" class="form-control" id="newpassword2" name="newpassword2" placeholder="请再次输入密码">
+                                <div id="errorcode_newpassword2">
+                                    <span class="help-block" id="errortext_newpassword2">两次密码不一致</span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                            关闭
+                        </button>
+                    <button type="button" id="addaccoountbtn" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                            提交
+                        </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 </body>
+<script>
+    function logout() {
+        $.ajax({
+            type: "POST",
+            url: "/logout",
+            success: function(data) {
+                window.location.href = "login"
+            }
+        })
+    }
+    $(document).ready(function() {
+        $.ajax({
+            type: "POST",
+            url: "/accountlist",
+            success: function(data) {
+                var con = ""
+                data = JSON.parse(data)
+                    //alert(data)
+                $.each(data, function(index, item) {
+                    con += "<tr><td><input type='checkbox' name='accountlistcheckbox' id='" + item.Id + "'></td>"
+                    con += " <td>" + item.accountId + "</td>"
+                    con += " <td>" + item.accountPassword + "</td></tr>"
+                        //alert(item.ipStr + index)
+                });
+                $("#accountlist").append(con)
+            }
+        });
+    });
+    $("#errorcode_accountId").hide()
+    $("#errorcode_newpassword").hide()
+    $("#errorcode_newpassword2").hide()
+    $("#addaccoountbtn").click(function() {
+        var accountId = $("#accountId").val()
+        var newpassword = $("#newpassword").val()
+        var newpassword2 = $("#newpassword2").val()
+        if (accountId == "") {
+            $("#errorcode_accountId").show()
+            $("#errorcode_accountId").parent().addClass("has-error has-feedback")
+        } else {
+            $("#errorcode_accountId").hide()
+            $("#errorcode_accountId").parent().removeClass("has-error has-feedback")
+            if (newpassword == "") {
+                $("#errorcode_newpassword").show()
+                $("#errorcode_newpassword").parent().addClass("has-error has-feedback")
+            } else {
+                $("#errorcode_newpassword").hide()
+                $("#errorcode_newpassword").parent().removeClass("has-error has-feedback")
+                if (newpassword2 == "") {
+                    $("#errorcode_newpassword2").show()
+                    $("#errorcode_newpassword2").parent().addClass("has-error has-feedback")
+                    $("#errortext_newpassword2").text("确认密码不可为空")
+                } else if (newpassword2 != newpassword) {
+                    $("#errorcode_newpassword2").show()
+                    $("#errorcode_newpassword2").parent().addClass("has-error has-feedback")
+                    $("#errortext_newpassword2").text("两次输入的密码不一致")
+                } else {
+                    $("#errorcode_newpassword2").hide()
+                    $("#errorcode_newpassword2").parent().removeClass("has-error has-feedback")
+                    $.ajax({
+                        type: "POST",
+                        url: "/addaccount",
+                        data: {
+                            accountId: accountId,
+                            accountPassword: newpassword
+                        },
+                        success: function(data) {
+                            alert("添加成功")
+                            window.location.reload()
+                        }
+                    });
+                }
+            }
+        }
+    })
+    $("#accselectAll").click(function() {
+        var allcheck = $(this).prop("checked")
+        var check = $("input[name='accountlistcheckbox']").prop("checked", allcheck)
+    })
+    $("tbody").on('click', "[name='accountlistcheckbox']", function() {
+        var checkAll = $("#accselectAll").prop("checked")
+        var check = $("input[name='accountlistcheckbox']")
+        var checknum = 0
+            //  alert(check.length)
+        for (var index = 0; index < check.length; index++) {
+            //alert($(check[index]).prop("checked"))
+            if (checkAll != $(check[index]).prop("checked")) {
+                $("#accselectAll").prop("checked", false)
+            }
+            if ($(check[index]).prop("checked") == true) {
+                checknum++
+            }
+        }
+        if (checknum == check.length) {
+            $("#accselectAll").prop("checked", true)
+        }
+    });
+    $("#removeAccount").click(function() {
+        var check = $("input[name='accountlistcheckbox']:checked")
+        if (check.length == 0) {
+            alert("请选中至少一条记录")
+        } else {
+            for (var index = 0; index < check.length; index++) {
+                //alert($(check[index]).attr("id"))
+                var id = $(check[index]).attr("id")
+                $.ajax({
+                    type: "POST",
+                    url: "/removeaccount",
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {}
+                });
+            }
+            alert("删除成功")
+            window.location.reload()
+        }
+    })
+</script>
 
 </html>

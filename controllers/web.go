@@ -9,6 +9,9 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
+	"strings"
 )
 
 var globalSessions *utils.Manager
@@ -94,15 +97,93 @@ func removeip(w http.ResponseWriter, r *http.Request) {
 		models.DeleteDateById("iplist", ipid)
 	}
 }
+func reqcert(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		notAfter, _ := strconv.Atoi(r.FormValue("notAfter"))
+		ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
+		country := strings.Split(r.FormValue("country"), ",")
+		organization := strings.Split(r.FormValue("organization"), ",")
+		commonName := r.FormValue("commonName")
+		ipPath := r.FormValue("ipAddress")
+		//fmt.Println("chenyao*************", ipPath, ipAddress)
+		r.ParseMultipartForm(32 << 20)
+		file, handler, err := r.FormFile("pubKeyFile")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer file.Close()
+		//fmt.Fprintf(w, "%v", handler.Header)
+		utils.Creatdir("conf/" + ipPath)
+		f, err := os.OpenFile("conf/"+ipPath+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer f.Close()
+		io.Copy(f, file)
+
+		utils.GetPubKey("conf/"+ipPath+"/key_req.pem", r.FormValue("ipAddress"))
+
+		utils.GenerateCert(notAfter, ipAddress, country, organization, commonName)
+		io.WriteString(w, "conf/"+ipPath+"/cert.pem")
+		//fmt.Println("chenyao******", notAfter, ipAddress, country, organization, commonName)
+	}
+}
+
+func easygen(w http.ResponseWriter, r *http.Request) {
+	ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
+	utils.EasyGen(ipAddress)
+	f1, _ := os.Open("conf/" + r.FormValue("ipAddress"))
+	defer f1.Close()
+	f2, _ := os.Open("conf/readme.txt")
+	defer f2.Close()
+	var files = []*os.File{f1, f2}
+	dest := "conf/" + r.FormValue("ipAddress") + ".zip"
+	utils.Compress(files, dest)
+}
+
+func accountlist(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		accountlistMap := models.Queryaccountlist()
+		accountlistJson, _ := json.Marshal(accountlistMap)
+		io.WriteString(w, string(accountlistJson))
+	}
+}
+
+func addaccount(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		accountId := r.FormValue("accountId")
+		accountPassword := r.FormValue("accountPassword")
+		models.InsertData("account", []string{accountId, accountPassword, "11"})
+	}
+}
+
+func removeaccount(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		id := r.FormValue("id")
+		models.DeleteDateById("account", id)
+	}
+}
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
+	http.Handle("/conf/", http.StripPrefix("/conf/", http.FileServer(http.Dir("conf"))))       //设置静态文件路径
 	http.HandleFunc("/login", login)                                                           //设置访问的路由
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/index_ca", index_ca)
 	http.HandleFunc("/index_peer", index_peer)
+
+	//用户操作
 	http.HandleFunc("/addip", addip)
 	http.HandleFunc("/removeip", removeip)
 	http.HandleFunc("/iplist", iplist)
+	http.HandleFunc("/reqcert", reqcert)
+	http.HandleFunc("/easygen", easygen)
+
+	//ca操作
+	http.HandleFunc("/accountlist", accountlist)
+	http.HandleFunc("/addaccount", addaccount)
+	http.HandleFunc("/removeaccount", removeaccount)
 	err := http.ListenAndServe(":9090", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

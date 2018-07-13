@@ -115,18 +115,19 @@ func subString(str string, start, end int) string {
 
 	return string(rs[start:end])
 }
-func main() {
-	f1, _ := os.Open("../conf/10.1.1.2")
 
-	defer f1.Close()
-	f2, _ := os.Open("../conf/ca")
+// func main() {
+// 	f1, _ := os.Open("../conf/10.1.1.2")
 
-	defer f2.Close()
-	f3, _ := os.Open("../conf/10.1.1.2/cert.pem")
+// 	defer f1.Close()
+// 	f2, _ := os.Open("../conf/ca")
 
-	defer f3.Close()
-	var files = []*os.File{f1, f2, f3}
-	dest := "test.zip"
-	Compress(files, dest)
+// 	defer f2.Close()
+// 	f3, _ := os.Open("../conf/10.1.1.2/cert.pem")
 
-}
+// 	defer f3.Close()
+// 	var files = []*os.File{f1, f2, f3}
+// 	dest := "test.zip"
+// 	Compress(files, dest)
+
+// }

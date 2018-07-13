@@ -78,6 +78,43 @@ func QueryiplistByAccountId(accountId string) []map[string]string {
 	}
 	return result
 }
+
+func QueryData(tableName string) []map[string]string {
+	db.mysql_open()
+	//查询数据，取所有字段
+	rows, _ := db.db.Query("select * from " + tableName)
+	db.mysql_close()
+	//返回所有列
+	cols, _ := rows.Columns()
+	//这里表示一行所有列的值，用[]byte表示
+	vals := make([][]byte, len(cols))
+	//这里表示一行填充数据
+	scans := make([]interface{}, len(cols))
+	//这里scans引用vals，把数据填充到[]byte里
+	for k, _ := range vals {
+		scans[k] = &vals[k]
+	}
+
+	i := 0
+	var result []map[string]string
+	for rows.Next() {
+		//填充数据
+		rows.Scan(scans...)
+		//每行数据
+		row := make(map[string]string)
+		//把vals中的数据复制到row中
+		for k, v := range vals {
+			key := cols[k]
+			//这里把[]byte数据转成string
+			row[key] = string(v)
+		}
+		//放入结果集
+		result = append(result, row)
+		i++
+	}
+	return result
+}
+
 func DeleteDateById(tableName string, id string) {
 	db.mysql_open()
 	ret, _ := db.db.Exec("delete from "+tableName+" where id = ?", id)

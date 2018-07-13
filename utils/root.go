@@ -16,9 +16,15 @@ package utils
 
 import (
 	"crypto/ecdsa"
+	"crypto/rand"
+	"crypto/x509/pkix"
+	"encoding/pem"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/tjfoc/gmsm/sm2"
 )
@@ -115,6 +121,62 @@ func GenerateCert(notAfter int, ipAddress []string, country []string, organizati
 	genCert(path)
 	//os.RemoveAll("conf/req")
 }
+
+//path:想要吊销的证书的列表
+func RevokedCertificates(path []string) {
+	cert, err := sm2.ReadCertificateFromPem("./conf/ca/ca.pem")
+	if err != nil {
+		panic(err)
+	}
+	privKey, err := sm2.ReadPrivateKeyFromPem("./conf/ca/key.pem", nil)
+	if err != nil {
+		fmt.Println("read priv key err:", err)
+	}
+	var revokedCerts []pkix.RevokedCertificate
+	for _, v := range path {
+		peer_cert, err := sm2.ReadCertificateFromPem(v)
+		if err != nil {
+			fmt.Println(err)
+		}
+		peer_revoke := pkix.RevokedCertificate{
+			SerialNumber:   peer_cert.SerialNumber,
+			RevocationTime: time.Now(),
+			Extensions:     peer_cert.Extensions,
+		}
+		revokedCerts = append(revokedCerts, peer_revoke)
+	}
+
+	now := time.Now()
+	dd, _ := time.ParseDuration("24000h")
+	expir := now.Add(dd)
+	crl, err := cert.CreateCRL(rand.Reader, privKey, revokedCerts, now, expir)
+	if err != nil {
+		panic(err)
+	}
+	block := &pem.Block{
+		Type:  "CRL",
+		Bytes: crl,
+	}
+	file, err := os.Create("./conf/crl.pem")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	err = pem.Encode(file, block)
+	if err != nil {
+		panic(err)
+	}
+
+	rcrl, err := readClr("./conf/crl.pem")
+	if err != nil {
+		panic(err)
+	}
+	err = cert.CheckCRLSignature(rcrl)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("吊销成功")
+}
 func EasyGen(ipAddress []string) {
 	Cfg.Cert.DNSNames = ipAddress
 	Creatdir("conf/ca")
@@ -127,4 +189,17 @@ func EasyGen(ipAddress []string) {
 	genKey(path)
 	genCetReq(path)
 	genCert(path)
+}
+
+func readClr(path string) (*pkix.CertificateList, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	block, _ := pem.Decode(data)
+	if block == nil {
+		return nil, errors.New("failed to decode CRL")
+	}
+	return sm2.ParseCRL(block.Bytes)
+
 }

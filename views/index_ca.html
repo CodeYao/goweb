@@ -19,7 +19,7 @@
             <div class="navbar-header">
                 <h4 class="navbar-text" style=" color: #dddddd;">
                     ca管理系统
-                    </h>
+                </h4>
             </div>
             <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}</span> <a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
         </div>
@@ -41,13 +41,13 @@
                     <caption>证书列表</caption>
                     <thead>
                         <tr>
-                            <th class="col-sm-1"><input type="checkbox">全选</th>
+                            <th class="col-sm-1"><input type="checkbox" id="certselectAll">全选</th>
                             <th>申请账号</th>
                             <th>证书</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
+                    <tbody id="certlist">
+                        <!-- <tr>
                             <td><input type="checkbox"></td>
                             <td>张三</td>
                             <td>证书1</td>
@@ -61,11 +61,11 @@
                             <td><input type="checkbox"></td>
                             <td>王五</td>
                             <td>证书3</td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
                 <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看证书</button> -->
-                <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">吊销证书</button>
+                <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="crlbtn">吊销证书</button>
             </div>
             <div class="tab-pane fade" id="accountMG">
                 <table class="table table-bordered table-hover">
@@ -185,6 +185,24 @@
             }
         });
     });
+    $(document).ready(function() {
+        $.ajax({
+            type: "POST",
+            url: "/certlist",
+            success: function(data) {
+                var con = ""
+                data = JSON.parse(data)
+                    //alert(data)
+                $.each(data, function(index, item) {
+                    con += "<tr><td><input type='checkbox' name='certlistcheckbox' id='" + item.Id + "'></td>"
+                    con += " <td>" + item.accountId + "</td>"
+                    con += " <td>" + item.certPath + "</td></tr>"
+                        //alert(item.ipStr + index)
+                });
+                $("#certlist").append(con)
+            }
+        });
+    });
     $("#errorcode_accountId").hide()
     $("#errorcode_newpassword").hide()
     $("#errorcode_newpassword2").hide()
@@ -235,6 +253,10 @@
         var allcheck = $(this).prop("checked")
         var check = $("input[name='accountlistcheckbox']").prop("checked", allcheck)
     })
+    $("#certselectAll").click(function() {
+        var allcheck = $(this).prop("checked")
+        var check = $("input[name='certlistcheckbox']").prop("checked", allcheck)
+    })
     $("tbody").on('click', "[name='accountlistcheckbox']", function() {
         var checkAll = $("#accselectAll").prop("checked")
         var check = $("input[name='accountlistcheckbox']")
@@ -251,6 +273,24 @@
         }
         if (checknum == check.length) {
             $("#accselectAll").prop("checked", true)
+        }
+    });
+    $("tbody").on('click', "[name='certlistcheckbox']", function() {
+        var checkAll = $("#certselectAll").prop("checked")
+        var check = $("input[name='certlistcheckbox']")
+        var checknum = 0
+            //  alert(check.length)
+        for (var index = 0; index < check.length; index++) {
+            //alert($(check[index]).prop("checked"))
+            if (checkAll != $(check[index]).prop("checked")) {
+                $("#certselectAll").prop("checked", false)
+            }
+            if ($(check[index]).prop("checked") == true) {
+                checknum++
+            }
+        }
+        if (checknum == check.length) {
+            $("#certselectAll").prop("checked", true)
         }
     });
     $("#removeAccount").click(function() {
@@ -272,6 +312,35 @@
             }
             alert("删除成功")
             window.location.reload()
+        }
+    })
+    $("#crlbtn").click(function() {
+        var check = $("input[name='certlistcheckbox']:checked")
+        if (check.length == 0) {
+            alert("请选中至少一条记录")
+        } else {
+            var certPath = ""
+            for (var index = 0; index < check.length; index++) {
+                //alert($(check[index]).attr("id"))
+                var path = $(check[index]).parent().next().next().text()
+                certPath += path + "@"
+            }
+            certPath = certPath.substring(0, certPath.length - 1)
+            $.ajax({
+                type: "POST",
+                url: "/createcrl",
+                data: {
+                    certPath: certPath,
+                },
+                success: function(data) {
+                    alert("吊销成功")
+                    var link = document.createElement('a')
+                    link.setAttribute("download", "")
+                    link.href = "conf/crl.pem"
+                    link.click()
+                    window.location.reload()
+                }
+            });
         }
     })
 </script>

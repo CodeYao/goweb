@@ -98,7 +98,9 @@ func removeip(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func reqcert(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
+		userName := sess.Get("username")
 		notAfter, _ := strconv.Atoi(r.FormValue("notAfter"))
 		ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
 		country := strings.Split(r.FormValue("country"), ",")
@@ -128,19 +130,25 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 		utils.GenerateCert(notAfter, ipAddress, country, organization, commonName)
 		io.WriteString(w, "conf/"+ipPath+"/cert.pem")
 		//fmt.Println("chenyao******", notAfter, ipAddress, country, organization, commonName)
+		models.InsertData("cert", []string{"conf/" + ipPath + "/cert.pem", "conf/" + ipPath + "/pubkey.pem", userName.(string)})
 	}
 }
 
 func easygen(w http.ResponseWriter, r *http.Request) {
-	ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
-	utils.EasyGen(ipAddress)
-	f1, _ := os.Open("conf/" + r.FormValue("ipAddress"))
-	defer f1.Close()
-	f2, _ := os.Open("conf/readme.txt")
-	defer f2.Close()
-	var files = []*os.File{f1, f2}
-	dest := "conf/" + r.FormValue("ipAddress") + ".zip"
-	utils.Compress(files, dest)
+	sess := globalSessions.SessionStart(w, r)
+	if r.Method == "POST" {
+		userName := sess.Get("username")
+		ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
+		utils.EasyGen(ipAddress)
+		f1, _ := os.Open("conf/" + r.FormValue("ipAddress"))
+		defer f1.Close()
+		f2, _ := os.Open("conf/readme.txt")
+		defer f2.Close()
+		var files = []*os.File{f1, f2}
+		dest := "conf/" + r.FormValue("ipAddress") + ".zip"
+		utils.Compress(files, dest)
+		models.InsertData("cert", []string{"conf/" + r.FormValue("ipAddress") + "/cert.pem", "conf/" + r.FormValue("ipAddress") + "/pubkey.pem", userName.(string)})
+	}
 }
 
 func accountlist(w http.ResponseWriter, r *http.Request) {
@@ -165,6 +173,20 @@ func removeaccount(w http.ResponseWriter, r *http.Request) {
 		models.DeleteDateById("account", id)
 	}
 }
+
+func certlist(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		iplistMap := models.QueryData("cert")
+		iplistJson, _ := json.Marshal(iplistMap)
+		io.WriteString(w, string(iplistJson))
+	}
+}
+func createcrl(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		certPath := strings.Split(r.FormValue("certPath"), "@")
+		utils.RevokedCertificates(certPath)
+	}
+}
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
 	http.Handle("/conf/", http.StripPrefix("/conf/", http.FileServer(http.Dir("conf"))))       //设置静态文件路径
@@ -184,6 +206,9 @@ func RunWeb() {
 	http.HandleFunc("/accountlist", accountlist)
 	http.HandleFunc("/addaccount", addaccount)
 	http.HandleFunc("/removeaccount", removeaccount)
+	http.HandleFunc("/certlist", certlist)
+	http.HandleFunc("/createcrl", createcrl)
+
 	err := http.ListenAndServe(":9090", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

@@ -19,7 +19,7 @@
             <div class="navbar-header">
                 <h4 class="navbar-text" style=" color: #dddddd;">
                     ca管理系统
-                    </h>
+                </h4>
             </div>
             <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}！</span> <a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
         </div>
@@ -322,11 +322,12 @@
                     data: new FormData($('#certForm')[0]),
                     success: function(data) {
                         alert("生成成功")
-                        alert(data)
+                            //alert(data)
                         var link = document.createElement('a')
                         link.setAttribute("download", "")
                         link.href = data
                         link.click()
+                        window.location.reload()
                             // window.open("conf/cert.pem")
                     }
                 });

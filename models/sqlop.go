@@ -149,8 +149,8 @@ func queryDataById(tableName string, id string) {
 func QueryPasswordByAccount(accountId string) Account {
 	var account Account
 	db.mysql_open()
-	row := db.db.QueryRow("select accountId,accountPassword,accountLevel from account where accountId = '" + accountId + "'")
+	row := db.db.QueryRow("select accountId,organization,password,accountLevel,enabled from account where accountId = '" + accountId + "'")
 	db.mysql_close()
-	row.Scan(&account.AccountId, &account.AccountPassword, &account.AccountLevel)
+	row.Scan(&account.AccountId, &account.Organization, &account.Password, &account.AccountLevel, &account.Enable)
 	return account
 }

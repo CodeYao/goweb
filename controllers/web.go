@@ -42,7 +42,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		//请求的是登陆数据，那么执行登陆的逻辑判断
 		realpassword := models.QueryPasswordByAccount(accountId)
 		fmt.Println(realpassword)
-		if password == realpassword.AccountPassword {
+		if password == realpassword.Password {
 			//str, _ := json.Marshal(realpassword)
 			//设置session
 			sess.Set("username", accountId)

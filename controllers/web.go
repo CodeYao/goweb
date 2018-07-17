@@ -101,36 +101,41 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
 		userName := sess.Get("username")
+		certName := r.FormValue("certName")
 		notAfter, _ := strconv.Atoi(r.FormValue("notAfter"))
-		ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
+		ipAddress := strings.Split(r.FormValue("ipAddress"), ";")
+		reqcertxt := r.FormValue("reqcertxt")
 		country := strings.Split(r.FormValue("country"), ",")
 		organization := strings.Split(r.FormValue("organization"), ",")
 		commonName := r.FormValue("commonName")
 		ipPath := r.FormValue("ipAddress")
-		//fmt.Println("chenyao*************", ipPath, ipAddress)
-		r.ParseMultipartForm(32 << 20)
-		file, handler, err := r.FormFile("pubKeyFile")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer file.Close()
-		//fmt.Fprintf(w, "%v", handler.Header)
-		utils.Creatdir("conf/" + ipPath)
-		f, err := os.OpenFile("conf/"+ipPath+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer f.Close()
-		io.Copy(f, file)
-
-		utils.GetPubKey("conf/"+ipPath+"/key_req.pem", r.FormValue("ipAddress"))
-
+		fmt.Println(userName, certName, notAfter, ipAddress, reqcertxt, country, organization, commonName, ipPath)
+		utils.GetPubKey(reqcertxt, r.FormValue("ipAddress"))
 		utils.GenerateCert(notAfter, ipAddress, country, organization, commonName)
-		io.WriteString(w, "conf/"+ipPath+"/cert.pem")
-		//fmt.Println("chenyao******", notAfter, ipAddress, country, organization, commonName)
-		models.InsertData("cert", []string{"conf/" + ipPath + "/cert.pem", "conf/" + ipPath + "/pubkey.pem", userName.(string)})
+		//fmt.Println("chenyao*************", ipPath, ipAddress)
+		// r.ParseMultipartForm(32 << 20)
+		// file, handler, err := r.FormFile("pubKeyFile")
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	return
+		// }
+		// defer file.Close()
+		// //fmt.Fprintf(w, "%v", handler.Header)
+		// utils.Creatdir("conf/" + ipPath)
+		// f, err := os.OpenFile("conf/"+ipPath+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	return
+		// }
+		// defer f.Close()
+		// io.Copy(f, file)
+
+		// utils.GetPubKey("conf/"+ipPath+"/key_req.pem", r.FormValue("ipAddress"))
+
+		// utils.GenerateCert(notAfter, ipAddress, country, organization, commonName)
+		// io.WriteString(w, "conf/"+ipPath+"/cert.pem")
+		// //fmt.Println("chenyao******", notAfter, ipAddress, country, organization, commonName)
+		// models.InsertData("cert", []string{"conf/" + ipPath + "/cert.pem", "conf/" + ipPath + "/pubkey.pem", userName.(string)})
 	}
 }
 
@@ -138,7 +143,7 @@ func easygen(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
 		userName := sess.Get("username")
-		ipAddress := strings.Split(r.FormValue("ipAddress"), ",")
+		ipAddress := strings.Split(r.FormValue("ipAddress"), ";")
 		utils.EasyGen(ipAddress)
 		f1, _ := os.Open("conf/" + r.FormValue("ipAddress"))
 		defer f1.Close()
@@ -187,6 +192,10 @@ func createcrl(w http.ResponseWriter, r *http.Request) {
 		utils.RevokedCertificates(certPath)
 	}
 }
+func genreatePage(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("views/generate.html")
+	t.Execute(w, nil)
+}
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
 	http.Handle("/conf/", http.StripPrefix("/conf/", http.FileServer(http.Dir("conf"))))       //设置静态文件路径
@@ -201,6 +210,7 @@ func RunWeb() {
 	http.HandleFunc("/iplist", iplist)
 	http.HandleFunc("/reqcert", reqcert)
 	http.HandleFunc("/easygen", easygen)
+	http.HandleFunc("/genreatePage", genreatePage)
 
 	//ca操作
 	http.HandleFunc("/accountlist", accountlist)

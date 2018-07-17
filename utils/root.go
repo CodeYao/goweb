@@ -73,8 +73,8 @@ func Creatdir(dir string) {
 	}
 }
 
-func GetPubKey(certpath string, ipAddress string) {
-	req, err := sm2.ReadCertificateRequestFromPem(certpath)
+func GetPubKey(reqdata string, ipAddress string) {
+	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqdata))
 	if err != nil {
 		fmt.Println("parse ecdsa req err:", err)
 		return
@@ -85,14 +85,14 @@ func GetPubKey(certpath string, ipAddress string) {
 		X:     pubkey.X,
 		Y:     pubkey.Y,
 	}
-	s := "/pubkey.pem"
-	//设置公钥路径
-	s = "conf/" + ipAddress + s
-	ok, err := sm2.WritePublicKeytoPem(s, smPub, nil)
-	if !ok {
+	// s := "/pubkey.pem"
+	// //设置公钥路径
+	// s = "conf/" + ipAddress + s
+	ok, err := sm2.WritePublicKeytoMem(smPub, nil)
+	if err == nil {
 		fmt.Println(err)
 	}
-	//fmt.Println(pubkey)
+	fmt.Println(string(ok))
 }
 
 func GenerateCert(notAfter int, ipAddress []string, country []string, organization []string, commonName string) {

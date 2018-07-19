@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/tjfoc/gmsm/sm2"
@@ -34,12 +33,12 @@ var Cfg ToolConf
 
 func init() {
 	Cfg.Cert.KeyType = "sm2"
-	Cfg.Cert.CommonName = "test.example.com"
-	Cfg.Cert.Organization = []string{"TEST", "TEST1"}
-	Cfg.Cert.Country = []string{"China"}
+	//Cfg.Cert.CommonName = "test.example.com"
+	//Cfg.Cert.Organization = []string{"TEST", "TEST1"}
+	//Cfg.Cert.Country = []string{"China"}
 	Cfg.Cert.NotBefore = 100
-	Cfg.Cert.NotAfter = 1000
-	Cfg.Cert.DNSNames = []string{"10.1.3.150", "10.1.3.150"}
+	//Cfg.Cert.NotAfter = 1000
+	//Cfg.Cert.DNSNames = []string{"10.1.3.150", "10.1.3.150"}
 	Cfg.Cert.PermittedDNSDomains = []string{".example.com", "example.com"}
 	Cfg.Cert.CRLDistributionPoints = []string{"http://crl1.example.com/ca1.cr1", "http://cr12.example.com/ca1.crl"}
 	Cfg.Cert.SM2SignatureAlgorithm = 18
@@ -73,11 +72,11 @@ func Creatdir(dir string) {
 	}
 }
 
-func GetPubKey(reqdata string, ipAddress string) {
+func GetPubKey(reqdata string) []byte {
 	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqdata))
 	if err != nil {
 		fmt.Println("parse ecdsa req err:", err)
-		return
+		return nil
 	}
 	pubkey := req.PublicKey.(*ecdsa.PublicKey)
 	smPub := &sm2.PublicKey{
@@ -89,13 +88,13 @@ func GetPubKey(reqdata string, ipAddress string) {
 	// //设置公钥路径
 	// s = "conf/" + ipAddress + s
 	ok, err := sm2.WritePublicKeytoMem(smPub, nil)
-	if err == nil {
+	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(string(ok))
+	return ok
 }
 
-func GenerateCert(notAfter int, ipAddress []string, country []string, organization []string, commonName string) {
+func GenerateCert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, reqData string) []byte {
 	Cfg.Cert.NotAfter = notAfter
 	Cfg.Cert.DNSNames = ipAddress
 	if len(organization) > 0 {
@@ -109,17 +108,25 @@ func GenerateCert(notAfter int, ipAddress []string, country []string, organizati
 	}
 	Creatdir("conf/ca")
 	//Creatdir("conf/req")
-	if !CheckIsExist("conf/ca/key.pem") {
-		genKey("conf/ca")
-	}
-	reqpath := strings.Join(ipAddress, ",")
-	path := "conf/" + reqpath
+	// if !CheckIsExist("conf/ca/key.pem") {
+	// 	genKey("conf/ca")
+	// }
+	//reqpath := strings.Join(ipAddress, ",")
+	//path := "conf/" + reqpath
 	//Creatdir(path)
 	//genKey(path)
 
 	//genCetReq(path)
-	genCert(path)
+	fmt.Println(Cfg.Cert)
+	return genCert(reqData)
 	//os.RemoveAll("conf/req")
+}
+func GetCert(certbyte []byte) sm2.Certificate {
+	cert, err := sm2.ReadCertificateFromMem(certbyte)
+	if err != nil {
+		panic(err)
+	}
+	return *cert
 }
 
 //path:想要吊销的证书的列表
@@ -134,7 +141,7 @@ func RevokedCertificates(path []string) {
 	}
 	var revokedCerts []pkix.RevokedCertificate
 	for _, v := range path {
-		peer_cert, err := sm2.ReadCertificateFromPem(v)
+		peer_cert, err := sm2.ReadCertificateFromMem([]byte(v))
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -177,20 +184,27 @@ func RevokedCertificates(path []string) {
 	}
 	fmt.Println("吊销成功")
 }
-func EasyGen(ipAddress []string) {
-	Cfg.Cert.DNSNames = ipAddress
-	Creatdir("conf/ca")
-	if !CheckIsExist("conf/ca/key.pem") {
-		genKey("conf/ca")
-	}
-	reqpath := strings.Join(ipAddress, ",")
-	path := "conf/" + reqpath
-	Creatdir(path)
-	genKey(path)
-	genCetReq(path)
-	genCert(path)
-}
 
+// func EasyGen(ipAddress []string) {
+// 	Cfg.Cert.DNSNames = ipAddress
+// 	Creatdir("conf/ca")
+// 	if !CheckIsExist("conf/ca/key.pem") {
+// 		genKey("conf/ca")
+// 	}
+// 	reqpath := strings.Join(ipAddress, ",")
+// 	path := "conf/" + reqpath
+// 	Creatdir(path)
+// 	genKey(path)
+// 	genCetReq(path)
+// 	genCert(path)
+// }
+
+func OneTouch() []string {
+	key := genKey()
+	req := genCetReq(key)
+	pub := GetPubKey(string(req))
+	return []string{string(key), string(pub), string(req)}
+}
 func readClr(path string) (*pkix.CertificateList, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {

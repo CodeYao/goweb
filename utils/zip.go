@@ -2,7 +2,9 @@ package utils
 
 import (
 	"archive/zip"
+	"bytes"
 	"io"
+	"log"
 	"os"
 )
 
@@ -61,6 +63,39 @@ func compress(file *os.File, prefix string, zw *zip.Writer) error {
 		}
 	}
 	return nil
+}
+
+func ZipByte(certByte []byte, path string) {
+	buf := new(bytes.Buffer)
+
+	w := zip.NewWriter(buf)
+
+	var files = []struct {
+		Name, Body string
+	}{
+		{"cert.pem", string(certByte)},
+	}
+	for _, file := range files {
+		f, err := w.Create(file.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = f.Write([]byte(file.Body))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	err := w.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	buf.WriteTo(f)
 }
 
 // func main() {

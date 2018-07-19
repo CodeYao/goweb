@@ -9,14 +9,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Resource struct {
-	XMLName    xml.Name `xml:"resource"`
-	Dbhostsip  string   `xml:"dbhostsip"`
-	Dbusername string   `xml:"dbusername"`
-	Dbpassowrd string   `xml:"dbpassword"`
-	Dbname     string   `xml:"dbname"`
-}
-
 // var (
 // 	dbhostsip  = "127.0.0.1"
 // 	dbusername = "root"

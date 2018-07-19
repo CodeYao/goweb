@@ -34,44 +34,43 @@ const (
 	ECDSA
 )
 
-func genKey(path string) {
+func genKey() []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
-		genSM2Key(path)
+		return genSM2Key()
 	case "ecdsa":
-		genECDSAKey(path)
+		genECDSAKey("")
 	default:
 		fmt.Println("err key type!")
 	}
+	return nil
 }
 
-func genSM2Key(path string) {
-	for i := 0; i < NumberOfKey; i++ {
-		priv, err := sm2.GenerateKey()
+func genSM2Key() []byte {
 
-		if err != nil {
-			fmt.Println(err)
-		}
-		//s := fmt.Sprintf("priv%d.pem", i)
-		s := "key.pem"
-		//设置私钥路径
-		s = path + "/" + s
-		ok, err := sm2.WritePrivateKeytoPem(s, priv, nil)
-		if !ok {
-			fmt.Println(err)
-		}
+	priv, err := sm2.GenerateKey()
 
-		pubKey, _ := priv.Public().(*sm2.PublicKey)
-		//s = fmt.Sprintf("pub%d.pem", i)
-		s = "pubkey.pem"
-		//设置公钥路径
-		s = path + "/" + s
-		ok, err = sm2.WritePublicKeytoPem(s, pubKey, nil)
-		if !ok {
-			fmt.Println(err)
-		}
-
+	if err != nil {
+		fmt.Println(err)
 	}
+	//s := fmt.Sprintf("priv%d.pem", i)
+	//s := "key.pem"
+	//设置私钥路径
+	//s = path + "/" + s
+	ok, err := sm2.WritePrivateKeytoMem(priv, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// pubKey, _ := priv.Public().(*sm2.PublicKey)
+	// //s = fmt.Sprintf("pub%d.pem", i)
+	// s = "pubkey.pem"
+	// //设置公钥路径
+	// s = path + "/" + s
+	// ok, err = sm2.WritePublicKeytoPem(s, pubKey, nil)
+	// if !ok {
+	// 	fmt.Println(err)
+	// }
+	return ok
 }
 
 func genECDSAKey(path string) {

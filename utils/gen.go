@@ -34,18 +34,19 @@ import (
 var oidExtensionSubjectKeyId = []int{2, 5, 29, 14}
 var PrivK string = "key.pem"
 
-func genCert(path string) {
+func genCert(path string) []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
-		genSM2Cert(path)
+		return genSM2Cert(path)
 	case "ecdsa":
 		genECDSACert(path)
 	default:
 		fmt.Println("err key type!")
 	}
+	return nil
 }
 
-func genSM2Cert(path string) {
+func genSM2Cert(reqData string) []byte {
 	fmt.Println("==========SM2============")
 	//ca读私钥
 	privKey, err := sm2.ReadPrivateKeyFromPem("./conf/ca/key.pem", nil)
@@ -133,7 +134,7 @@ func genSM2Cert(path string) {
 		ok, _ := sm2.CreateCertificateToPem("conf/ca/ca.pem", &template, &template, &privKey.PublicKey, privKey)
 		if !ok {
 			fmt.Println("sm create cert err")
-			return
+			return nil
 		}
 
 	}
@@ -143,26 +144,29 @@ func genSM2Cert(path string) {
 	//if err != nil {
 	//	fmt.Println("read priv key err:", err)
 	//}
-	s := fmt.Sprintf(path+"/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
+	//s := fmt.Sprintf(path+"/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
 
 	//读取证书生成请求
-	req, err := sm2.ReadCertificateRequestFromPem(s)
+	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqData))
 	if err != nil {
 		fmt.Println("read req err:", err)
-		return
+		return nil
 	}
 	//设置证书路径
 	cert, err := sm2.ReadCertificateFromPem("conf/ca/ca.pem")
 	tmp := sm2CsrToCert(req)
 	//filepath := "./" + path + "/" + PrivK
 	//s = fmt.Sprintf("%s_cert.pem", strings.TrimSuffix(filepath, ".pem"))
-	s = "./" + path + "/cert.pem"
+	//s = "./" + path + "/cert.pem"
+	tmp.Subject.CommonName = Cfg.Cert.CommonName
+	tmp.Subject.Country = Cfg.Cert.Country
+	tmp.Subject.Organization = Cfg.Cert.Organization
 	pub := req.PublicKey
 
 	v, ok := pub.(*ecdsa.PublicKey)
 	if !ok {
 		fmt.Println("err pub key type")
-		return
+		return nil
 	}
 
 	smPub := &sm2.PublicKey{
@@ -179,25 +183,26 @@ func genSM2Cert(path string) {
 	*smPub:节点公钥
 	*privKey:ca私钥
 	 */
-	ok, err = sm2.CreateCertificateToPem(s, tmp, cert, smPub, privKey)
-	if !ok {
+	newcert, err := sm2.CreateCertificateToMem(tmp, cert, smPub, privKey)
+	if err != nil {
 		fmt.Println("create cert err!", err)
-		return
+		return nil
 	}
 
-	cert1, err := sm2.ReadCertificateFromPem(s)
+	cert1, err := sm2.ReadCertificateFromMem(newcert)
 	if err != nil {
 		fmt.Println("read cert err:", err)
-		return
+		return nil
 	}
 	err = cert.CheckSignature(cert1.SignatureAlgorithm, cert1.RawTBSCertificate, cert1.Signature)
 	if err != nil {
 		fmt.Println("check signature err:", err)
-		return
+		return nil
 	}
 
 	fmt.Println("********success!********")
 	fmt.Println("==========SM2============")
+	return newcert
 }
 
 func genECDSACert(path string) {

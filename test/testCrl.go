@@ -1,7 +1,5 @@
 package main
 
-import "ca/goweb/utils"
-
-func main() {
-	utils.RevokedCertificates([]string{"../conf/10.2.2.2,10.3.3.3/cert.pem", "../conf/10.2.2.2,10.3.3.3/cert.pem"})
-}
+// func main() {
+// 	utils.RevokedCertificates([]string{"../conf/10.2.2.2,10.3.3.3/cert.pem", "../conf/10.2.2.2,10.3.3.3/cert.pem"})
+// }

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
     <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
     <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="static/bootstrap-3.3.7/js/clipboard.min.js"></script>
 </head>
 
 <style>
@@ -29,24 +30,70 @@
         <table class="table table-bordered table-hover">
             <label>公钥</label>
             <textarea id="pubkey" class="form-control" rows="5"></textarea>
-            <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">复制公钥</button>
+            <button type="button" class="btn btn-default pull-right" id="cppubkey" data-clipboard-target="#pubkey" style="background: #333333; color: #dddddd;">复制公钥</button>
         </table>
 
         <table class="table table-bordered table-hover">
             <label>私钥</label>
             <textarea id="privkey" class="form-control" rows="5"></textarea>
-            <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">复制私钥</button>
+            <button type="button" class="btn btn-default pull-right" id="cpprivkey" data-clipboard-target="#privkey" style="background: #333333; color: #dddddd;">复制私钥</button>
         </table>
 
         <table class="table table-bordered table-hover">
             <label>证书请求</label>
             <textarea id="req" class="form-control" rows="5"></textarea>
-            <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">复制证书请求</button>
+            <button type="button" class="btn btn-default pull-right" id="cpreq" data-clipboard-target="#req" style="background: #333333; color: #dddddd;">复制证书请求</button>
         </table>
     </div>
 
 </body>
 <script>
+    var clipboard1 = new ClipboardJS('#cppubkey');
+    clipboard1.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+        alert("复制成功")
+    });
+
+    clipboard1.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        alert("复制失败，换个浏览器试试")
+    });
+
+    var clipboard2 = new ClipboardJS('#cpprivkey');
+    clipboard2.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+        alert("复制成功")
+    });
+
+    clipboard2.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        alert("复制失败，换个浏览器试试")
+    });
+    var clipboard3 = new ClipboardJS('#cpreq');
+    clipboard3.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+        alert("复制成功")
+    });
+
+    clipboard3.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        alert("复制失败，换个浏览器试试")
+    });
     $(document).ready(function() {
         $.ajax({
             type: "POST",

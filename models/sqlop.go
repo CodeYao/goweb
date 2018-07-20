@@ -125,9 +125,9 @@ func DeleteDateById(tableName string, id string) {
 }
 
 //将账号更新为不可用
-func DeleteAccountById(id string) {
+func DeleteAccountById(id int) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update account set enabled = 'disabled' where accountId = ?", id)
+	ret, _ := db.db.Exec("update account set enabled = 'disabled' where Id = ?", id)
 	db.mysql_close()
 	fmt.Println("删除成功", ret.RowsAffected)
 }

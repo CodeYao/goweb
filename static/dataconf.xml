@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resource>
-    <dbhostsip>127.0.0.1</dbhostsip>
+    <dbhostsip>10.1.4.115</dbhostsip>
     <dbusername>root</dbusername>
     <dbpassword>root</dbpassword>
     <dbname>tjfoc_ca</dbname>

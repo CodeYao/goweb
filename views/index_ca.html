@@ -323,6 +323,50 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+    <!--修改密码 模态框（Modal） -->
+    <div class="modal fade" id="changepwdModle" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                            </button>
+                    <h4 class="modal-title" id="reqcertModalLabel">
+                        请账号密码相关信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="changepwdForm" class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="accountId" class="col-sm-3 control-label">账号名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="cgaccountId" name="cgaccountId" readonly="readonly" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ipAddress" class="col-sm-3 control-label">新密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="newpwd" name="newpwd" placeholder="请输入新密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">确认密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="checknewpwd" name="checknewpwd" placeholder="请再次输入新密码">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="commitpwd" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                                    确认修改
+                                </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 </body>
 <script>
     function logout() {
@@ -347,7 +391,7 @@
                     con += "<tr><td><input type='checkbox' name='accountlistcheckbox' id='" + item.Id + "'></td>"
                     con += " <td>" + item.accountId + "</td>"
                     con += " <td>" + item.organization + "</td>"
-                    con += '<td><button type="button" class="btn btn-default" style="background: #333333; color: #dddddd;" id="removeAccount">修改密码</button></td></tr>'
+                    con += '<td><button type="button" class="btn btn-default" style="background: #333333; color: #dddddd;" onclick="changepassword(\'' + item.accountId + '\')">修改密码</button></td></tr>'
                         //alert(item.ipStr + index)
                 });
                 //alert(con)
@@ -450,6 +494,30 @@
             }
         });
     });
+    $("#commitpwd").click(function() {
+        var newpwd = $("#newpwd").val()
+        var checknewpwd = $("#checknewpwd").val()
+        if (newpwd != checknewpwd) {
+            alert("新密码两次输入不一致！")
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/changepwd_ca",
+                processData: false,
+                contentType: false,
+                data: new FormData($('#changepwdForm')[0]),
+                success: function(data) {
+                    alert(data)
+                    window.location.reload()
+                        // if (data == "修改成功，请重新登录") {
+                        //     window.location.href = "login"
+                        // }
+
+                }
+            })
+        }
+
+    })
     $("#aprove").click(function() {
         var certId = $("#certid").val()
         $.ajax({
@@ -625,7 +693,7 @@
             alert("请选中至少一条记录")
         } else {
             for (var index = 0; index < check.length; index++) {
-                //alert($(check[index]).attr("id"))
+                // alert($(check[index]).attr("id"))
                 var id = $(check[index]).attr("id")
                 $.ajax({
                     type: "POST",
@@ -654,6 +722,11 @@
             }
         });
     })
+
+    function changepassword(accoutid) {
+        $("#cgaccountId").val(accoutid)
+        $("#changepwdModle").modal("show")
+    }
 </script>
 
 </html>

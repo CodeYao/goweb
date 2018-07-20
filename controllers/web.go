@@ -192,7 +192,8 @@ func addaccount(w http.ResponseWriter, r *http.Request) {
 
 func removeaccount(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		id := r.FormValue("id")
+		id, _ := strconv.Atoi(r.FormValue("id"))
+		fmt.Println("chenyao**********", id)
 		//models.DeleteDateById("account", id)
 		models.DeleteAccountById(id)
 	}
@@ -300,6 +301,17 @@ func downloadcert(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 }
+
+func changepwd_ca(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		accountId := r.FormValue("cgaccountId")
+		newpwd := r.FormValue("newpwd")
+		models.UpdatePassword(accountId, newpwd)
+		io.WriteString(w, "修改成功")
+
+	}
+}
+
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
 	http.Handle("/conf/", http.StripPrefix("/conf/", http.FileServer(http.Dir("conf"))))       //设置静态文件路径
@@ -330,6 +342,7 @@ func RunWeb() {
 	http.HandleFunc("/revokecert", revokecert)
 	http.HandleFunc("/select_certlist", select_certlist)
 	http.HandleFunc("/downloadcert", downloadcert)
+	http.HandleFunc("/changepwd_ca", changepwd_ca)
 
 	err := http.ListenAndServe(":9090", nil) //设置监听的端口
 	if err != nil {

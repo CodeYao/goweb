@@ -10,64 +10,135 @@
 </head>
 
 <style>
-
+    .dropdown-menu::before {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid #CCC;
+        position: absolute;
+        top: -13px;
+        left: 117px;
+    }
+    
+    .dropdown-menu::after {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid white;
+        position: absolute;
+        top: -12px;
+        left: 117px;
+    }
+    
+    th,
+    td {
+        vertical-align: middle;
+        text-align: center;
+    }
+    /* a {
+        text-decoration: none;
+        out-line: none;
+        color: #1c294b
+    }
+    
+    a:hover {
+        color: red;
+        text-decoration: underline;
+    } */
+    /* li {
+        display: block;
+        background: green;
+    } */
 </style>
 
-<body>
-    <nav class="navbar navbar-inverse">
+<body style="background: #f6f6f6">
+    <nav class="navbar" style="background: #1c294b ;">
         <div class="container-fluid">
             <div class="navbar-header">
-                <h4 class="navbar-text" style=" color: #dddddd;">
-                    ca管理系统
-                </h4>
+                <div style="height:68px; margin-top: 26px; margin-left: 50%">
+                    <img src="/static/img/logo.png">
+                </div>
             </div>
-            <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}</span> <a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
+            <div style="margin-top: 13px">
+                <div class="navbar-text navbar-right" style="margin-right:7%">
+                    <span style="color: #dddddd;">你好，{{.}}!</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="#" data-toggle="dropdown"><img src="/static/img/用户.png"></a>
+                    <!--<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a>-->
+                    <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
+                        <li>
+                            <a href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img src="/static/img/修改密码.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img src="/static/img/退出登录black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+
+
+
+
+
+
+            </div>
+
+
         </div>
     </nav>
-    <div style="width: 70%;margin: 0 auto">
+    <div style="width: 70%;margin: 0 auto; ">
+        <img class="pull-left" src="/static/img/位置.png">
+        <span class="pull-left" style="font-size:x-large;margin-left: 5px">CA管理系统</span>
+    </div>
+    <div style="width: 70%;margin: 0 auto;background: #ffffff;margin-top: 65px">
 
 
         <ul id="myTab" class="nav nav-tabs">
             <li class="active">
-                <a href="#certMG" data-toggle="tab">
+                <a href="#certMG" data-toggle="tab" style="border-left-color: transparent;">
                              证书管理
-                        </a>
+                </a>
             </li>
             <li><a href="#accountMG" data-toggle="tab">账号管理</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade in active" id="certMG">
-                <label class="col-sm-1" for=" name ">筛选</label>
-                <select class="form-control" onchange="selectState(this)">
-                    <option value="全部">全部</option>
-                    <option value="待审批">待审批</option>
-                    <option value="已审批">已审批</option>
-                    <option value="已吊销">已吊销</option>
-                    <option value="已驳回">已驳回</option>
-                </select>
+                <div style="height: 100px;border-bottom: 1px solid #ddd">
+                    <label class="pull-left " for=" name " style="margin-left: 3%;margin-top: 3%;">筛选</label>
+                    <div class="col-sm-11" style="margin-left: 2%;margin-top: 2.5%">
+                        <select class="form-control" onchange="selectState(this)">
+                            <option value="全部">全部</option>
+                            <option value="待审批">待审批</option>
+                            <option value="已审批">已审批</option>
+                            <option value="已吊销">已吊销</option>
+                            <option value="已驳回">已驳回</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="width: 96%;margin: 0 auto;">
+                    <label style="margin-top: 20px">证书列表</label>
+                    <table class="table table-hover" style="margin-top: 16px">
+                        <thead>
+                            <tr style="background: #f4f4f4;height:80px">
+                                <!-- <th class="col-sm-1"><input type="checkbox" id="certselectAll">全选</th> -->
+                                <th><span style="margin-bottom: 50px">申请账号</span></th>
+                                <th>所属组织机构</th>
+                                <th>证书</th>
+                                <th>证书对应ip</th>
+                                <th>申请时间</th>
+                                <th>状态</th>
+                                <th>审批人</th>
+                                <th>审批时间</th>
+                                <th>吊销人</th>
+                                <th>吊销时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="certlist">
 
-                <table class="table table-bordered table-hover">
-                    <caption>证书列表</caption>
-                    <thead>
-                        <tr>
-                            <!-- <th class="col-sm-1"><input type="checkbox" id="certselectAll">全选</th> -->
-                            <th>申请账号</th>
-                            <th>所属组织机构</th>
-                            <th>证书</th>
-                            <th>证书对应ip</th>
-                            <th>申请时间</th>
-                            <th>状态</th>
-                            <th>审批人</th>
-                            <th>审批时间</th>
-                            <th>吊销人</th>
-                            <th>吊销时间</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="certlist">
-
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看证书</button> -->
                 <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="crlbtn">下载吊销证书文件</button>
             </div>

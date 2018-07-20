@@ -201,7 +201,7 @@ func removeaccount(w http.ResponseWriter, r *http.Request) {
 
 func ca_certlist(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-		certlistMap := models.QueryData("tjfoc_ca.cert as A left join tjfoc_ca.account as B on A.accountId = B.accountId")
+		certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
 		certlistJson, _ := json.Marshal(certlistMap)
 		io.WriteString(w, string(certlistJson))
 	}

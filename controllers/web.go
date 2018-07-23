@@ -272,11 +272,11 @@ func select_certlist(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		selected := r.FormValue("selected")
 		if selected == "全部" {
-			certlistMap := models.QueryData("tjfoc_ca.cert as A left join tjfoc_ca.account as B on A.accountId = B.accountId")
+			certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
 			certlistJson, _ := json.Marshal(certlistMap)
 			io.WriteString(w, string(certlistJson))
 		} else {
-			certlistMap := models.QueryData("tjfoc_ca.cert as A left join tjfoc_ca.account as B on A.accountId = B.accountId where state = '" + selected + "'")
+			certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId where state = '" + selected + "'")
 			certlistJson, _ := json.Marshal(certlistMap)
 			io.WriteString(w, string(certlistJson))
 		}

@@ -21,6 +21,14 @@
         left: 117px;
     }
     
+    .nav>li>a {
+        color: #000000;
+    }
+    
+    .btn-default:hover {
+        background-color: #f6fbff;
+    }
+    
     .dropdown-menu::after {
         content: '';
         display: inline-block;
@@ -32,10 +40,24 @@
         left: 117px;
     }
     
-    th,
-    td {
+    .table tbody tr td {
+        height: 80px;
         vertical-align: middle;
-        text-align: center;
+        /* text-align: center; */
+    }
+    
+    .dropdown-menu>li>a:hover {
+        color: #f6f6f6
+    }
+    
+    .app-footer {
+        margin-top: 100px;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
     }
     /* a {
         text-decoration: none;
@@ -68,10 +90,10 @@
                     <!--<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a>-->
                     <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
                         <li>
-                            <a href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img src="/static/img/修改密码.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
+                            <a id="changepwd_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/修改密码black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
                         </li>
                         <li>
-                            <a href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img src="/static/img/退出登录black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
+                            <a id="logout_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="logout_menu_img" src="/static/img/退出登录black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
                         </li>
                     </ul>
                 </div>
@@ -106,7 +128,7 @@
                 <div style="height: 100px;border-bottom: 1px solid #ddd">
                     <label class="pull-left " for=" name " style="margin-left: 3%;margin-top: 3%;">筛选</label>
                     <div class="col-sm-11" style="margin-left: 2%;margin-top: 2.5%">
-                        <select class="form-control" onchange="selectState(this)">
+                        <select class="form-control" onchange="selectState(this)" style="cursor:pointer;">
                             <option value="全部">全部</option>
                             <option value="待审批">待审批</option>
                             <option value="已审批">已审批</option>
@@ -117,30 +139,61 @@
                 </div>
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">证书列表</label>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #dddddd;margin-top: 11px" id="crlbtn"><img src="/static/img/下载吊销证书文件.png" style="width: 20px"> &nbsp;下载吊销证书文件</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
                                 <!-- <th class="col-sm-1"><input type="checkbox" id="certselectAll">全选</th> -->
-                                <th><span style="margin-bottom: 50px">申请账号</span></th>
-                                <th>所属组织机构</th>
-                                <th>证书</th>
-                                <th>证书对应ip</th>
-                                <th>申请时间</th>
-                                <th>状态</th>
-                                <th>审批人</th>
-                                <th>审批时间</th>
-                                <th>吊销人</th>
-                                <th>吊销时间</th>
-                                <th>操作</th>
+                                <th style='vertical-align: middle;'>申请账号</th>
+                                <th style='vertical-align: middle;'>所属组织机构</th>
+                                <th style='vertical-align: middle;'>证书</th>
+                                <th style='vertical-align: middle;'>证书对应ip</th>
+                                <th style='vertical-align: middle;'>申请时间</th>
+                                <th style='vertical-align: middle;'>状态</th>
+                                <th style='vertical-align: middle;'>审批人</th>
+                                <th style='vertical-align: middle;'>审批时间</th>
+                                <th style='vertical-align: middle;'>吊销人</th>
+                                <th style='vertical-align: middle;'>吊销时间</th>
+                                <th style='vertical-align: middle;'>操作</th>
                             </tr>
                         </thead>
                         <tbody id="certlist">
-
+                            <!-- <tr>
+                                <td>银行证书1</td>
+                                <td>银行证书1</td>
+                                <td>银行证书1</td>
+                                <td>银行证书1</td>
+                                <td>银行证书1</td>
+                                <td>银行证书1</td>
+                                <td>银行证书1</td>
+                                <td>10.1.1.1</td>
+                                <td>2017年5月6号 9:00</td>
+                                <td>待审核</td>
+                                <td><button type="button" class="btn btn-default " id="" style="background:url('/static/img/查看.png'); background-color: transparent; border: 0;width: 24px;height: 26px"></button>
+                                </td>
+                            </tr> -->
                         </tbody>
                     </table>
+                    <div style="text-align: right">
+                        <ul class="pagination">
+                            <li class="page-item"><a href="#">首页</a></li>
+                            <li class="page-item"><a href="#">上一页</a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                            <li class="page-item"><a class="page-link" href="#">尾页</a></li>
+                        </ul>
+                        <div class="pagination pull-right" style="margin-top: 25px;margin-left: 5px">
+                            共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button>
+                        </div>
+
+                    </div>
                 </div>
                 <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看证书</button> -->
-                <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="crlbtn">下载吊销证书文件</button>
+
             </div>
             <div class="tab-pane fade" id="accountMG">
                 <table class="table table-bordered table-hover">
@@ -174,11 +227,12 @@
                         </tr> -->
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addaccount" style="background: #333333; color: #dddddd;">添加账号</button>
-                <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="removeAccount">删除账号</button>
+                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addaccount" style="background: #1082ed; color: #dddddd;">添加账号</button>
+                <button type="button" class="btn btn-default pull-right" style="background: #1082ed; color: #dddddd;" id="removeAccount">删除账号</button>
             </div>
         </div>
     </div>
+    <div class="app-footer">Copyright © 2018 苏州同济区块链研究院</div>
     <!--添加账户 模态框（Modal） -->
     <div class="modal fade" id="addaccount" tabindex="-1" role="dialog" aria-labelledby="addipModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -234,7 +288,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                             关闭
                         </button>
-                    <button type="button" id="addaccoountbtn" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                    <button type="button" id="addaccoountbtn" class="btn btn-primary" style="background: #1082ed; color: #dddddd;">
                             提交
                         </button>
                 </div>
@@ -384,7 +438,7 @@
                     <button type="button" class="btn btn-default" id="reject">
                                驳回
                             </button>
-                    <button type="button" id="aprove" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                    <button type="button" id="aprove" class="btn btn-primary" style="background: #1082ed; color: #dddddd;">
                                     通过
                                 </button>
                 </div>
@@ -428,7 +482,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="commitpwd" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                    <button type="button" id="commitpwd" class="btn btn-primary" style="background: #1082ed; color: #dddddd;">
                                     确认修改
                                 </button>
                 </div>
@@ -462,7 +516,7 @@
                     con += "<tr><td><input type='checkbox' name='accountlistcheckbox' id='" + item.Id + "'></td>"
                     con += " <td>" + item.accountId + "</td>"
                     con += " <td>" + item.organization + "</td>"
-                    con += '<td><button type="button" class="btn btn-default" style="background: #333333; color: #dddddd;" onclick="changepassword(\'' + item.accountId + '\')">修改密码</button></td></tr>'
+                    con += '<td><button type="button" class="btn btn-default" style="background: #1082ed; color: #dddddd;" onclick="changepassword(\'' + item.accountId + '\')">修改密码</button></td></tr>'
                         //alert(item.ipStr + index)
                 });
                 //alert(con)
@@ -490,16 +544,16 @@
                     con += "<td>" + item.revoker + "</td>"
                     con += "<td>" + item.revokedate + "</td>"
                     if (item.state == "待审批") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background: #333333; color: #dddddd;">查看</button>'
-                        con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default "  style="background: #333333; color: #dddddd;">审批</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default " title="审批" style="background:url(\'/static/img/审批.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     } else if (item.state == "已审批") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background: #333333; color: #dddddd;">查看</button>'
-                        con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" style="background: #333333; color: #dddddd;">吊销</button>'
-                        con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">下载</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" title="吊销证书" style="background:url(\'/static/img/吊销.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default "title="下载证书" style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     } else if (item.state == "已吊销") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn" title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     } else if (item.state == "已驳回") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     }
                     con += "</td></tr>"
                         //alert(item.ipStr + index)
@@ -643,16 +697,16 @@
                     con += "<td>" + item.revoker + "</td>"
                     con += "<td>" + item.revokedate + "</td>"
                     if (item.state == "待审批") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background: #333333; color: #dddddd;">查看</button>'
-                        con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default "  style="background: #333333; color: #dddddd;">审批</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default "  style="background:url(\'/static/img/审批.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     } else if (item.state == "已审批") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background: #333333; color: #dddddd;">查看</button>'
-                        con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" style="background: #333333; color: #dddddd;">吊销</button>'
-                        con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default " style="background: #333333; color: #dddddd;">下载</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" style="background:url(\'/static/img/吊销.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default " style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     } else if (item.state == "已吊销") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     } else if (item.state == "已驳回") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                     }
                     con += "</td></tr>"
                         //alert(item.ipStr + index)
@@ -798,6 +852,16 @@
         $("#cgaccountId").val(accoutid)
         $("#changepwdModle").modal("show")
     }
+    $("#changepwd_menu").hover(function() {
+        $("#changepwd_menu_img").attr("src", "/static/img/修改密码white.png")
+    }, function() {
+        $("#changepwd_menu_img").attr("src", "/static/img/修改密码black.png")
+    })
+    $("#logout_menu").hover(function() {
+        $("#logout_menu_img").attr("src", "/static/img/退出登录white.png")
+    }, function() {
+        $("#logout_menu_img").attr("src", "/static/img/退出登录black.png")
+    })
 </script>
 
 </html>

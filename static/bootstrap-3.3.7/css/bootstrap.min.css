@@ -2886,7 +2886,7 @@ th {
 }
 
 .table-hover>tbody>tr:hover {
-    background-color: #f5f5f5
+    background-color: #f6fbff
 }
 
 table col[class*=col-] {
@@ -5666,7 +5666,7 @@ fieldset[disabled] .navbar-inverse .btn-link:hover {
     padding: 6px 12px;
     margin-left: -1px;
     line-height: 1.42857143;
-    color: #337ab7;
+    color: #1082ed;
     text-decoration: none;
     background-color: #fff;
     border: 1px solid #ddd
@@ -5691,7 +5691,7 @@ fieldset[disabled] .navbar-inverse .btn-link:hover {
 .pagination>li>span:hover {
     z-index: 2;
     color: #23527c;
-    background-color: #eee;
+    background-color: #f6fbff;
     border-color: #ddd
 }
 
@@ -5704,8 +5704,8 @@ fieldset[disabled] .navbar-inverse .btn-link:hover {
     z-index: 3;
     color: #fff;
     cursor: default;
-    background-color: #337ab7;
-    border-color: #337ab7
+    background-color: #1082ed;
+    border-color: #1082ed
 }
 
 .pagination>.disabled>a,
@@ -7642,7 +7642,7 @@ button.close {
     margin: 1px;
     text-indent: -999px;
     cursor: pointer;
-    background-color: #000\9;
+    background-color: #000;
     background-color: rgba(0, 0, 0, 0);
     border: 1px solid #fff;
     border-radius: 10px

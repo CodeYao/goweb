@@ -3,47 +3,157 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Bootstrap</title>
+    <title>CA管理系统</title>
     <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
     <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
     <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <style>
-
+    .dropdown-menu::before {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid #CCC;
+        position: absolute;
+        top: -13px;
+        left: 117px;
+    }
+    
+    .form-ctrl-diy {
+        height: 34px;
+        font-size: 14px;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+    .nav>li>a {
+        color: #000000;
+        border: 0
+    }
+    
+    .nav>li>a:hover {
+        background-color: #ffffff;
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        background-color: #f6fbff;
+        border-color: #ddd
+    }
+    
+    .dropdown-menu::after {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid white;
+        position: absolute;
+        top: -12px;
+        left: 117px;
+    }
+    
+    .table tbody tr td {
+        height: 80px;
+        vertical-align: middle;
+        border-bottom: 1px solid #ddd
+        /* text-align: center; */
+    }
+    
+    .table>thead>tr>th {
+        border-bottom: 1px solid #ddd
+    }
+    
+    .table>thead:first-child>tr:first-child>th {
+        border-top: 1px solid #ddd
+    }
+    
+    .dropdown-menu>li>a:hover {
+        color: #f6f6f6
+    }
+    
+    .pagination>li>a {
+        color: #000000
+    }
+    
+    .pagination>li>a:hover {
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        color: #1082ed
+    }
+    
+    .app-footer {
+        margin-top: 100px;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
+    }
+    
+    .checkbox-info input[type="checkbox"]:checked+label::before {
+        background-color: #1082ed;
+        border-color: #1082ed;
+    }
 </style>
 
-<body>
-    <nav class="navbar navbar-inverse">
+<body style="background: #f6f6f6">
+    <nav class="navbar" style="background: #1c294b ;">
         <div class="container-fluid">
             <div class="navbar-header">
-                <h4 class="navbar-text" style=" color: #dddddd;">
-                    ca管理系统
-                </h4>
+                <div style="height:68px; margin-top: 26px; margin-left: 50%">
+                    <img src="/static/img/logo.png">
+                </div>
             </div>
-            <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}！</span> <a href="javascript:void(0)" onclick="changepassword()" class="navbar-link">修改密码</a>/<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
+            <div style="margin-top: 13px">
+                <div class="navbar-text navbar-right" style="margin-right:7%">
+                    <span style="color: #dddddd;">你好，{{.}}!</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="#" data-toggle="dropdown"><img src="/static/img/用户.png"></a>
+                    <!--<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a>-->
+                    <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
+                        <li>
+                            <a id="changepwd_menu" href="javascript:void(0)" onclick="changepassword('{{.}}')" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/修改密码black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
+                        </li>
+                        <li>
+                            <a id="logout_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="logout_menu_img" src="/static/img/退出登录black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
-
-    <div style="width: 70%;margin: 0 auto">
-        <table class="table table-bordered table-hover">
-            <caption>ip列表</caption>
-            <thead>
-                <tr>
-                    <!-- <th class="col-sm-1"><input type="checkbox" id="selectAll">全选</th> -->
-                    <th>证书名称</th>
-                    <th>证书对应ip</th>
-                    <th>申请时间</th>
-                    <th>状态</th>
-                    <th>审批人</th>
-                    <th>审批时间</th>
-                    <th>吊销人</th>
-                    <th>吊销时间</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody id="certlist">
-                <!-- <tr>
+    <div style="width: 70%;margin: 0 auto; ">
+        <img class="pull-left" src="/static/img/位置.png">
+        <span class="pull-left" style="font-size:x-large;margin-left: 5px">CA管理系统</span>
+    </div>
+    <div style="width: 70%;margin: 0 auto;background: #ffffff;margin-top: 65px">
+        <div style="width: 96%;margin: 0 auto;">
+            <label style="margin-top: 20px">证书列表</label>
+            <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" id="reqcertbtn" data-toggle="modal" data-target="#addaccount"><img src="/static/img/申请证书.png" style="width: 20px"> &nbsp;申请证书</button>
+            <table class="table table-hover" style="margin-top: 16px">
+                <thead>
+                    <tr style="background: #f4f4f4;height:80px">
+                        <!-- <th class="col-sm-1"><input type="checkbox" id="selectAll">全选</th> -->
+                        <th style='vertical-align: middle;'>证书名称</th>
+                        <th style='vertical-align: middle;'>证书对应ip</th>
+                        <th style='vertical-align: middle;'>申请时间</th>
+                        <th style='vertical-align: middle;'>状态</th>
+                        <th style='vertical-align: middle;'>审批人</th>
+                        <th style='vertical-align: middle;'>审批时间</th>
+                        <th style='vertical-align: middle;'>吊销人</th>
+                        <th style='vertical-align: middle;'>吊销时间</th>
+                        <th style='vertical-align: middle;'>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="certlist">
+                    <!-- <tr>
                     <td>银行证书1</td>
                     <td>10.1.1.1</td>
                     <td>2017年5月6号 9:00</td>
@@ -69,9 +179,27 @@
                         <button type="button" class="btn btn-default" id="" style="background: #333333; color: #dddddd;">查看</button>
                     </td>
                 </tr> -->
-            </tbody>
-        </table>
-        <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">申请证书</button>
+                </tbody>
+            </table>
+            <div style="text-align: right">
+                <ul class="pagination" id="pageNumList">
+                    <!-- <li class="page-item"><a href="#">首页</a></li>
+                        <li class="page-item"><a href="#">上一页</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                        <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                        <li class="page-item"><a class="page-link" href="#">尾页</a></li> -->
+                </ul>
+                <div class="pagination pull-right" style="margin-top: 20px;margin-left: 5px" id="pageText">
+                    <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
+                </div>
+
+            </div>
+            <!-- <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">申请证书</button> -->
+        </div>
         <!-- <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addip" style="background: #333333; color: #dddddd;">添加ip</button>
         <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="removeIp">移除ip</button> -->
         <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看信息</button> -->
@@ -219,7 +347,7 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                             关闭
                         </button>
-                    <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                    <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6;">
                                 提交
                             </button>
                     <!-- <button type="button" id="easygenbtn" class="btn btn-default pull-left" data-toggle="tooltip" data-placement="bottom" title="此操作私钥由服务器生成">
@@ -274,7 +402,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="commitpwd" class="btn btn-primary" style="background: #333333; color: #dddddd;">
+                    <button type="button" id="commitpwd" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6">
                                     确认修改
                                 </button>
                 </div>
@@ -285,7 +413,7 @@
     </div>
     <!-- /.modal -->
 
-
+    <div class="app-footer">Copyright © 2018 苏州同济区块链研究院</div>
 </body>
 <script>
     $(function() {
@@ -328,15 +456,28 @@
         }
 
     })
-    $(document).ready(function() {
+    $(document).ready(
+        getcertList(1)
+    );
+
+    function pageJump() {
+        var pagestr = $("#jumpstr").val()
+            //alert(pagestr)
+        getcertList(pagestr)
+    }
+
+    function getcertList(currentpage) {
         $.ajax({
             type: "POST",
             url: "/certlist",
+            data: {
+                currentpage: currentpage,
+            },
             success: function(data) {
                 var con = ""
                 data = JSON.parse(data)
                     //alert(data)
-                $.each(data, function(index, item) {
+                $.each(data.entityList, function(index, item) {
                     con += "<tr><td>" + item.certname + "</td>"
                     con += "<td>" + item.ipstr + "</td>"
                     con += "<td>" + item.reqdate + "</td>"
@@ -346,22 +487,67 @@
                     con += "<td>" + item.revoker + "</td>"
                     con += "<td>" + item.revokedate + "</td>"
                     if (item.state == "待审批") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
                     } else if (item.state == "已审批") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">查看</button>'
-                        con += '<button type="button" class="btn btn-default " id="' + item.id + '" name="downloadcert" style="background: #333333; color: #dddddd;">下载</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default "title="下载证书" style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+                            // con += '<button type="button" class="btn btn-default " id="' + item.id + '" name="downloadcert" style="background: #333333; color: #dddddd;">下载</button>'
                     } else if (item.state == "已吊销") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
                     } else if (item.state == "已驳回") {
-                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">查看</button>'
+                        con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
                     }
                     con += "</td></tr>"
                         //alert(item.ipStr + index)
                 });
+                $("#certlist").html("")
                 $("#certlist").append(con)
+                var pagecon = ""
+                var showPage = 5
+                var currentPage = data.currentPage //当前页
+                var pageNum = data.pageNum //一页显示多少条
+                var totalPage = data.totalPage //总页数
+                var startPage = data.startPage //起始页
+                var endPage = 0
+                if ((Number(startPage) + Number(showPage) - 1) >= Number(totalPage)) {
+                    endPage = totalPage
+                } else {
+                    endPage = Number(startPage) + Number(showPage) - 1
+                }
+                var previous = currentPage - 1
+                var next = Number(currentPage) + Number(1)
+                pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getcertList(1)">首页</a></li>'
+                if (previous == 0) {
+                    pagecon += '<li class="page-item disabled"><a href="#">上一页</a></li>'
+                } else {
+                    pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getcertList(' + previous + ')">上一页</a></li>'
+                }
+                // alert(startPage + endPage)
+                for (var index = startPage; index <= endPage; index++) {
+
+                    if (index == currentPage) {
+                        pagecon += '<li class="page-item active"><a class="page-link" href="#">' + index + '</a></li>'
+                    } else {
+                        pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcertList(' + index + ')">' + index + '</a></li>'
+                    }
+                }
+                if (next > totalPage) {
+                    pagecon += '<li class="page-item disabled"><a class="page-link" href="#">下一页</a></li>'
+                } else {
+                    pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcertList(' + next + ')">下一页</a></li>'
+                }
+
+                pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcertList(' + totalPage + ')">尾页</a></li>'
+                    // alert(pagecon)
+                $("#pageNumList").html("")
+                $("#pageNumList").append(pagecon)
+                var pageTextcon = ""
+                pageTextcon += '共' + data.totalPage + '页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到&nbsp;<input class="form-ctrl-diy" style="width: 25px" id="jumpstr" type="text">&nbsp;页 <button class="btn btn-default" onclick="pageJump()">确定</button>'
+                $("#pageText").html("")
+                $("#pageText").append(pageTextcon)
             }
         });
-    });
+    }
     //     $("#errorcode_ipname").hide()
     //     $("#errorcode_ipstr").hide()
     //     $("#selectAll").click(function() {
@@ -382,13 +568,13 @@
             },
             success: function(data) {
                 data = JSON.parse(data)
-                $("#watchcertName").val(data.CertName)
-                $("#watchipAddress").val(data.IpAdderss)
-                $("#watchnotAfter").val(data.CertDay)
-                $("#watchcountry").val(data.Country)
-                $("#watchorganization").val(data.Organization)
-                $("#watchcommonName").val(data.CommonName)
-                $("#watchstate").val(data.State)
+                $("#watchcertName").val(data.certName)
+                $("#watchipAddress").val(data.ipAddress)
+                $("#watchnotAfter").val(data.certDay)
+                $("#watchcountry").val(data.country)
+                $("#watchorganization").val(data.organization)
+                $("#watchcommonName").val(data.commonName)
+                $("#watchstate").val(data.state)
                 $("#watchcertmodel").modal("show")
             }
         });
@@ -535,6 +721,17 @@
         var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
         return reg.test(ip);
     }
+
+    $("#changepwd_menu").hover(function() {
+        $("#changepwd_menu_img").attr("src", "/static/img/修改密码white.png")
+    }, function() {
+        $("#changepwd_menu_img").attr("src", "/static/img/修改密码black.png")
+    })
+    $("#logout_menu").hover(function() {
+        $("#logout_menu_img").attr("src", "/static/img/退出登录white.png")
+    }, function() {
+        $("#logout_menu_img").attr("src", "/static/img/退出登录black.png")
+    })
 </script>
 
 </html>

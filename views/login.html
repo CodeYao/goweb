@@ -10,14 +10,45 @@
 </head>
 
 <style>
-    body {
+    body,
+    html {
         text-align: center;
     }
 </style>
 
-<body>
-    <div class="col-sm-3" style="margin-left:37%;margin-top: 15%">
-        <div class="panel panel-default">
+<body style="background-image: url('static/img/background.jpg');">
+    <div style="width:550px; height:512px;margin-top: 276px;margin-left: 976px;padding-top: 100px;padding-left: 40px;padding-right: 40px">
+        <h3>CA管理系统</h3>
+        <form class="form-horizontal" action="login" style="margin-top: 40px">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="请输入账号" style=" padding-left: 60px;height: 45px; background-image: url('/static/img/账号.png');background-repeat: no-repeat;background-position:4%;">
+
+                </div>
+                <div id="errorcode_username">
+                    <span class="help-block">账号不能为空</span>
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group ">
+                <div class="col-sm-12">
+                    <!-- <span class="input-group-addon" style="background: #ffffff"><img style="height: 30px;" src="/static/img/密码.png"></span> -->
+                    <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" style=" padding-left: 60px;height: 45px; background-image: url('/static/img/密码.png');background-repeat: no-repeat;background-position:4%;">
+
+                </div>
+                <div id="errorcode_password">
+                    <span class="help-block">密码不能为空</span>
+                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 45px">
+                <div class="col-sm-12">
+                    <button id="loginbtn" type="button" class="btn form-control" style="height: 50px; background: #1082ed; color: #ffffff;">登录</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- <div class="panel panel-default">
             <div class="panel-heading" style="background: #333333; color: #dddddd;">CA管理系统</div>
             <div class="panel-body">
                 <form class="form-horizontal" action="login">
@@ -46,7 +77,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 <script>

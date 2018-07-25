@@ -11,38 +11,114 @@
 </head>
 
 <style>
-
+    .dropdown-menu::before {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid #CCC;
+        position: absolute;
+        top: -13px;
+        left: 117px;
+    }
+    
+    .nav>li>a {
+        color: #000000;
+        border: 0
+    }
+    
+    .nav>li>a:hover {
+        background-color: #ffffff;
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        background-color: #f6fbff;
+        border-color: #ddd
+    }
+    
+    .dropdown-menu::after {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid white;
+        position: absolute;
+        top: -12px;
+        left: 117px;
+    }
+    
+    .table tbody tr td {
+        height: 80px;
+        vertical-align: middle;
+        border-bottom: 1px solid #ddd
+        /* text-align: center; */
+    }
+    
+    .table>thead>tr>th {
+        border-bottom: 1px solid #ddd
+    }
+    
+    .table>thead:first-child>tr:first-child>th {
+        border-top: 1px solid #ddd
+    }
+    
+    .dropdown-menu>li>a:hover {
+        color: #f6f6f6
+    }
+    
+    .pagination>li>a {
+        color: #000000
+    }
+    
+    .pagination>li>a:hover {
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        color: #1082ed
+    }
+    
+    .app-footer {
+        margin-top: 100px;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
+    }
 </style>
 
 <body>
-    <nav class="navbar navbar-inverse">
+    <nav class="navbar" style="background: #1c294b ;">
         <div class="container-fluid">
             <div class="navbar-header">
-                <h4 class="navbar-text" style=" color: #dddddd;">
-                    ca管理系统
-                </h4>
+                <div style="height:68px; margin-top: 26px; margin-left: 50%">
+                    <img src="/static/img/logo.png">
+                </div>
             </div>
-            <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}！</span> <a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
+
         </div>
     </nav>
 
     <div style="width: 70%;margin: 0 auto">
-        <table class="table table-bordered table-hover">
-            <label>公钥</label>
+        <table class="table table-hover">
+            <label>公钥</label> <button type="button" class="btn btn-default pull-right" id="cppubkey" data-clipboard-target="#pubkey" style="background: #1082ed; color: #f6f6f6;">复制公钥</button>
             <textarea id="pubkey" class="form-control" rows="5"></textarea>
-            <button type="button" class="btn btn-default pull-right" id="cppubkey" data-clipboard-target="#pubkey" style="background: #333333; color: #dddddd;">复制公钥</button>
+
         </table>
 
         <table class="table table-bordered table-hover">
-            <label>私钥</label>
+            <label>私钥</label><button type="button" class="btn btn-default pull-right" id="cpprivkey" data-clipboard-target="#privkey" style="background: #1082ed; color: #f6f6f6;">复制私钥</button>
             <textarea id="privkey" class="form-control" rows="5"></textarea>
-            <button type="button" class="btn btn-default pull-right" id="cpprivkey" data-clipboard-target="#privkey" style="background: #333333; color: #dddddd;">复制私钥</button>
+
         </table>
 
         <table class="table table-bordered table-hover">
-            <label>证书请求</label>
+            <label>证书请求</label><button type="button" class="btn btn-default pull-right" id="cpreq" data-clipboard-target="#req" style="background: #1082ed; color: #f6f6f6;">复制证书请求</button>
             <textarea id="req" class="form-control" rows="5"></textarea>
-            <button type="button" class="btn btn-default pull-right" id="cpreq" data-clipboard-target="#req" style="background: #333333; color: #dddddd;">复制证书请求</button>
+
         </table>
     </div>
 
@@ -104,6 +180,7 @@
                 $("#pubkey").val(data[1])
                 $("#privkey").val(data[0])
                 $("#req").val(data[2])
+                    // $("#hellotext").text("你好，" + date[3] + "!")
             }
         });
     })

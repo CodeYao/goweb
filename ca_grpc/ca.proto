@@ -1,0 +1,25 @@
+syntax = "proto3";
+ 
+option objc_class_prefix = "CA_ADDRESS";
+ 
+package ca_grpc;
+ 
+message IsPermissionReply {
+    bool IsPermission = 1;
+}
+// The request message containing the user's name.
+message AddressRequest {
+  string addr = 1;
+}
+ 
+// The response message containing the greetings
+message AddressReply {
+  string message = 1;
+}
+
+// The greeting service definition.
+service Greeter {
+    // Sends a greeting
+    rpc JudgeAddress (AddressRequest) returns (AddressReply) {}
+    rpc AuthorityCtrl (AddressRequest) returns (IsPermissionReply) {}
+  }

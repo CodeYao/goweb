@@ -97,11 +97,33 @@ func showcertInfo(w http.ResponseWriter, r *http.Request) {
 }
 func certlist(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
+	var pagevo models.PageVO
+	var startPage int
+	var dataNum int
 	if r.Method == "POST" {
 		userName := sess.Get("username")
-		certlistMap := models.QuerycertlistByAccountId(userName.(string))
-		certlistJson, _ := json.Marshal(certlistMap)
-		io.WriteString(w, string(certlistJson))
+		pagevo.CurrentPage = r.FormValue("currentpage")
+		if pagevo.CurrentPage == "" {
+			pagevo.CurrentPage = "1"
+		}
+		currentPage, _ := strconv.Atoi(pagevo.CurrentPage)
+		pagevo.PageNum = "5"
+		pageNum := 5
+		showPage := 5
+
+		start := (currentPage - 1) * pageNum
+		startPage = currentPage/showPage*showPage + 1
+		//fmt.Println(startPage, "chenyao********************", currentPage)
+		pagevo.StartPage = strconv.Itoa(startPage)
+		pagevo.EntityList = models.QuerycertlistByPage(userName.(string), strconv.Itoa(start), pagevo.PageNum)
+		dataNum = models.GetTableNum("cert where accountId = '" + userName.(string) + "'")
+		if dataNum%pageNum == 0 {
+			pagevo.TotalPage = strconv.Itoa(dataNum / pageNum)
+		} else {
+			pagevo.TotalPage = strconv.Itoa((dataNum / pageNum) + 1)
+		}
+		pagevolistJson, _ := json.Marshal(pagevo)
+		io.WriteString(w, string(pagevolistJson))
 	}
 }
 func removeip(w http.ResponseWriter, r *http.Request) {
@@ -173,11 +195,36 @@ func easygen(w http.ResponseWriter, r *http.Request) {
 }
 
 func accountlist(w http.ResponseWriter, r *http.Request) {
+	var pagevo models.PageVO
+	var startPage int
+	var dataNum int
 	if r.Method == "POST" {
-		fmt.Println("chenyao*******************")
-		accountlistMap := models.Queryaccountlist()
-		accountlistJson, _ := json.Marshal(accountlistMap)
-		io.WriteString(w, string(accountlistJson))
+		//selected := r.FormValue("selected")
+		pagevo.CurrentPage = r.FormValue("currentpage")
+		if pagevo.CurrentPage == "" {
+			pagevo.CurrentPage = "1"
+		}
+		currentPage, _ := strconv.Atoi(pagevo.CurrentPage)
+		pagevo.PageNum = "5"
+		pageNum := 5
+		showPage := 5
+
+		start := (currentPage - 1) * pageNum
+		startPage = currentPage/showPage*showPage + 1
+		//fmt.Println(startPage, "chenyao********************", currentPage)
+		pagevo.StartPage = strconv.Itoa(startPage)
+		//fmt.Println("chenyao*************************", pagevo.CurrentPage, pagevo.TotalPage)
+		pagevo.EntityList = models.QueryData("account where accountLevel = '11' and enabled = 'enabled' limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
+		dataNum = models.GetTableNum("account where accountLevel = '11' and enabled = 'enabled'")
+
+		if dataNum%pageNum == 0 {
+			pagevo.TotalPage = strconv.Itoa(dataNum / pageNum)
+		} else {
+			pagevo.TotalPage = strconv.Itoa((dataNum / pageNum) + 1)
+		}
+
+		pageJson, _ := json.Marshal(pagevo)
+		io.WriteString(w, string(pageJson))
 	}
 }
 
@@ -200,18 +247,40 @@ func removeaccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func ca_certlist(w http.ResponseWriter, r *http.Request) {
+	var pagevo models.PageVO
+	var startPage int
 	if r.Method == "POST" {
-		certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
-		certlistJson, _ := json.Marshal(certlistMap)
-		io.WriteString(w, string(certlistJson))
+		pagevo.CurrentPage = r.FormValue("currentpage")
+		if pagevo.CurrentPage == "" {
+			pagevo.CurrentPage = "1"
+		}
+		currentPage, _ := strconv.Atoi(pagevo.CurrentPage)
+		pagevo.PageNum = "5"
+		pageNum := 5
+		showPage := 5
+		dataNum := models.GetTableNum("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
+		if dataNum%pageNum == 0 {
+			pagevo.TotalPage = strconv.Itoa(dataNum / pageNum)
+		} else {
+			pagevo.TotalPage = strconv.Itoa((dataNum / pageNum) + 1)
+		}
+
+		start := (currentPage - 1) * pageNum
+		startPage = currentPage/showPage*showPage + 1
+		//fmt.Println(startPage, "chenyao********************", currentPage)
+		pagevo.StartPage = strconv.Itoa(startPage)
+		//fmt.Println("chenyao*************************", pagevo.CurrentPage, pagevo.TotalPage)
+		pagevo.EntityList = models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
+		pageJson, _ := json.Marshal(pagevo)
+		io.WriteString(w, string(pageJson))
 	}
 }
 func createcrl(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		var certPath []string
 		certlistMap := models.QueryData("cert where state = '已吊销'")
-		for k, v := range certlistMap {
-			fmt.Println(k, "*********chenyao***********")
+		for _, v := range certlistMap {
+			//fmt.Println(k, "*********chenyao***********")
 			certPath = append(certPath, v["cert"])
 		}
 		utils.RevokedCertificates(certPath)
@@ -239,8 +308,10 @@ func changepwd(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func onetouch(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
-		keysJson, _ := json.Marshal(utils.OneTouch())
+		accountId := sess.Get("username")
+		keysJson, _ := json.Marshal(append(utils.OneTouch(), accountId.(string)))
 		io.WriteString(w, string(keysJson))
 	}
 }
@@ -269,20 +340,60 @@ func revokecert(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func select_certlist(w http.ResponseWriter, r *http.Request) {
+	var pagevo models.PageVO
+	var startPage int
+	var dataNum int
 	if r.Method == "POST" {
 		selected := r.FormValue("selected")
+		pagevo.CurrentPage = r.FormValue("currentpage")
+		if pagevo.CurrentPage == "" {
+			pagevo.CurrentPage = "1"
+		}
+		currentPage, _ := strconv.Atoi(pagevo.CurrentPage)
+		pagevo.PageNum = "5"
+		pageNum := 5
+		showPage := 5
+
+		start := (currentPage - 1) * pageNum
+		startPage = currentPage/showPage*showPage + 1
+		//fmt.Println(startPage, "chenyao********************", currentPage)
+		pagevo.StartPage = strconv.Itoa(startPage)
+		//fmt.Println("chenyao*************************", pagevo.CurrentPage, pagevo.TotalPage)
+		pagevo.EntityList = models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
 		if selected == "全部" {
-			certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
-			certlistJson, _ := json.Marshal(certlistMap)
-			io.WriteString(w, string(certlistJson))
+			dataNum = models.GetTableNum("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
+			pagevo.EntityList = models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
 		} else {
-			certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId where state = '" + selected + "'")
-			certlistJson, _ := json.Marshal(certlistMap)
-			io.WriteString(w, string(certlistJson))
+			dataNum = models.GetTableNum("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId where state = '" + selected + "'")
+			pagevo.EntityList = models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId where state = '" + selected + "' limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
 		}
 
+		if dataNum%pageNum == 0 {
+			pagevo.TotalPage = strconv.Itoa(dataNum / pageNum)
+		} else {
+			pagevo.TotalPage = strconv.Itoa((dataNum / pageNum) + 1)
+		}
+
+		pageJson, _ := json.Marshal(pagevo)
+		io.WriteString(w, string(pageJson))
 	}
 }
+
+// func select_certlist(w http.ResponseWriter, r *http.Request) {
+// 	if r.Method == "POST" {
+// 		selected := r.FormValue("selected")
+// 		if selected == "全部" {
+// 			certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId")
+// 			certlistJson, _ := json.Marshal(certlistMap)
+// 			io.WriteString(w, string(certlistJson))
+// 		} else {
+// 			certlistMap := models.QueryData("(select * from tjfoc_ca.account where enabled = 'enabled') as A right join tjfoc_ca.cert as B on A.accountId = B.accountId where state = '" + selected + "'")
+// 			certlistJson, _ := json.Marshal(certlistMap)
+// 			io.WriteString(w, string(certlistJson))
+// 		}
+
+// 	}
+// }
 func downloadcert(w http.ResponseWriter, r *http.Request) {
 	fileName := strconv.FormatInt(time.Now().Unix(), 10)
 	certId := r.FormValue("certId")
@@ -344,6 +455,11 @@ func RunWeb() {
 	http.HandleFunc("/downloadcert", downloadcert)
 	http.HandleFunc("/changepwd_ca", changepwd_ca)
 
+	// //配置rpc方法
+	// var address = new(carpc.Address)
+	// rpc.Register(address)
+	// rpc.HandleHTTP() //将Rpc绑定到HTTP协议上。
+	fmt.Println("启动服务...")
 	err := http.ListenAndServe(":9090", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

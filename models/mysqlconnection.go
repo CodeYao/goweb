@@ -25,7 +25,11 @@ func (f *mysql_db) mysql_open() { //打开
 	file, err := os.Open("static/dataconf.xml")
 
 	if err != nil {
-		panic(err)
+		//panic(err)
+		file, err = os.Open("../grpcdataconf/dataconf.xml")
+		if err != nil {
+			panic(err)
+		}
 	}
 	fileinfo, _ := file.Stat()
 	filesize := fileinfo.Size()

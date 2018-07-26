@@ -161,6 +161,7 @@
                 </a>
             </li>
             <li><a href="#accountMG" data-toggle="tab">账号管理</a></li>
+            <li><a href="#addressMG" data-toggle="tab">钱包地址管理</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade in active" id="certMG">
@@ -301,6 +302,88 @@
 
                 </div>
             </div>
+
+            <div class="tab-pane fade" id="addressMG">
+                <div style="width: 96%;margin: 0 auto;">
+                    <label style="margin-top: 20px">钱包地址列表</label>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加钱包地址</button>
+                    <table class="table table-hover" style="margin-top: 16px">
+                        <thead>
+                            <tr style="background: #f4f4f4;height:80px">
+                                <th style='vertical-align: middle; text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="addrselectAll" class="styled" type="checkbox">
+                                        <label for="addrselectAll">全选</label>
+                                    </div>
+                                    <!-- <input type="checkbox" id="accselectAll"> -->
+                                </th>
+                                <th style='vertical-align: middle;'>钱包地址</th>
+                                <th style='vertical-align: middle;'>添加人</th>
+                                <th style='vertical-align: middle;'>添加时间</th>
+                                <th style='vertical-align: middle;'>描述</th>
+                            </tr>
+                        </thead>
+                        <tbody id="addresslist">
+                            <!-- <tr>
+                                <td style='text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="checkbox4" class="styled" name="addresslistcheckbox" type="checkbox">
+                                        <label for="checkbox4"></label>
+                                    </div>
+                                </td>
+                                <td>0x743F67527FF4DD211528c7e7AE041888f70D1C70</td>
+                                <td>admin</td>
+                                <td>2018-7-5</td>
+                                <td>这是银行节点1的钱包</td>
+                            </tr>
+                            <tr>
+                                <td style='text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="checkbox4" class="styled" name="accountlistcheckbox" type="checkbox">
+                                        <label for="checkbox4"></label>
+                                    </div>
+                                </td>
+                                <td>0x743F67527FF4DD211528c7e7AE041888f70D1C70</td>
+                                <td>admin</td>
+                                <td>2018-7-5</td>
+                                <td>这是银行节点1的钱包</td>
+                            </tr>
+                            <tr>
+                                <td style='text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="checkbox4" class="styled" name="accountlistcheckbox" type="checkbox">
+                                        <label for="checkbox4"></label>
+                                    </div>
+                                </td>
+                                <td>0x743F67527FF4DD211528c7e7AE041888f70D1C70</td>
+                                <td>admin</td>
+                                <td>2018-7-5</td>
+                                <td>这是银行节点1的钱包</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                    <div style="text-align: right">
+                        <ul class="pagination" id="addresspageNumList">
+                            <!-- <li class="page-item"><a href="#">首页</a></li>
+                                    <li class="page-item"><a href="#">上一页</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">尾页</a></li> -->
+                        </ul>
+                        <div class="pagination pull-right" style="margin-top: 20px;margin-left: 5px" id="addresspageText">
+                            <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
+                        </div>
+                        <div class="pagination pull-left" style="margin-top: 20px;margin-left: 5px">
+                            <button type="button" class="btn btn-default pull-right" id="removeAddress">删除钱包地址</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
     <div class="app-footer">Copyright © 2018 苏州同济区块链研究院</div>
@@ -362,6 +445,54 @@
                     <button type="button" id="addaccoountbtn" class="btn btn-primary" style="background: #1082ed; color: #ffffff;">
                             提交
                         </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!--添加钱包地址 模态框（Modal） -->
+    <div class="modal fade" id="addaddress" tabindex="-1" role="dialog" aria-labelledby="addipModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                            </button>
+                    <h4 class="modal-title" id="addipModalLabel">
+                        请填写钱包地址信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="address" name="address" placeholder="请输入钱包地址">
+                                <div id="errorcode_address">
+                                    <span class="help-block">钱包地址不能为空</span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="descript" name="descript" placeholder="请输入相关描述">
+                                <!-- <div id="errorcode_discript">
+                                    <span class="help-block" id="errortext_descript">组织机构不可为空</span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                                </div> -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                关闭
+                            </button>
+                    <button type="button" id="addaddressbtn" class="btn btn-primary" style="background: #1082ed; color: #ffffff;">
+                                提交
+                            </button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -650,7 +781,82 @@
             }
         });
     }
-    $(document).ready(getcertList(1));
+    $(document).ready(getaddress(1))
+
+    function addresspageJump() {
+        var pagestr = $("#addressjumpstr").val()
+            //alert(pagestr)
+        getaddress(pagestr)
+    }
+
+    function getaddress(currentpage) {
+        $.ajax({
+            type: "POST",
+            url: "/addresslist",
+            data: {
+                currentpage: currentpage,
+            },
+            success: function(data) {
+                // alert(data)
+                var con = ""
+                data = JSON.parse(data)
+                    //alert(data)
+                $.each(data.entityList, function(index, item) {
+                    con += "<tr><td style='text-align: center'><div class='checkbox checkbox-info'><input class='styled' type='checkbox' name='addresslistcheckbox' id='" + item.id + "'><label for='" + item.id + "'></label></div></td>"
+                    con += " <td>" + item.address + "</td>"
+                    con += " <td>" + item.addPeople + "</td>"
+                    con += " <td>" + item.addDate + "</td>"
+                    con += " <td>" + item.descript + "</td><tr>"
+                });
+                //alert(con)
+                $("#addresslist").html("")
+                $("#addresslist").append(con)
+                var pagecon = ""
+                var showPage = 5
+                var currentPage = data.currentPage //当前页
+                var pageNum = data.pageNum //一页显示多少条
+                var totalPage = data.totalPage //总页数
+                var startPage = data.startPage //起始页
+                var endPage = 0
+                if ((Number(startPage) + Number(showPage) - 1) >= Number(totalPage)) {
+                    endPage = totalPage
+                } else {
+                    endPage = Number(startPage) + Number(showPage) - 1
+                }
+                var previous = currentPage - 1
+                var next = Number(currentPage) + Number(1)
+                pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getaddress(1)">首页</a></li>'
+                if (previous == 0) {
+                    pagecon += '<li class="page-item disabled"><a href="#">上一页</a></li>'
+                } else {
+                    pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getaddress(' + previous + ')">上一页</a></li>'
+                }
+                // alert(startPage + endPage)
+                for (var index = startPage; index <= endPage; index++) {
+
+                    if (index == currentPage) {
+                        pagecon += '<li class="page-item active"><a class="page-link" href="#">' + index + '</a></li>'
+                    } else {
+                        pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getaddress(' + index + ')">' + index + '</a></li>'
+                    }
+                }
+                if (next > totalPage) {
+                    pagecon += '<li class="page-item disabled"><a class="page-link" href="#">下一页</a></li>'
+                } else {
+                    pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getaddress(' + next + ')">下一页</a></li>'
+                }
+                pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getaddress(' + totalPage + ')">尾页</a></li>'
+                    // alert(pagecon)
+                $("#addresspageNumList").html("")
+                $("#addresspageNumList").append(pagecon)
+                var pageTextcon = ""
+                pageTextcon += '共' + data.totalPage + '页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到&nbsp;<input class="form-ctrl-diy" style="width: 25px" id="addressjumpstr" type="text">&nbsp;页 <button class="btn btn-default" onclick="addresspageJump()">确定</button>'
+                $("#addresspageText").html("")
+                $("#addresspageText").append(pageTextcon)
+            }
+        });
+    }
+    $(document).ready(getcertList(1))
 
     function pageJump() {
         var pagestr = $("#jumpstr").val()
@@ -850,65 +1056,93 @@
         });
     })
     $("#reject").click(function() {
-        var certId = $("#certid").val()
-        $.ajax({
-            type: "POST",
-            url: "/rejectcert",
-            data: {
-                id: certId,
-            },
-            success: function(data) {
-                alert("驳回成功")
-                window.location.reload()
-            }
-        });
-    })
-
-    //function selectState() {
-    //var selected = $("#certselect").val()
-    //getcertList(1)
-    //$("#certlist").html("")
-    // $.ajax({
-    //     type: "POST",
-    //     data: {
-    //         selected: selected,
-    //     },
-    //     url: "/select_certlist",
-    //     success: function(data) {
-    //         var con = ""
-    //         data = JSON.parse(data)
-    //             //alert(data)
-    //         $.each(data, function(index, item) {
-    //             con += "<tr><td>" + item.accountId + "</td>"
-    //             con += "<td>" + item.organization + "</td>"
-    //             con += "<td>" + item.certname + "</td>"
-    //             con += "<td>" + item.ipstr + "</td>"
-    //             con += "<td>" + item.reqdate + "</td>"
-    //             con += "<td>" + item.state + "</td>"
-    //             con += "<td>" + item.approver + "</td>"
-    //             con += "<td>" + item.approvaldate + "</td>"
-    //             con += "<td>" + item.revoker + "</td>"
-    //             con += "<td>" + item.revokedate + "</td>"
-    //             if (item.state == "待审批") {
-    //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-    //                 con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default "  style="background:url(\'/static/img/审批.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-    //             } else if (item.state == "已审批") {
-    //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-    //                 con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" style="background:url(\'/static/img/吊销.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-    //                 con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default " style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-    //             } else if (item.state == "已吊销") {
-    //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-    //             } else if (item.state == "已驳回") {
-    //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-    //             }
-    //             con += "</td></tr>"
-    //                 //alert(item.ipStr + index)
-    //         });
-    //         $("#certlist").append(con)
-    //     }
-    // });
+            var certId = $("#certid").val()
+            $.ajax({
+                type: "POST",
+                url: "/rejectcert",
+                data: {
+                    id: certId,
+                },
+                success: function(data) {
+                    alert("驳回成功")
+                    window.location.reload()
+                }
+            });
+        })
+        //function selectState() {
+        //var selected = $("#certselect").val()
+        //getcertList(1)
+        //$("#certlist").html("")
+        // $.ajax({
+        //     type: "POST",
+        //     data: {
+        //         selected: selected,
+        //     },
+        //     url: "/select_certlist",
+        //     success: function(data) {
+        //         var con = ""
+        //         data = JSON.parse(data)
+        //             //alert(data)
+        //         $.each(data, function(index, item) {
+        //             con += "<tr><td>" + item.accountId + "</td>"
+        //             con += "<td>" + item.organization + "</td>"
+        //             con += "<td>" + item.certname + "</td>"
+        //             con += "<td>" + item.ipstr + "</td>"
+        //             con += "<td>" + item.reqdate + "</td>"
+        //             con += "<td>" + item.state + "</td>"
+        //             con += "<td>" + item.approver + "</td>"
+        //             con += "<td>" + item.approvaldate + "</td>"
+        //             con += "<td>" + item.revoker + "</td>"
+        //             con += "<td>" + item.revokedate + "</td>"
+        //             if (item.state == "待审批") {
+        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+        //                 con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default "  style="background:url(\'/static/img/审批.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+        //             } else if (item.state == "已审批") {
+        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+        //                 con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" style="background:url(\'/static/img/吊销.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+        //                 con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default " style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+        //             } else if (item.state == "已吊销") {
+        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+        //             } else if (item.state == "已驳回") {
+        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+        //             }
+        //             con += "</td></tr>"
+        //                 //alert(item.ipStr + index)
+        //         });
+        //         $("#certlist").append(con)
+        //     }
+        // });
 
     //}
+    $("#errorcode_address").hide()
+        // $("#errorcode_descript").hide()
+    $("#addaddressbtn").click(function() {
+        var address = $("#address").val()
+        var descript = $("#descript").val()
+        if (address == "") {
+            $("#errorcode_address").show()
+            $("#errorcode_address").parent().addClass("has-error has-feedback")
+        } else {
+            $("#errorcode_address").hide()
+            $("#errorcode_address").parent().removeClass("has-error has-feedback")
+            $.ajax({
+                type: "POST",
+                url: "/addaddress",
+                data: {
+                    address: address,
+                    descript: descript,
+                },
+                success: function(data) {
+                    alert(data)
+                    $("#address").val("")
+                    $("#descript").val("")
+                    $("#addaddress").modal('hide')
+                    getaddress(1)
+                        //window.location.reload()
+                }
+            });
+        }
+    })
     $("#errorcode_accountId").hide()
     $("#errorcode_newpassword").hide()
     $("#errorcode_newpassword2").hide()
@@ -950,6 +1184,10 @@
                         },
                         success: function(data) {
                             alert("添加成功")
+                            var accountId = $("#accountId").val("")
+                            var organization = $("#organization").val("")
+                            var newpassword = $("#newpassword").val("")
+                            var newpassword2 = $("#newpassword2").val("")
                             $("#addaccount").modal('hide')
                             getaccountList(1)
                                 //window.location.reload()
@@ -963,9 +1201,9 @@
         var allcheck = $(this).prop("checked")
         var check = $("input[name='accountlistcheckbox']").prop("checked", allcheck)
     })
-    $("#certselectAll").click(function() {
+    $("#addrselectAll").click(function() {
         var allcheck = $(this).prop("checked")
-        var check = $("input[name='certlistcheckbox']").prop("checked", allcheck)
+        var check = $("input[name='addresslistcheckbox']").prop("checked", allcheck)
     })
     $("tbody").on('click', "[name='downloadcert']", function() {
         // alert($(this).attr("id"))
@@ -989,24 +1227,47 @@
             $("#accselectAll").prop("checked", true)
         }
     });
-    $("tbody").on('click', "[name='certlistcheckbox']", function() {
-        var checkAll = $("#certselectAll").prop("checked")
-        var check = $("input[name='certlistcheckbox']")
+    $("tbody").on('click', "[name='addresslistcheckbox']", function() {
+        var checkAll = $("#addrselectAll").prop("checked")
+        var check = $("input[name='addresslistcheckbox']")
         var checknum = 0
             //  alert(check.length)
         for (var index = 0; index < check.length; index++) {
             //alert($(check[index]).prop("checked"))
             if (checkAll != $(check[index]).prop("checked")) {
-                $("#certselectAll").prop("checked", false)
+                $("#addrselectAll").prop("checked", false)
             }
             if ($(check[index]).prop("checked") == true) {
                 checknum++
             }
         }
         if (checknum == check.length) {
-            $("#certselectAll").prop("checked", true)
+            $("#addrselectAll").prop("checked", true)
         }
     });
+    $("#removeAddress").click(function() {
+        var check = $("input[name='addresslistcheckbox']:checked")
+        if (check.length == 0) {
+            alert("请选中至少一条记录")
+        } else {
+            for (var index = 0; index < check.length; index++) {
+                // alert($(check[index]).attr("id"))
+                var id = $(check[index]).attr("id")
+                $.ajax({
+                    type: "POST",
+                    url: "/removeadderss",
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {}
+                });
+            }
+            alert("删除成功")
+            getaddress(1)
+                // window.location.reload()
+        }
+    })
+
     $("#removeAccount").click(function() {
         var check = $("input[name='accountlistcheckbox']:checked")
         if (check.length == 0) {

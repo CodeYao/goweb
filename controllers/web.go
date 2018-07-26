@@ -422,6 +422,58 @@ func changepwd_ca(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
+func addaddress(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
+	if r.Method == "POST" {
+		accountId := sess.Get("username")
+		address := r.FormValue("address")
+		descript := r.FormValue("descript")
+		models.InsertData("address", []string{address, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), descript, "enabled"})
+		io.WriteString(w, "添加成功")
+
+	}
+}
+func addresslist(w http.ResponseWriter, r *http.Request) {
+	var pagevo models.PageVO
+	var startPage int
+	var dataNum int
+	if r.Method == "POST" {
+		//selected := r.FormValue("selected")
+		pagevo.CurrentPage = r.FormValue("currentpage")
+		if pagevo.CurrentPage == "" {
+			pagevo.CurrentPage = "1"
+		}
+		currentPage, _ := strconv.Atoi(pagevo.CurrentPage)
+		pagevo.PageNum = "5"
+		pageNum := 5
+		showPage := 5
+
+		start := (currentPage - 1) * pageNum
+		startPage = currentPage/showPage*showPage + 1
+		//fmt.Println(startPage, "chenyao********************", currentPage)
+		pagevo.StartPage = strconv.Itoa(startPage)
+		//fmt.Println("chenyao*************************", pagevo.CurrentPage, pagevo.TotalPage)
+		pagevo.EntityList = models.QueryData("address where enabled = 'enabled' limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
+		dataNum = models.GetTableNum("address where enabled = 'enabled'")
+
+		if dataNum%pageNum == 0 {
+			pagevo.TotalPage = strconv.Itoa(dataNum / pageNum)
+		} else {
+			pagevo.TotalPage = strconv.Itoa((dataNum / pageNum) + 1)
+		}
+
+		pageJson, _ := json.Marshal(pagevo)
+		io.WriteString(w, string(pageJson))
+	}
+}
+
+func removeadderss(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		id, _ := strconv.Atoi(r.FormValue("id"))
+		fmt.Println("chenyao**********", id)
+		models.DeleteAddressById(id)
+	}
+}
 
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
@@ -454,6 +506,9 @@ func RunWeb() {
 	http.HandleFunc("/select_certlist", select_certlist)
 	http.HandleFunc("/downloadcert", downloadcert)
 	http.HandleFunc("/changepwd_ca", changepwd_ca)
+	http.HandleFunc("/addaddress", addaddress)
+	http.HandleFunc("/addresslist", addresslist)
+	http.HandleFunc("/removeadderss", removeadderss)
 
 	// //配置rpc方法
 	// var address = new(carpc.Address)

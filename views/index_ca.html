@@ -162,6 +162,7 @@
             </li>
             <li><a href="#accountMG" data-toggle="tab">账号管理</a></li>
             <li><a href="#addressMG" data-toggle="tab">钱包地址管理</a></li>
+            <li><a href="#CAMG" data-toggle="tab">CA证书</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade in active" id="certMG">
@@ -380,6 +381,55 @@
                         <div class="pagination pull-left" style="margin-top: 20px;margin-left: 5px">
                             <button type="button" class="btn btn-default pull-right" id="removeAddress">删除钱包地址</button>
                         </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="CAMG">
+                <div style="width: 96%;margin: 0 auto;">
+                    <label style="margin-top: 20px">证书信息</label>
+                    <!-- <button type="button" class="btn pull-right" style="margin-top: 11px;" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;导入</button> -->
+                    <button type="button" class="btn pull-right" style=" background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;导出</button>
+
+                    <table class="table table-hover" style="margin-top: 16px">
+                        <thead>
+                            <tr style="background: #f4f4f4;height:80px">
+                                <th style='vertical-align: middle;'>加密方式</th>
+                                <th style='vertical-align: middle;'>创建时间</th>
+                                <th style='vertical-align: middle;'>创建人</th>
+                                <!-- <th style='vertical-align: middle;'>操作</th> -->
+                            </tr>
+                        </thead>
+                        <tbody id="addresslist">
+                            <tr>
+                                <td>国密算法sm2</td>
+                                <td>2018-7-5</td>
+                                <td>admin</td>
+                                <!-- <td>
+                                    <button type="button" class="btn" style=" background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;导出</button>
+                                </td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="text-align: right">
+                        <ul class="pagination" id="addresspageNumList">
+                            <!-- <li class="page-item"><a href="#">首页</a></li>
+                                        <li class="page-item"><a href="#">上一页</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">4</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">尾页</a></li> -->
+                        </ul>
+                        <div class="pagination pull-right" style="margin-top: 20px;margin-left: 5px" id="addresspageText">
+                            <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
+                        </div>
+                        <!-- <div class="pagination pull-left" style="margin-top: 20px;margin-left: 5px">
+                            <button type="button" class="btn btn-default pull-right" id="removeAddress">删除钱包地址</button>
+                        </div> -->
                     </div>
 
                 </div>
@@ -694,8 +744,109 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+    <!--申请证书 模态框（Modal） -->
+    <div class="modal fade" id="reqcacert" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                            </button>
+                    <h4 class="modal-title" id="reqcertModalLabel">
+                        请填写证书相关信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="certForm" class="form-horizontal" role="form">
+                        <!-- <div class="form-group">
+                            <label for="certName" class="col-sm-3 control-label">证书名*</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="certName" name="certName" placeholder="可以是任意不重复的字符，如：银行证书1">
+                            </div>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="certName" class="col-sm-3 control-label">加密类型*</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="KeyType" name="KeyType" style="cursor:pointer;">
+                                        <option value="sm2">国密算法sm2</option>
+                                        <option value="ecdsa">ecdsa</option>
+                                    </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notAfter" class="col-sm-3 control-label">证书有效期*</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="notAfter" name="notAfter" placeholder="请输入证书有效期，如180">
+                            </div>
+                            <label class="col-sm-1 control-label">天</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的ip*</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="ipAddress" name="ipAddress" placeholder="若输入多个请用分号隔开，如10.1.1.1;10.2.2.2">
+                            </div>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴证书请求*</label>
+                            <div class="col-sm-7">
+                                <textarea id="reqcertxt" name="reqcertxt" class="form-control"></textarea>
+                            </div>
+                        </div> -->
+                        <!-- <div class="form-group">
+                            <label for="inputfile" class="col-sm-offset-3 col-sm-7 control-label">没有文件?<a href="/static/tool.rar" download="tool.rar">下载工具</a>或者<a target="view_window" href="genreatePage">在线生成</a></label>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">国家</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="country" name="country" placeholder="例如：china">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">公司名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="organization" name="organization" placeholder="例如：tjfoc">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">域名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="commonName" name="commonName" placeholder="例如：test.example">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                                关闭
+                            </button>
+                    <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6;">
+                                    提交
+                                </button>
+                    <!-- <button type="button" id="easygenbtn" class="btn btn-default pull-left" data-toggle="tooltip" data-placement="bottom" title="此操作私钥由服务器生成">
+                            一键生成
+                                </button> -->
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 </body>
 <script>
+    $(document).ready(function() {
+        $.ajax({
+            type: "POST",
+            url: "/checkca",
+            success: function(data) {
+                if (data == 0) {
+                    $("#reqcacert").modal("show")
+                }
+            }
+        })
+    })
+
     function logout() {
         $.ajax({
             type: "POST",
@@ -1056,64 +1207,20 @@
         });
     })
     $("#reject").click(function() {
-            var certId = $("#certid").val()
-            $.ajax({
-                type: "POST",
-                url: "/rejectcert",
-                data: {
-                    id: certId,
-                },
-                success: function(data) {
-                    alert("驳回成功")
-                    window.location.reload()
-                }
-            });
-        })
-        //function selectState() {
-        //var selected = $("#certselect").val()
-        //getcertList(1)
-        //$("#certlist").html("")
-        // $.ajax({
-        //     type: "POST",
-        //     data: {
-        //         selected: selected,
-        //     },
-        //     url: "/select_certlist",
-        //     success: function(data) {
-        //         var con = ""
-        //         data = JSON.parse(data)
-        //             //alert(data)
-        //         $.each(data, function(index, item) {
-        //             con += "<tr><td>" + item.accountId + "</td>"
-        //             con += "<td>" + item.organization + "</td>"
-        //             con += "<td>" + item.certname + "</td>"
-        //             con += "<td>" + item.ipstr + "</td>"
-        //             con += "<td>" + item.reqdate + "</td>"
-        //             con += "<td>" + item.state + "</td>"
-        //             con += "<td>" + item.approver + "</td>"
-        //             con += "<td>" + item.approvaldate + "</td>"
-        //             con += "<td>" + item.revoker + "</td>"
-        //             con += "<td>" + item.revokedate + "</td>"
-        //             if (item.state == "待审批") {
-        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-        //                 con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default "  style="background:url(\'/static/img/审批.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-        //             } else if (item.state == "已审批") {
-        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-        //                 con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" style="background:url(\'/static/img/吊销.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-        //                 con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default " style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-        //             } else if (item.state == "已吊销") {
-        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-        //             } else if (item.state == "已驳回") {
-        //                 con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default "  style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
-        //             }
-        //             con += "</td></tr>"
-        //                 //alert(item.ipStr + index)
-        //         });
-        //         $("#certlist").append(con)
-        //     }
-        // });
+        var certId = $("#certid").val()
+        $.ajax({
+            type: "POST",
+            url: "/rejectcert",
+            data: {
+                id: certId,
+            },
+            success: function(data) {
+                alert("驳回成功")
+                window.location.reload()
+            }
+        });
+    })
 
-    //}
     $("#errorcode_address").hide()
         // $("#errorcode_descript").hide()
     $("#addaddressbtn").click(function() {

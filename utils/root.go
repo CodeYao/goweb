@@ -17,6 +17,7 @@ package utils
 import (
 	"crypto/ecdsa"
 	"crypto/rand"
+	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"errors"
@@ -32,7 +33,7 @@ import (
 var Cfg ToolConf
 
 func init() {
-	Cfg.Cert.KeyType = "sm2"
+	//Cfg.Cert.KeyType = "sm2"
 	//Cfg.Cert.CommonName = "test.example.com"
 	//Cfg.Cert.Organization = []string{"TEST", "TEST1"}
 	//Cfg.Cert.Country = []string{"China"}
@@ -72,7 +73,27 @@ func Creatdir(dir string) {
 	}
 }
 
-func GetPubKey(reqdata string) []byte {
+func GetEcdsaPubKey(reqdata string) []byte {
+	req, err := parseECDSAReq([]byte(reqdata))
+	if err != nil {
+		fmt.Println("parse ecdsa req err:", err)
+		return nil
+	}
+	pubkey := req.PublicKey.(*ecdsa.PublicKey)
+	pubB, err := x509.MarshalPKIXPublicKey(pubkey)
+	pub := &pem.Block{
+		Type:  "ECDSA PUBLIC KEY",
+		Bytes: pubB,
+	}
+	// s := "/pubkey.pem"
+	// //设置公钥路径
+	// s = "conf/" + ipAddress + s
+	ok := pem.EncodeToMemory(pub)
+
+	return ok
+}
+
+func GetSm2PubKey(reqdata string) []byte {
 	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqdata))
 	if err != nil {
 		fmt.Println("parse ecdsa req err:", err)
@@ -94,7 +115,27 @@ func GetPubKey(reqdata string) []byte {
 	return ok
 }
 
-func GenerateCert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, reqData string) []byte {
+func GenerateCACert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, reqData string, KeyType string) []byte {
+	Cfg.Cert.KeyType = KeyType
+	Cfg.Cert.NotAfter = notAfter
+	Cfg.Cert.DNSNames = ipAddress
+	if len(organization) > 0 {
+		Cfg.Cert.Organization = organization
+	}
+	if len(country) > 0 {
+		Cfg.Cert.Country = country
+	}
+	if commonName != "" {
+		Cfg.Cert.CommonName = commonName
+	}
+	Creatdir("conf/ca")
+
+	fmt.Println(Cfg.Cert)
+	return genCert(reqData)
+}
+
+func GenerateCert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, reqData string, KeyType string) []byte {
+	Cfg.Cert.KeyType = KeyType
 	Cfg.Cert.NotAfter = notAfter
 	Cfg.Cert.DNSNames = ipAddress
 	if len(organization) > 0 {
@@ -199,10 +240,17 @@ func RevokedCertificates(path []string) {
 // 	genCert(path)
 // }
 
-func OneTouch() []string {
+func OneTouch(KeyType string) []string {
+	Cfg.Cert.KeyType = KeyType
+	var pub []byte
 	key := genKey()
 	req := genCetReq(key)
-	pub := GetPubKey(string(req))
+	if KeyType == "sm2" {
+		pub = GetSm2PubKey(string(req))
+	} else if KeyType == "ecdsa" {
+		pub = GetSm2PubKey(string(req))
+	}
+
 	return []string{string(key), string(pub), string(req)}
 }
 func readClr(path string) (*pkix.CertificateList, error) {

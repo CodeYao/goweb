@@ -29,6 +29,22 @@ func parseCert(fileName string) ([]byte, error) {
 	return p.Bytes, nil
 
 }
+func ecdsaPrivKeyFromMen(data []byte) (*ecdsa.PrivateKey, error) {
+
+	p, _ := pem.Decode(data)
+
+	key, err := x509.ParsePKCS8PrivateKey(p.Bytes)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	v, ok := key.(*ecdsa.PrivateKey)
+	if !ok {
+		return nil, errors.New("parse pkcs8 priv key err")
+	}
+	return v, nil
+
+}
 func ecdsaPrivKeyFromPem(fileName string) (*ecdsa.PrivateKey, error) {
 
 	file, err := os.Open(fileName)
@@ -58,21 +74,21 @@ func ecdsaPrivKeyFromPem(fileName string) (*ecdsa.PrivateKey, error) {
 
 }
 
-func parseECDSAReq(fileName string) (*x509.CertificateRequest, error) {
+func parseECDSAReq(file []byte) (*x509.CertificateRequest, error) {
 
 	//	fmt.Println("file name:", fileName)
-	file, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// file, err := os.Open(fileName)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	defer file.Close()
-	b, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-	}
+	// defer file.Close()
+	// b, err := ioutil.ReadAll(file)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 
-	p, _ := pem.Decode(b)
+	p, err := pem.Decode(file)
 	if err != nil {
 		fmt.Println(err)
 	}

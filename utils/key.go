@@ -37,9 +37,11 @@ const (
 func genKey() []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
+		fmt.Println("use sm2")
 		return genSM2Key()
 	case "ecdsa":
-		genECDSAKey("")
+		fmt.Println("use ECDSA")
+		return genECDSAKey()
 	default:
 		fmt.Println("err key type!")
 	}
@@ -61,52 +63,66 @@ func genSM2Key() []byte {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// pubKey, _ := priv.Public().(*sm2.PublicKey)
-	// //s = fmt.Sprintf("pub%d.pem", i)
-	// s = "pubkey.pem"
-	// //设置公钥路径
-	// s = path + "/" + s
-	// ok, err = sm2.WritePublicKeytoPem(s, pubKey, nil)
-	// if !ok {
-	// 	fmt.Println(err)
-	// }
 	return ok
 }
 
-func genECDSAKey(path string) {
-	for i := 0; i < NumberOfKey; i++ {
-		var c elliptic.Curve
-		switch Elliptic {
-		case "p256":
-			c = elliptic.P256()
-		case "p384":
-			c = elliptic.P384()
-		case "p521":
-			c = elliptic.P521()
-		default:
-			fmt.Println("err elliptic curve!")
-
-		}
-		priv, err := ecdsa.GenerateKey(c, rand.Reader)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		//s1 := fmt.Sprintf("priv%d.pem", i)
-		s1 := "key.pem"
-		//设置私钥路径
-		s1 = path + "/" + s1
-		//s2 := fmt.Sprintf("pub%d.pem", i)
-		s2 := "pubkey.pem"
-		//设置公钥路径
-		s2 = path + "/" + s2
-		err = ToPem(priv, s1, s2)
-		if err != nil {
-			fmt.Println(err)
-		}
+func genECDSAKey() []byte {
+	// for i := 0; i < NumberOfKey; i++ {
+	var c elliptic.Curve
+	switch Elliptic {
+	case "p256":
+		c = elliptic.P256()
+	case "p384":
+		c = elliptic.P384()
+	case "p521":
+		c = elliptic.P521()
+	default:
+		fmt.Println("err elliptic curve!")
 
 	}
+	priv, err := ecdsa.GenerateKey(c, rand.Reader)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//s1 := fmt.Sprintf("priv%d.pem", i)
+	// s1 := "key.pem"
+	// //设置私钥路径
+	// s1 = path + "/" + s1
+	// //s2 := fmt.Sprintf("pub%d.pem", i)
+	// s2 := "pubkey.pem"
+	// //设置公钥路径
+	// s2 = path + "/" + s2
+	ok, err := ToMem(priv)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return ok
+	// }
+
+}
+
+func ToMem(key *ecdsa.PrivateKey) ([]byte, error) {
+
+	privB, err := marshalEcdsaUnecryptedPrivateKey(key)
+	if err != nil {
+		fmt.Println("marshal ecdsa priv key err:", err)
+		return nil, err
+	}
+
+	_, err = x509.ParsePKCS8PrivateKey(privB)
+	if err != nil {
+		fmt.Println("pkcs8 parse err:", err)
+	}
+	fmt.Println("pkcs8 parse success!")
+
+	priv := &pem.Block{
+		Type:  "EC PRIVATE KEY",
+		Bytes: privB,
+	}
+
+	return pem.EncodeToMemory(priv), nil
 
 }
 

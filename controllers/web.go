@@ -136,6 +136,7 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
 		userName := sess.Get("username")
+		KeyType := r.FormValue("KeyType")
 		certName := r.FormValue("certName")
 		notAfter, _ := strconv.Atoi(r.FormValue("notAfter"))
 		ipAddress := strings.Split(r.FormValue("ipAddress"), ";")
@@ -144,9 +145,15 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 		organization := strings.Split(r.FormValue("organization"), ";")
 		commonName := r.FormValue("commonName")
 		ipPath := r.FormValue("ipAddress")
-		fmt.Println(userName, certName, notAfter, ipAddress, reqcertxt, country, organization, commonName, ipPath)
-		newpubkey := string(utils.GetPubKey(reqcertxt))
-		newcert := string(utils.GenerateCert(notAfter, ipAddress, country, organization, commonName, reqcertxt))
+		fmt.Println(userName, certName, notAfter, ipAddress, reqcertxt, country, organization, commonName, ipPath, KeyType)
+		var newpubkey string
+		if KeyType == "sm2" {
+			newpubkey = string(utils.GetSm2PubKey(reqcertxt))
+		} else if KeyType == "ecdsa" {
+			newpubkey = string(utils.GetEcdsaPubKey(reqcertxt))
+		}
+
+		newcert := string(utils.GenerateCert(notAfter, ipAddress, country, organization, commonName, reqcertxt, KeyType))
 		fmt.Println("newpubkey:", newpubkey)
 		fmt.Println("newcert:", newcert)
 		models.InsertData("cert", []string{certName, r.FormValue("ipAddress"), newcert, newpubkey, userName.(string), time.Now().Format("2006-01-02 15:04:05"), "待审批", "", "", "", ""})
@@ -311,7 +318,8 @@ func onetouch(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
 		accountId := sess.Get("username")
-		keysJson, _ := json.Marshal(append(utils.OneTouch(), accountId.(string)))
+		KeyType := r.FormValue("KeyType")
+		keysJson, _ := json.Marshal(append(utils.OneTouch(KeyType), accountId.(string)))
 		io.WriteString(w, string(keysJson))
 	}
 }
@@ -475,6 +483,13 @@ func removeadderss(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func checkca(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		dataNum := models.GetTableNum("ca where enabled = 'enabled'")
+		io.WriteString(w, strconv.Itoa(dataNum))
+	}
+}
+
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
 	http.Handle("/conf/", http.StripPrefix("/conf/", http.FileServer(http.Dir("conf"))))       //设置静态文件路径
@@ -509,6 +524,7 @@ func RunWeb() {
 	http.HandleFunc("/addaddress", addaddress)
 	http.HandleFunc("/addresslist", addresslist)
 	http.HandleFunc("/removeadderss", removeadderss)
+	http.HandleFunc("/checkca", checkca)
 
 	// //配置rpc方法
 	// var address = new(carpc.Address)

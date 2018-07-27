@@ -116,7 +116,6 @@
                 <div class="navbar-text navbar-right" style="margin-right:7%">
                     <span style="color: #dddddd;">你好，{{.}}!</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <a href="#" data-toggle="dropdown"><img src="/static/img/用户.png"></a>
-                    <!--<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a>-->
                     <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
                         <li>
                             <a id="changepwd_menu" href="javascript:void(0)" onclick="changepassword('{{.}}')" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/修改密码black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
@@ -153,57 +152,18 @@
                     </tr>
                 </thead>
                 <tbody id="certlist">
-                    <!-- <tr>
-                    <td>银行证书1</td>
-                    <td>10.1.1.1</td>
-                    <td>2017年5月6号 9:00</td>
-                    <td>待审核</td>
-                    <td><button type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">查看</button></td>
-                </tr>
-                <tr>
-                    <td>银行证书2</td>
-                    <td>10.2.2.2</td>
-                    <td>2017年5月6号 10:00</td>
-                    <td>已于2017年5月9号通过审核</td>
-                    <td>
-                        <button type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">查看</button>
-                        <button type="button" class="btn btn-default " id="" style="background: #333333; color: #dddddd;">下载</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>银行证书3</td>
-                    <td>10.3.3.3</td>
-                    <td>2017年5月6号 10:00</td>
-                    <td>已于2017年5月9号被吊销</td>
-                    <td>
-                        <button type="button" class="btn btn-default" id="" style="background: #333333; color: #dddddd;">查看</button>
-                    </td>
-                </tr> -->
                 </tbody>
             </table>
             <div style="text-align: right">
                 <ul class="pagination" id="pageNumList">
-                    <!-- <li class="page-item"><a href="#">首页</a></li>
-                        <li class="page-item"><a href="#">上一页</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                        <li class="page-item"><a class="page-link" href="#">下一页</a></li>
-                        <li class="page-item"><a class="page-link" href="#">尾页</a></li> -->
                 </ul>
                 <div class="pagination pull-right" style="margin-top: 20px;margin-left: 5px" id="pageText">
-                    <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
                 </div>
 
             </div>
-            <!-- <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">申请证书</button> -->
         </div>
-        <!-- <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addip" style="background: #333333; color: #dddddd;">添加ip</button>
-        <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="removeIp">移除ip</button> -->
-        <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看信息</button> -->
     </div>
+
     <!--查看证书 模态框（Modal） -->
     <div class="modal fade" id="watchcertmodel" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -261,18 +221,6 @@
                         </div>
                     </form>
                 </div>
-                <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                                关闭
-                            </button>
-                    <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #333333; color: #dddddd;">
-                                    提交
-                                </button>
-                    <button type="button" id="easygenbtn" class="btn btn-default pull-left" data-toggle="tooltip" data-placement="bottom" title="此操作私钥由服务器生成">
-                            一键生成
-                                </button>
-
-                </div> -->
             </div>
             <!-- /.modal-content -->
         </div>
@@ -300,6 +248,15 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label for="certName" class="col-sm-3 control-label">加密类型*</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="KeyType" name="KeyType" style="cursor:pointer;">
+                                    <option value="sm2">国密算法sm2</option>
+                                    <option value="ecdsa">ecdsa</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="notAfter" class="col-sm-3 control-label">证书有效期*</label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="notAfter" name="notAfter" placeholder="请输入证书有效期，如180">
@@ -316,9 +273,7 @@
                             <label for="reqcertxt" class="col-sm-3 control-label">粘贴证书请求*</label>
                             <div class="col-sm-7">
                                 <textarea id="reqcertxt" name="reqcertxt" class="form-control"></textarea>
-                                <!-- <input type="text" id="pubKeyFile" name="pubKeyFile"> -->
                             </div>
-                            <!-- <label for="inputfile" class="col-sm-4 control-label">没有文件?<a href="/static/tool.rar" download="tool.rar">下载工具</a></label> -->
                         </div>
                         <div class="form-group">
                             <label for="inputfile" class="col-sm-offset-3 col-sm-7 control-label">没有文件?<a href="/static/tool.rar" download="tool.rar">下载工具</a>或者<a target="view_window" href="genreatePage">在线生成</a></label>
@@ -654,6 +609,7 @@
             // }
     })
     $("#commitreqcertbtn").click(function() {
+        //var KeyType = $("#certselect").val()
         var CertName = $("#certName").val()
         var NotAfter = $("#notAfter").val()
         var IpAddress = $("#ipAddress").val()

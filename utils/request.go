@@ -21,8 +21,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"net"
-	"os"
-	"strings"
 
 	"github.com/tjfoc/gmsm/sm2"
 )
@@ -37,7 +35,7 @@ func genCetReq(key []byte) []byte {
 	case "sm2":
 		return genSM2Req(key)
 	case "ecdsa":
-		genECDSAReq("")
+		return genECDSAReq(key)
 	default:
 		fmt.Println("err key type!")
 	}
@@ -77,11 +75,11 @@ func genSM2Req(key []byte) []byte {
 	return ok
 }
 
-func genECDSAReq(path string) {
+func genECDSAReq(data []byte) []byte {
 	DNames = Cfg.Cert.DNSNames
 	EMailAddr = Cfg.Cert.EmailAddresses
 
-	priv, err := ecdsaPrivKeyFromPem(("./" + path + "/" + PrivateKey))
+	priv, err := ecdsaPrivKeyFromMen(data)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -107,16 +105,5 @@ func genECDSAReq(path string) {
 		Type:  "CERTIFICATE REQUEST",
 		Bytes: der,
 	}
-	s := fmt.Sprintf("./req/%s_req.pem", strings.TrimSuffix(PrivateKey, ".pem"))
-	file, err := os.Create(s)
-	if err != nil {
-		panic(err)
-
-	}
-	defer file.Close()
-	err = pem.Encode(file, block)
-	if err != nil {
-		panic(err)
-	}
-
+	return pem.EncodeToMemory(block)
 }

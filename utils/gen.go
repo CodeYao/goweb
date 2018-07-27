@@ -24,8 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"net"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/tjfoc/gmsm/sm2"
@@ -34,12 +32,14 @@ import (
 var oidExtensionSubjectKeyId = []int{2, 5, 29, 14}
 var PrivK string = "key.pem"
 
-func genCert(path string) []byte {
+func genCert(reqdata string) []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
-		return genSM2Cert(path)
+		fmt.Println("use sm2 cert")
+		return genSM2Cert(reqdata)
 	case "ecdsa":
-		genECDSACert(path)
+		fmt.Println("use ECDSA cert")
+		return genECDSACert(reqdata)
 	default:
 		fmt.Println("err key type!")
 	}
@@ -205,32 +205,32 @@ func genSM2Cert(reqData string) []byte {
 	return newcert
 }
 
-func genECDSACert(path string) {
+func genECDSACert(data string) []byte {
 	fmt.Println("==========ECDSA============")
 	privKey, err := ecdsaPrivKeyFromPem("./ca/key.pem")
 	if err != nil {
 
 		fmt.Println("read ecdsa priv err:", err)
-		return
+		return nil
 	}
 	if !CheckIsExist("./ca/ca.pem") {
 		template := x509Template()
 		template.IsCA = true
-		_, err := ecdsaCert("./ca/ca.pem", &template, &template, &privKey.PublicKey, privKey)
+		//_, err := ecdsaCert("./ca/ca.pem", &template, &template, &privKey.PublicKey, privKey)
 		if err != nil {
 			fmt.Println("gen ca cert err:", err)
-			return
+			return nil
 		}
 		fmt.Println("create ca cert success!")
 	}
 
 	// req = ./req/priv?_req.pem
-	s := fmt.Sprintf("./req/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
+	//s := fmt.Sprintf("./req/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
 
-	req, err := parseECDSAReq(s)
+	req, err := parseECDSAReq([]byte(data))
 	if err != nil {
 		fmt.Println("parse ecdsa req err:", err)
-		return
+		return nil
 	}
 
 	//req -> x509.Certificate
@@ -238,12 +238,12 @@ func genECDSACert(path string) {
 	//s = priv?_cert.pem
 	//filepath := "./" + path + "/" + PrivK
 	//s = fmt.Sprintf("%s_cert.pem", strings.TrimSuffix(filepath, ".pem"))
-	s = "./" + path + "/cert.pem"
+	//s = "./" + path + "/cert.pem"
 	cert, err := parseECDSACert("./ca/ca.pem")
 	//	fmt.Println("cert:", cert)
 	if err != nil {
 		fmt.Println("parse ecdsa cert err:", err)
-		return
+		return nil
 	}
 	//gen node cert!
 	pub := req.PublicKey
@@ -252,10 +252,10 @@ func genECDSACert(path string) {
 	if !ok {
 		fmt.Println("key type err")
 	}
-	cert1, err := ecdsaCert(s, tmp, cert, v, privKey)
+	cert1, certbyte, err := ecdsaCert(tmp, cert, v, privKey)
 	if err != nil {
 		fmt.Println("create cert err!", err)
-		return
+		return nil
 	}
 	//parse priv?_cert.pem
 	// certb, err := parseCert(s)
@@ -274,39 +274,33 @@ func genECDSACert(path string) {
 	if err != nil {
 		fmt.Println("check signature err:", err)
 		fmt.Println("==========ECDSA============")
-		return
+		return nil
 	}
 
 	fmt.Println("create node cert success!")
 	fmt.Println("==========ECDSA============")
+	return certbyte
 }
 
-func ecdsaCert(fileName string, tmp, parent *x509.Certificate, pub *ecdsa.PublicKey, priv interface{}) (*x509.Certificate, error) {
+func ecdsaCert(tmp, parent *x509.Certificate, pub *ecdsa.PublicKey, priv interface{}) (*x509.Certificate, []byte, error) {
 	b, err := x509.CreateCertificate(rand.Reader, tmp, parent, pub, priv)
 	if err != nil {
 		fmt.Println("create cert err:", err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	certFile, err := os.Create(fileName)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	defer certFile.Close()
-
-	err = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: b})
+	certbyte := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: b})
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	x509Cert, err := x509.ParseCertificate(b)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return x509Cert, nil
+	return x509Cert, certbyte, nil
 
 }
 

@@ -1,4 +1,4 @@
-package main
+package ca_grpcserver
 
 import (
 	pb "ca/goweb/ca_grpc"
@@ -35,7 +35,7 @@ func (s *server) AuthorityCtrl(ctx context.Context, in *pb.AddressRequest) (*pb.
 	return &pb.IsPermissionReply{IsPermission: false}, nil
 }
 
-func main() {
+func CAGrpcRun() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

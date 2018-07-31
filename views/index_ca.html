@@ -161,7 +161,8 @@
                 </a>
             </li>
             <li><a href="#accountMG" data-toggle="tab">账号管理</a></li>
-            <li><a href="#addressMG" data-toggle="tab">钱包地址管理</a></li>
+            <li><a href="#addressMG" data-toggle="tab">超级账号地址管理</a></li>
+            <li><a href="#codeaddressMG" data-toggle="tab">冻结地址管理</a></li>
             <li><a href="#CAMG" data-toggle="tab">CA证书</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
@@ -385,12 +386,92 @@
 
                 </div>
             </div>
+            <div class="tab-pane fade" id="codeaddressMG">
+                <div style="width: 96%;margin: 0 auto;">
+                    <label style="margin-top: 20px">钱包地址列表</label>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#codeaddaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加钱包地址</button>
+                    <table class="table table-hover" style="margin-top: 16px">
+                        <thead>
+                            <tr style="background: #f4f4f4;height:80px">
+                                <th style='vertical-align: middle; text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="codeaddrselectAll" class="styled" type="checkbox">
+                                        <label for="codeaddrselectAll">全选</label>
+                                    </div>
+                                    <!-- <input type="checkbox" id="accselectAll"> -->
+                                </th>
+                                <th style='vertical-align: middle;'>钱包地址</th>
+                                <th style='vertical-align: middle;'>添加人</th>
+                                <th style='vertical-align: middle;'>添加时间</th>
+                                <th style='vertical-align: middle;'>描述</th>
+                            </tr>
+                        </thead>
+                        <tbody id="codeaddresslist">
+                            <!-- <tr>
+                                <td style='text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="checkbox4" class="styled" name="addresslistcheckbox" type="checkbox">
+                                        <label for="checkbox4"></label>
+                                    </div>
+                                </td>
+                                <td>0x743F67527FF4DD211528c7e7AE041888f70D1C70</td>
+                                <td>admin</td>
+                                <td>2018-7-5</td>
+                                <td>这是银行节点1的钱包</td>
+                            </tr>
+                            <tr>
+                                <td style='text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="checkbox4" class="styled" name="accountlistcheckbox" type="checkbox">
+                                        <label for="checkbox4"></label>
+                                    </div>
+                                </td>
+                                <td>0x743F67527FF4DD211528c7e7AE041888f70D1C70</td>
+                                <td>admin</td>
+                                <td>2018-7-5</td>
+                                <td>这是银行节点1的钱包</td>
+                            </tr>
+                            <tr>
+                                <td style='text-align: center'>
+                                    <div class="checkbox checkbox-info">
+                                        <input id="checkbox4" class="styled" name="accountlistcheckbox" type="checkbox">
+                                        <label for="checkbox4"></label>
+                                    </div>
+                                </td>
+                                <td>0x743F67527FF4DD211528c7e7AE041888f70D1C70</td>
+                                <td>admin</td>
+                                <td>2018-7-5</td>
+                                <td>这是银行节点1的钱包</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                    <div style="text-align: right">
+                        <ul class="pagination" id="codeaddresspageNumList">
+                            <!-- <li class="page-item"><a href="#">首页</a></li>
+                                    <li class="page-item"><a href="#">上一页</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item active"><a class="page-link" href="#">4</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">下一页</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">尾页</a></li> -->
+                        </ul>
+                        <div class="pagination pull-right" style="margin-top: 20px;margin-left: 5px" id="codeaddresspageText">
+                            <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
+                        </div>
+                        <div class="pagination pull-left" style="margin-top: 20px;margin-left: 5px">
+                            <button type="button" class="btn btn-default pull-right" id="removecodeAddress">删除钱包地址</button>
+                        </div>
+                    </div>
 
+                </div>
+            </div>
             <div class="tab-pane fade" id="CAMG">
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">证书信息</label>
                     <!-- <button type="button" class="btn pull-right" style="margin-top: 11px;" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;导入</button> -->
-                    <button type="button" class="btn pull-right" style=" background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;导出</button>
+                    <button type="button" class="btn pull-right" style=" background: #1082ed; color: #f6f6f6;margin-top: 11px" id="exportCAcert"><img src="/static/img/导出.png" style="width: 20px"> &nbsp;导出</button>
 
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
@@ -401,7 +482,7 @@
                                 <!-- <th style='vertical-align: middle;'>操作</th> -->
                             </tr>
                         </thead>
-                        <tbody id="addresslist">
+                        <tbody id="cacertlist">
                             <tr>
                                 <td>国密算法sm2</td>
                                 <td>2018-7-5</td>
@@ -543,6 +624,53 @@
                     <button type="button" id="addaddressbtn" class="btn btn-primary" style="background: #1082ed; color: #ffffff;">
                                 提交
                             </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <!--添加冻结钱包地址 模态框（Modal） -->
+    <div class="modal fade" id="codeaddaddress" tabindex="-1" role="dialog" aria-labelledby="addipModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                        </button>
+                    <h4 class="modal-title" id="addipModalLabel">
+                        请填写钱包地址信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="codeaddress" name="codeaddress" placeholder="请输入钱包地址">
+                                <div id="errorcode_codeaddress">
+                                    <span class="help-block">钱包地址不能为空</span>
+                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control" id="codedescript" name="codedescript" placeholder="请输入相关描述">
+                                <!-- <div id="errorcode_discript">
+                                <span class="help-block" id="errortext_descript">组织机构不可为空</span>
+                                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                            </div> -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                            关闭
+                        </button>
+                    <button type="button" id="codeaddaddressbtn" class="btn btn-primary" style="background: #1082ed; color: #ffffff;">
+                            提交
+                        </button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -745,7 +873,7 @@
     </div>
     <!-- /.modal -->
 
-    <!--申请证书 模态框（Modal） -->
+    <!--申请CA证书 模态框（Modal） -->
     <div class="modal fade" id="reqcacert" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -757,14 +885,14 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form id="certForm" class="form-horizontal" role="form">
+                    <form id="cacertFrom" class="form-horizontal" role="form">
                         <!-- <div class="form-group">
                             <label for="certName" class="col-sm-3 control-label">证书名*</label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="certName" name="certName" placeholder="可以是任意不重复的字符，如：银行证书1">
                             </div>
                         </div> -->
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="certName" class="col-sm-3 control-label">加密类型*</label>
                             <div class="col-sm-7">
                                 <select class="form-control" id="KeyType" name="KeyType" style="cursor:pointer;">
@@ -772,18 +900,18 @@
                                         <option value="ecdsa">ecdsa</option>
                                     </select>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label for="notAfter" class="col-sm-3 control-label">证书有效期*</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="notAfter" name="notAfter" placeholder="请输入证书有效期，如180">
+                                <input type="text" class="form-control" id="canotAfter" name="canotAfter" placeholder="请输入证书有效期，如180">
                             </div>
                             <label class="col-sm-1 control-label">天</label>
                         </div>
                         <div class="form-group">
-                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的ip*</label>
+                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的IP*</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="ipAddress" name="ipAddress" placeholder="若输入多个请用分号隔开，如10.1.1.1;10.2.2.2">
+                                <input type="text" class="form-control" id="caipAddress" name="caipAddress" placeholder="若输入多个请用分号隔开，如10.1.1.1;10.2.2.2">
                             </div>
                         </div>
                         <!-- <div class="form-group">
@@ -798,28 +926,75 @@
                         <div class="form-group">
                             <label for="lastname" class="col-sm-3 control-label">国家</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="country" name="country" placeholder="例如：china">
+                                <input type="text" class="form-control" id="cacountry" name="cacountry" placeholder="例如：China">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="lastname" class="col-sm-3 control-label">公司名</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="organization" name="organization" placeholder="例如：tjfoc">
+                                <input type="text" class="form-control" id="caorganization" name="caorganization" placeholder="例如：tjfoc">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="lastname" class="col-sm-3 control-label">域名</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="commonName" name="commonName" placeholder="例如：test.example">
+                                <input type="text" class="form-control" id="cacommonName" name="cacommonName" placeholder="例如：test.example">
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                                关闭
+                    <button type="button" class="btn btn-default" id="importcertbtn">
+                                已有证书，直接导入
                             </button>
                     <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6;">
+                                    提交
+                                </button>
+                    <!-- <button type="button" id="easygenbtn" class="btn btn-default pull-left" data-toggle="tooltip" data-placement="bottom" title="此操作私钥由服务器生成">
+                            一键生成
+                                </button> -->
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+
+    <!--导入CA证书 模态框（Modal） -->
+    <div class="modal fade" id="importCAcertModel" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                            </button>
+                    <h4 class="modal-title" id="reqcertModalLabel">
+                        请录入CA证书和公钥
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="" class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴CA私钥*</label>
+                            <div class="col-sm-8">
+                                <textarea id="caprivkeytext" name="caprivkeytext" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴CA证书*</label>
+                            <div class="col-sm-8">
+                                <textarea id="cacertxt" name="cacertxt" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="gobackbtn">
+                                返回
+                            </button>
+                    <button type="button" id="commitcerttbtn" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6;">
                                     提交
                                 </button>
                     <!-- <button type="button" id="easygenbtn" class="btn btn-default pull-left" data-toggle="tooltip" data-placement="bottom" title="此操作私钥由服务器生成">
@@ -842,9 +1017,97 @@
             success: function(data) {
                 if (data == 0) {
                     $("#reqcacert").modal("show")
+                } else {
+                    // alert(data)
+                    var con = ""
+                    data = JSON.parse(data)
+                        //alert(data)
+                    $.each(data, function(index, item) {
+                        con += "<tr><td>" + item.keytype + "</td>"
+                        con += " <td>" + item.createdate + "</td>"
+                        con += " <td>" + item.accountId + "</td></tr>"
+                    });
+                    //alert(con)
+                    $("#cacertlist").html("")
+                    $("#cacertlist").append(con)
                 }
             }
         })
+    })
+    $("#commitreqcertbtn").click(function() {
+        var NotAfter = $("#canotAfter").val()
+        var IpAddress = $("#caipAddress").val()
+        if (NotAfter == "") {
+            alert("有效期不能为空")
+        } else if (IpAddress == "") {
+            alert("IP不能为空")
+        } else {
+            var ips = IpAddress.split(";")
+            for (let index = 0; index < ips.length; index++) {
+                //alert(ips[index])
+                if (!isValidIP(ips[index])) {
+                    alert("IP格式错误，" + ips[index] + "不是正确的IP格式！")
+                    return
+                }
+            }
+            $.ajax({
+                type: "POST",
+                url: "/generateCA",
+                processData: false,
+                contentType: false,
+                data: new FormData($('#cacertFrom')[0]),
+                success: function(data) {
+                    alert("根证书生成成功")
+                    window.location.reload()
+                }
+            })
+        }
+    })
+    $("#importcertbtn").click(function() {
+        $("#reqcacert").modal("hide")
+        $("#importCAcertModel").modal("show")
+    })
+    $("#gobackbtn").click(function() {
+        $("#importCAcertModel").modal("hide")
+        $("#reqcacert").modal("show")
+    })
+
+    $("#commitcerttbtn").click(function() {
+        var caprivkeytext = $("#caprivkeytext").val()
+        var cacertxt = $("#cacertxt").val()
+        if (caprivkeytext == "") {
+            alert("私钥不能为空！")
+        } else if (cacertxt == "") {
+            alert("证书不能为空！")
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/importCA",
+                data: {
+                    caprivkeytext: caprivkeytext,
+                    cacertxt: cacertxt
+                },
+                success: function(data) {
+                    alert("根证书生成成功")
+                    window.location.reload()
+                }
+            })
+        }
+    })
+    $("#exportCAcert").click(function() {
+        $.ajax({
+            type: "POST",
+            url: "/createcacert",
+            success: function(data) {
+                //alert("吊销成功")
+                var link = document.createElement('a')
+                link.setAttribute("download", "")
+                link.href = "conf/cacert.pem"
+                link.click()
+                    //window.location.reload()
+            }
+        });
+
     })
 
     function logout() {
@@ -1007,6 +1270,81 @@
             }
         });
     }
+    $(document).ready(getcodeaddress(1))
+
+    function codeaddresspageJump() {
+        var pagestr = $("#codeaddressjumpstr").val()
+            //alert(pagestr)
+        getcodeaddress(pagestr)
+    }
+
+    function getcodeaddress(currentpage) {
+        $.ajax({
+            type: "POST",
+            url: "/codeaddresslist",
+            data: {
+                currentpage: currentpage,
+            },
+            success: function(data) {
+                // alert(data)
+                var con = ""
+                data = JSON.parse(data)
+                    //alert(data)
+                $.each(data.entityList, function(index, item) {
+                    con += "<tr><td style='text-align: center'><div class='checkbox checkbox-info'><input class='styled' type='checkbox' name='codeaddresslistcheckbox' id='" + item.id + "'><label for='" + item.id + "'></label></div></td>"
+                    con += " <td>" + item.address + "</td>"
+                    con += " <td>" + item.addPeople + "</td>"
+                    con += " <td>" + item.addDate + "</td>"
+                    con += " <td>" + item.descript + "</td><tr>"
+                });
+                //alert(con)
+                $("#codeaddresslist").html("")
+                $("#codeaddresslist").append(con)
+                var pagecon = ""
+                var showPage = 5
+                var currentPage = data.currentPage //当前页
+                var pageNum = data.pageNum //一页显示多少条
+                var totalPage = data.totalPage //总页数
+                var startPage = data.startPage //起始页
+                var endPage = 0
+                if ((Number(startPage) + Number(showPage) - 1) >= Number(totalPage)) {
+                    endPage = totalPage
+                } else {
+                    endPage = Number(startPage) + Number(showPage) - 1
+                }
+                var previous = currentPage - 1
+                var next = Number(currentPage) + Number(1)
+                pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getcodeaddress(1)">首页</a></li>'
+                if (previous == 0) {
+                    pagecon += '<li class="page-item disabled"><a href="#">上一页</a></li>'
+                } else {
+                    pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getcodeaddress(' + previous + ')">上一页</a></li>'
+                }
+                // alert(startPage + endPage)
+                for (var index = startPage; index <= endPage; index++) {
+
+                    if (index == currentPage) {
+                        pagecon += '<li class="page-item active"><a class="page-link" href="#">' + index + '</a></li>'
+                    } else {
+                        pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcodeaddress(' + index + ')">' + index + '</a></li>'
+                    }
+                }
+                if (next > totalPage) {
+                    pagecon += '<li class="page-item disabled"><a class="page-link" href="#">下一页</a></li>'
+                } else {
+                    pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcodeaddress(' + next + ')">下一页</a></li>'
+                }
+                pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcodeaddress(' + totalPage + ')">尾页</a></li>'
+                    // alert(pagecon)
+                $("#codeaddresspageNumList").html("")
+                $("#codeaddresspageNumList").append(pagecon)
+                var pageTextcon = ""
+                pageTextcon += '共' + data.totalPage + '页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到&nbsp;<input class="form-ctrl-diy" style="width: 25px" id="codeaddressjumpstr" type="text">&nbsp;页 <button class="btn btn-default" onclick="codeaddresspageJump()">确定</button>'
+                $("#codeaddresspageText").html("")
+                $("#codeaddresspageText").append(pageTextcon)
+            }
+        });
+    }
     $(document).ready(getcertList(1))
 
     function pageJump() {
@@ -1154,7 +1492,7 @@
                 data = JSON.parse(data)
                 $("#aprovcertName").val(data.certName)
                 $("#certid").val(certId)
-                $("#aprovipAddress").val(data.ipAdderss)
+                $("#aprovipAddress").val(data.ipAddress)
                 $("#aprovnotAfter").val(data.certDay)
                 $("#aprovcountry").val(data.country)
                 $("#aprovorganization").val(data.organization)
@@ -1222,8 +1560,36 @@
     })
 
     $("#errorcode_address").hide()
+    $("#errorcode_codeaddress").hide()
+    $("#codeaddaddressbtn").click(function() {
+            var address = $("#codeaddress").val()
+            var descript = $("#codedescript").val()
+            if (address == "") {
+                $("#errorcode_codeaddress").show()
+                $("#errorcode_codeaddress").parent().addClass("has-error has-feedback")
+            } else {
+                $("#errorcode_codeaddress").hide()
+                $("#errorcode_codeaddress").parent().removeClass("has-error has-feedback")
+                $.ajax({
+                    type: "POST",
+                    url: "/codeaddaddress",
+                    data: {
+                        address: address,
+                        descript: descript,
+                    },
+                    success: function(data) {
+                        alert(data)
+                        $("#codeaddress").val("")
+                        $("#codedescript").val("")
+                        $("#codeaddaddress").modal('hide')
+                        getcodeaddress(1)
+                            //window.location.reload()
+                    }
+                });
+            }
+        })
         // $("#errorcode_descript").hide()
-    $("#addaddressbtn").click(function() {
+    $("#codeaddaddressbtn").click(function() {
         var address = $("#address").val()
         var descript = $("#descript").val()
         if (address == "") {
@@ -1312,6 +1678,10 @@
         var allcheck = $(this).prop("checked")
         var check = $("input[name='addresslistcheckbox']").prop("checked", allcheck)
     })
+    $("#codeaddrselectAll").click(function() {
+        var allcheck = $(this).prop("checked")
+        var check = $("input[name='codeaddresslistcheckbox']").prop("checked", allcheck)
+    })
     $("tbody").on('click', "[name='downloadcert']", function() {
         // alert($(this).attr("id"))
         window.location.href = "downloadcert?certId=" + $(this).attr("id")
@@ -1352,6 +1722,24 @@
             $("#addrselectAll").prop("checked", true)
         }
     });
+    $("tbody").on('click', "[name='codeaddresslistcheckbox']", function() {
+        var checkAll = $("#codeaddrselectAll").prop("checked")
+        var check = $("input[name='codeaddresslistcheckbox']")
+        var checknum = 0
+            //  alert(check.length)
+        for (var index = 0; index < check.length; index++) {
+            //alert($(check[index]).prop("checked"))
+            if (checkAll != $(check[index]).prop("checked")) {
+                $("#codeaddrselectAll").prop("checked", false)
+            }
+            if ($(check[index]).prop("checked") == true) {
+                checknum++
+            }
+        }
+        if (checknum == check.length) {
+            $("#codeaddrselectAll").prop("checked", true)
+        }
+    });
     $("#removeAddress").click(function() {
         var check = $("input[name='addresslistcheckbox']:checked")
         if (check.length == 0) {
@@ -1375,6 +1763,28 @@
         }
     })
 
+    $("#removecodeAddress").click(function() {
+        var check = $("input[name='codeaddresslistcheckbox']:checked")
+        if (check.length == 0) {
+            alert("请选中至少一条记录")
+        } else {
+            for (var index = 0; index < check.length; index++) {
+                // alert($(check[index]).attr("id"))
+                var id = $(check[index]).attr("id")
+                $.ajax({
+                    type: "POST",
+                    url: "/removecodeadderss",
+                    data: {
+                        id: id,
+                    },
+                    success: function(data) {}
+                });
+            }
+            alert("删除成功")
+            getcodeaddress(1)
+                // window.location.reload()
+        }
+    })
     $("#removeAccount").click(function() {
         var check = $("input[name='accountlistcheckbox']:checked")
         if (check.length == 0) {

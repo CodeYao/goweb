@@ -15,6 +15,7 @@
 package utils
 
 import (
+	"ca/goweb/models"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/x509"
@@ -76,8 +77,7 @@ func Creatdir(dir string) {
 func GetEcdsaPubKey(reqdata string) []byte {
 	req, err := parseECDSAReq([]byte(reqdata))
 	if err != nil {
-		fmt.Println("parse ecdsa req err:", err)
-		return nil
+		panic(err)
 	}
 	pubkey := req.PublicKey.(*ecdsa.PublicKey)
 	pubB, err := x509.MarshalPKIXPublicKey(pubkey)
@@ -93,11 +93,24 @@ func GetEcdsaPubKey(reqdata string) []byte {
 	return ok
 }
 
+func GetSm2PubKeyFromPrivKey(privKey string) ([]byte, error) {
+	priv, err := sm2.ReadPrivateKeyFromMem([]byte(privKey), nil)
+	if err != nil {
+		return nil, err
+	}
+	pub := priv.PublicKey
+	ok, err := sm2.WritePublicKeytoMem(&pub, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return ok, nil
+}
+
 func GetSm2PubKey(reqdata string) []byte {
 	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqdata))
 	if err != nil {
-		fmt.Println("parse ecdsa req err:", err)
-		return nil
+		panic(err)
+		//return nil
 	}
 	pubkey := req.PublicKey.(*ecdsa.PublicKey)
 	smPub := &sm2.PublicKey{
@@ -115,7 +128,7 @@ func GetSm2PubKey(reqdata string) []byte {
 	return ok
 }
 
-func GenerateCACert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, reqData string, KeyType string) []byte {
+func GenerateCACert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, privKey string, KeyType string) []byte {
 	Cfg.Cert.KeyType = KeyType
 	Cfg.Cert.NotAfter = notAfter
 	Cfg.Cert.DNSNames = ipAddress
@@ -128,14 +141,17 @@ func GenerateCACert(notAfter int, ipAddress []string, country []string, organiza
 	if commonName != "" {
 		Cfg.Cert.CommonName = commonName
 	}
-	Creatdir("conf/ca")
+	//Creatdir("conf/ca")
 
-	fmt.Println(Cfg.Cert)
-	return genCert(reqData)
+	//fmt.Println(Cfg.Cert)
+	return genCACert(privKey)
 }
 
 func GenerateCert(notAfter int, ipAddress []string, country []string, organization []string, commonName string, reqData string, KeyType string) []byte {
 	Cfg.Cert.KeyType = KeyType
+	//设定证书的keytype与CA的相同
+	caInfo := models.QueryData("ca where enabled = 'enabled'")
+	Cfg.Cert.KeyType = caInfo[0]["keytype"]
 	Cfg.Cert.NotAfter = notAfter
 	Cfg.Cert.DNSNames = ipAddress
 	if len(organization) > 0 {
@@ -147,7 +163,7 @@ func GenerateCert(notAfter int, ipAddress []string, country []string, organizati
 	if commonName != "" {
 		Cfg.Cert.CommonName = commonName
 	}
-	Creatdir("conf/ca")
+	//Creatdir("conf/ca")
 	//Creatdir("conf/req")
 	// if !CheckIsExist("conf/ca/key.pem") {
 	// 	genKey("conf/ca")
@@ -172,11 +188,14 @@ func GetCert(certbyte []byte) sm2.Certificate {
 
 //path:想要吊销的证书的列表
 func RevokedCertificates(path []string) {
-	cert, err := sm2.ReadCertificateFromPem("./conf/ca/ca.pem")
+	caInfo := models.QueryData("ca where enabled = 'enabled'")
+
+	cert, err := sm2.ReadCertificateFromMem([]byte(caInfo[0]["cacert"]))
+	fmt.Println("***chenyao***", caInfo)
 	if err != nil {
 		panic(err)
 	}
-	privKey, err := sm2.ReadPrivateKeyFromPem("./conf/ca/key.pem", nil)
+	privKey, err := sm2.ReadPrivateKeyFromMem([]byte(caInfo[0]["caprivkey"]), nil)
 	if err != nil {
 		fmt.Println("read priv key err:", err)
 	}
@@ -248,11 +267,26 @@ func OneTouch(KeyType string) []string {
 	if KeyType == "sm2" {
 		pub = GetSm2PubKey(string(req))
 	} else if KeyType == "ecdsa" {
-		pub = GetSm2PubKey(string(req))
+		pub = GetEcdsaPubKey(string(req))
 	}
 
 	return []string{string(key), string(pub), string(req)}
 }
+
+func GetCAKey(KeyType string) (string, string) {
+	Cfg.Cert.KeyType = KeyType
+	var pub []byte
+	key := genKey()
+	req := genCetReq(key)
+	if KeyType == "sm2" {
+		pub = GetSm2PubKey(string(req))
+	} else if KeyType == "ecdsa" {
+		pub = GetEcdsaPubKey(string(req))
+	}
+
+	return string(key), string(pub)
+}
+
 func readClr(path string) (*pkix.CertificateList, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {

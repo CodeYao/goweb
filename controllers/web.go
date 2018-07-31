@@ -136,7 +136,8 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
 	if r.Method == "POST" {
 		userName := sess.Get("username")
-		KeyType := r.FormValue("KeyType")
+		//KeyType := r.FormValue("KeyType")
+		KeyType := "sm2"
 		certName := r.FormValue("certName")
 		notAfter, _ := strconv.Atoi(r.FormValue("notAfter"))
 		ipAddress := strings.Split(r.FormValue("ipAddress"), ";")
@@ -144,8 +145,8 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 		country := strings.Split(r.FormValue("country"), ";")
 		organization := strings.Split(r.FormValue("organization"), ";")
 		commonName := r.FormValue("commonName")
-		ipPath := r.FormValue("ipAddress")
-		fmt.Println(userName, certName, notAfter, ipAddress, reqcertxt, country, organization, commonName, ipPath, KeyType)
+		//ipPath := r.FormValue("ipAddress")
+		//fmt.Println(userName, certName, notAfter, ipAddress, reqcertxt, country, organization, commonName, ipPath, KeyType)
 		var newpubkey string
 		if KeyType == "sm2" {
 			newpubkey = string(utils.GetSm2PubKey(reqcertxt))
@@ -153,10 +154,16 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 			newpubkey = string(utils.GetEcdsaPubKey(reqcertxt))
 		}
 
-		newcert := string(utils.GenerateCert(notAfter, ipAddress, country, organization, commonName, reqcertxt, KeyType))
-		fmt.Println("newpubkey:", newpubkey)
-		fmt.Println("newcert:", newcert)
-		models.InsertData("cert", []string{certName, r.FormValue("ipAddress"), newcert, newpubkey, userName.(string), time.Now().Format("2006-01-02 15:04:05"), "待审批", "", "", "", ""})
+		dataNum := models.GetTableNum("cert where certname = '" + certName + "'")
+		if dataNum == 0 {
+			newcert := string(utils.GenerateCert(notAfter, ipAddress, country, organization, commonName, reqcertxt, KeyType))
+			fmt.Println("newpubkey:", newpubkey)
+			fmt.Println("newcert:", newcert)
+			models.InsertData("cert", []string{certName, r.FormValue("ipAddress"), newcert, newpubkey, userName.(string), reqcertxt, time.Now().Format("2006-01-02 15:04:05"), "待审批", "", "", "", ""})
+		} else {
+			io.WriteString(w, "0")
+		}
+
 		//fmt.Println("chenyao*************", ipPath, ipAddress)
 		// r.ParseMultipartForm(32 << 20)
 		// file, handler, err := r.FormFile("pubKeyFile")
@@ -486,7 +493,118 @@ func removeadderss(w http.ResponseWriter, r *http.Request) {
 func checkca(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		dataNum := models.GetTableNum("ca where enabled = 'enabled'")
-		io.WriteString(w, strconv.Itoa(dataNum))
+		if dataNum == 0 {
+			io.WriteString(w, strconv.Itoa(dataNum))
+		} else {
+			CAInfo := models.QueryData("ca where enabled = 'enabled'")
+			CAJson, _ := json.Marshal(CAInfo)
+			io.WriteString(w, string(CAJson))
+		}
+
+	}
+}
+func generateCA(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
+	if r.Method == "POST" {
+		accountId := sess.Get("username")
+		//	keyType := r.FormValue("KeyType")
+		keyType := "sm2"
+		//caNotAfter := r.FormValue("canotAfter")
+		caNotAfter, _ := strconv.Atoi(r.FormValue("canotAfter"))
+		//caIPAddress := r.FormValue("caipAddress")
+		caIPAddress := strings.Split(r.FormValue("caipAddress"), ";")
+		//caCountry := r.FormValue("cacountry")
+		caCountry := strings.Split(r.FormValue("cacountry"), ";")
+		//caOrganization := r.FormValue("caorganization")
+		caOrganization := strings.Split(r.FormValue("caorganization"), ";")
+		caCommonName := r.FormValue("cacommonName")
+		fmt.Println("***chenyao***:", accountId, keyType, caNotAfter, caIPAddress, caCountry, caOrganization, caCommonName)
+		caprivKey, capubKey := utils.GetCAKey(keyType)
+		fmt.Println(caprivKey, capubKey)
+		newcert := string(utils.GenerateCACert(caNotAfter, caIPAddress, caCountry, caOrganization, caCommonName, caprivKey, keyType))
+		//utils.GenerateCACert(keyType)
+		fmt.Println("capubKey:", capubKey)
+		fmt.Println("caprivKey:", caprivKey)
+		fmt.Println("newcert:", newcert)
+		models.InsertData("ca", []string{capubKey, caprivKey, newcert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+	}
+}
+
+func createcacert(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		cacert := models.QueryData("ca where enabled = 'enabled'")
+		ioutil.WriteFile("conf/cacert.pem", []byte(cacert[0]["cacert"]), 0666)
+	}
+}
+func importCA(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
+	if r.Method == "POST" {
+		accountId := sess.Get("username")
+		//	keyType := r.FormValue("KeyType")
+		keyType := "sm2"
+		caprivkey := r.FormValue("caprivkeytext")
+		cacert := r.FormValue("cacertxt")
+		capubkey, err := utils.GetSm2PubKeyFromPrivKey(caprivkey)
+		if err != nil {
+			fmt.Println(err)
+			io.WriteString(w, "err")
+		} else {
+			models.InsertData("ca", []string{string(capubkey), caprivkey, cacert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+		}
+
+	}
+}
+
+func codeaddresslist(w http.ResponseWriter, r *http.Request) {
+	var pagevo models.PageVO
+	var startPage int
+	var dataNum int
+	if r.Method == "POST" {
+		//selected := r.FormValue("selected")
+		pagevo.CurrentPage = r.FormValue("currentpage")
+		if pagevo.CurrentPage == "" {
+			pagevo.CurrentPage = "1"
+		}
+		currentPage, _ := strconv.Atoi(pagevo.CurrentPage)
+		pagevo.PageNum = "5"
+		pageNum := 5
+		showPage := 5
+
+		start := (currentPage - 1) * pageNum
+		startPage = currentPage/showPage*showPage + 1
+		//fmt.Println(startPage, "chenyao********************", currentPage)
+		pagevo.StartPage = strconv.Itoa(startPage)
+		//fmt.Println("chenyao*************************", pagevo.CurrentPage, pagevo.TotalPage)
+		pagevo.EntityList = models.QueryData("codeaddress where enabled = 'enabled' limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
+		dataNum = models.GetTableNum("codeaddress where enabled = 'enabled'")
+
+		if dataNum%pageNum == 0 {
+			pagevo.TotalPage = strconv.Itoa(dataNum / pageNum)
+		} else {
+			pagevo.TotalPage = strconv.Itoa((dataNum / pageNum) + 1)
+		}
+
+		pageJson, _ := json.Marshal(pagevo)
+		io.WriteString(w, string(pageJson))
+	}
+}
+func codeaddaddress(w http.ResponseWriter, r *http.Request) {
+	sess := globalSessions.SessionStart(w, r)
+	if r.Method == "POST" {
+		accountId := sess.Get("username")
+		address := r.FormValue("address")
+		descript := r.FormValue("descript")
+		models.InsertData("codeaddress", []string{address, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), descript, "enabled"})
+		io.WriteString(w, "添加成功")
+
+	}
+}
+
+func removecodeadderss(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		id, _ := strconv.Atoi(r.FormValue("id"))
+		fmt.Println("chenyao**********", id)
+		models.DeletecodeAddressById(id)
 	}
 }
 
@@ -525,6 +643,12 @@ func RunWeb() {
 	http.HandleFunc("/addresslist", addresslist)
 	http.HandleFunc("/removeadderss", removeadderss)
 	http.HandleFunc("/checkca", checkca)
+	http.HandleFunc("/generateCA", generateCA)
+	http.HandleFunc("/createcacert", createcacert)
+	http.HandleFunc("/importCA", importCA)
+	http.HandleFunc("/codeaddresslist", codeaddresslist)
+	http.HandleFunc("/codeaddaddress", codeaddaddress)
+	http.HandleFunc("/removecodeadderss", removecodeadderss)
 
 	// //配置rpc方法
 	// var address = new(carpc.Address)

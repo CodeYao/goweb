@@ -173,6 +173,15 @@ func DeleteAddressById(id int) {
 	db.mysql_close()
 	fmt.Println("删除成功", ret.RowsAffected)
 }
+
+//将冻结钱包地址更新为不可用
+func DeletecodeAddressById(id int) {
+	db.mysql_open()
+	ret, _ := db.db.Exec("update codeaddress set enabled = 'disabled' where Id = ?", id)
+	db.mysql_close()
+	fmt.Println("删除成功", ret.RowsAffected)
+}
+
 func InsertData(tableName string, insertdata []string) {
 	db.mysql_open()
 	sql := "insert into " + tableName + " values(null,'" + strings.Join(insertdata, "','") + "')"

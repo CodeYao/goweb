@@ -98,20 +98,8 @@ func parseECDSAReq(file []byte) (*x509.CertificateRequest, error) {
 
 }
 
-func parseECDSACert(fileName string) (*x509.Certificate, error) {
-
-	file, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer file.Close()
-	b, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	p, _ := pem.Decode(b)
+func parseECDSACert(b []byte) (*x509.Certificate, error) {
+	p, err := pem.Decode(b)
 	if err != nil {
 		fmt.Println(err)
 	}

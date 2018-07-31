@@ -545,11 +545,18 @@ func importCA(w http.ResponseWriter, r *http.Request) {
 		caprivkey := r.FormValue("caprivkeytext")
 		cacert := r.FormValue("cacertxt")
 		capubkey, err := utils.GetSm2PubKeyFromPrivKey(caprivkey)
+
 		if err != nil {
-			fmt.Println(err)
-			io.WriteString(w, "err")
+			fmt.Println(err, caprivkey)
+			io.WriteString(w, "err1")
 		} else {
-			models.InsertData("ca", []string{string(capubkey), caprivkey, cacert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+			err = utils.VerifySM2(cacert)
+			if err != nil {
+				fmt.Println(err)
+				io.WriteString(w, "err2")
+			} else {
+				models.InsertData("ca", []string{string(capubkey), caprivkey, cacert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+			}
 		}
 
 	}

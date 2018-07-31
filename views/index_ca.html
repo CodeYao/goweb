@@ -161,9 +161,9 @@
                 </a>
             </li>
             <li><a href="#accountMG" data-toggle="tab">账号管理</a></li>
-            <li><a href="#addressMG" data-toggle="tab">超级账号地址管理</a></li>
-            <li><a href="#codeaddressMG" data-toggle="tab">冻结地址管理</a></li>
-            <li><a href="#CAMG" data-toggle="tab">CA证书</a></li>
+            <li><a href="#addressMG" data-toggle="tab">UTXO Token账号管理</a></li>
+            <li><a href="#codeaddressMG" data-toggle="tab">UTXO冻结账号管理</a></li>
+            <li><a href="#CAMG" data-toggle="tab">CA根证书</a></li>
         </ul>
         <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade in active" id="certMG">
@@ -307,8 +307,8 @@
 
             <div class="tab-pane fade" id="addressMG">
                 <div style="width: 96%;margin: 0 auto;">
-                    <label style="margin-top: 20px">钱包地址列表</label>
-                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加钱包地址</button>
+                    <label style="margin-top: 20px">UTXO Token账号地址列表</label>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加UTXO Token账号</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
@@ -319,10 +319,10 @@
                                     </div>
                                     <!-- <input type="checkbox" id="accselectAll"> -->
                                 </th>
-                                <th style='vertical-align: middle;'>钱包地址</th>
+                                <th style='vertical-align: middle;'>账号地址</th>
+                                <th style='vertical-align: middle;'>描述</th>
                                 <th style='vertical-align: middle;'>添加人</th>
                                 <th style='vertical-align: middle;'>添加时间</th>
-                                <th style='vertical-align: middle;'>描述</th>
                             </tr>
                         </thead>
                         <tbody id="addresslist">
@@ -380,7 +380,7 @@
                             <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
                         </div>
                         <div class="pagination pull-left" style="margin-top: 20px;margin-left: 5px">
-                            <button type="button" class="btn btn-default pull-right" id="removeAddress">删除钱包地址</button>
+                            <button type="button" class="btn btn-default pull-right" id="removeAddress">删除UTXO Token地址</button>
                         </div>
                     </div>
 
@@ -388,8 +388,8 @@
             </div>
             <div class="tab-pane fade" id="codeaddressMG">
                 <div style="width: 96%;margin: 0 auto;">
-                    <label style="margin-top: 20px">钱包地址列表</label>
-                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#codeaddaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加钱包地址</button>
+                    <label style="margin-top: 20px">UTXO冻结账号</label>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#codeaddaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加冻结账号</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
@@ -400,10 +400,11 @@
                                     </div>
                                     <!-- <input type="checkbox" id="accselectAll"> -->
                                 </th>
-                                <th style='vertical-align: middle;'>钱包地址</th>
+                                <th style='vertical-align: middle;'>账号地址</th>
+                                <th style='vertical-align: middle;'>描述</th>
                                 <th style='vertical-align: middle;'>添加人</th>
                                 <th style='vertical-align: middle;'>添加时间</th>
-                                <th style='vertical-align: middle;'>描述</th>
+
                             </tr>
                         </thead>
                         <tbody id="codeaddresslist">
@@ -461,7 +462,7 @@
                             <!-- 共20页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到<input style="width: 25px" type="text">页 <button class="btn btn-default ">确定</button> -->
                         </div>
                         <div class="pagination pull-left" style="margin-top: 20px;margin-left: 5px">
-                            <button type="button" class="btn btn-default pull-right" id="removecodeAddress">删除钱包地址</button>
+                            <button type="button" class="btn btn-default pull-right" id="removecodeAddress">删除冻结账号地址</button>
                         </div>
                     </div>
 
@@ -592,16 +593,16 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                             </button>
                     <h4 class="modal-title" id="addipModalLabel">
-                        请填写钱包地址信息
+                        请填写Token账号地址信息
                     </h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="address" name="address" placeholder="请输入钱包地址">
+                                <input type="text" class="form-control" id="address" name="address" placeholder="请输入Token账号地址">
                                 <div id="errorcode_address">
-                                    <span class="help-block">钱包地址不能为空</span>
+                                    <span class="help-block">Token账号地址不能为空</span>
                                     <span class="glyphicon glyphicon-remove form-control-feedback"></span>
                                 </div>
                             </div>
@@ -639,16 +640,16 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
                         </button>
                     <h4 class="modal-title" id="addipModalLabel">
-                        请填写钱包地址信息
+                        请填写冻结账号地址信息
                     </h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <input type="text" class="form-control" id="codeaddress" name="codeaddress" placeholder="请输入钱包地址">
+                                <input type="text" class="form-control" id="codeaddress" name="codeaddress" placeholder="请输入冻结账号地址">
                                 <div id="errorcode_codeaddress">
-                                    <span class="help-block">钱包地址不能为空</span>
+                                    <span class="help-block">冻结账号地址不能为空</span>
                                     <span class="glyphicon glyphicon-remove form-control-feedback"></span>
                                 </div>
                             </div>
@@ -1088,8 +1089,14 @@
                     cacertxt: cacertxt
                 },
                 success: function(data) {
-                    alert("根证书生成成功")
-                    window.location.reload()
+                    if (data == "err1") {
+                        alert("私钥格式不正确，需要使用sm2格式的私钥")
+                    } else if (data == "err2") {
+                        alert("证书格式不正确，需要使用sm2格式的证书")
+                    } else {
+                        alert("根证书生成成功")
+                        window.location.reload()
+                    }
                 }
             })
         }
@@ -1218,9 +1225,10 @@
                 $.each(data.entityList, function(index, item) {
                     con += "<tr><td style='text-align: center'><div class='checkbox checkbox-info'><input class='styled' type='checkbox' name='addresslistcheckbox' id='" + item.id + "'><label for='" + item.id + "'></label></div></td>"
                     con += " <td>" + item.address + "</td>"
+                    con += " <td>" + item.descript + "</td>"
                     con += " <td>" + item.addPeople + "</td>"
-                    con += " <td>" + item.addDate + "</td>"
-                    con += " <td>" + item.descript + "</td><tr>"
+                    con += " <td>" + item.addDate + "</td><tr>"
+
                 });
                 //alert(con)
                 $("#addresslist").html("")
@@ -1293,9 +1301,10 @@
                 $.each(data.entityList, function(index, item) {
                     con += "<tr><td style='text-align: center'><div class='checkbox checkbox-info'><input class='styled' type='checkbox' name='codeaddresslistcheckbox' id='" + item.id + "'><label for='" + item.id + "'></label></div></td>"
                     con += " <td>" + item.address + "</td>"
+                    con += " <td>" + item.descript + "</td>"
                     con += " <td>" + item.addPeople + "</td>"
-                    con += " <td>" + item.addDate + "</td>"
-                    con += " <td>" + item.descript + "</td><tr>"
+                    con += " <td>" + item.addDate + "</td><tr>"
+
                 });
                 //alert(con)
                 $("#codeaddresslist").html("")
@@ -1589,7 +1598,7 @@
             }
         })
         // $("#errorcode_descript").hide()
-    $("#codeaddaddressbtn").click(function() {
+    $("#addaddressbtn").click(function() {
         var address = $("#address").val()
         var descript = $("#descript").val()
         if (address == "") {
@@ -1821,6 +1830,11 @@
             }
         });
     })
+
+    function isValidIP(ip) {
+        var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+        return reg.test(ip);
+    }
 
     function changepassword(accoutid) {
         $("#cgaccountId").val(accoutid)

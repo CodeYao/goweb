@@ -93,6 +93,11 @@ func GetEcdsaPubKey(reqdata string) []byte {
 	return ok
 }
 
+func VerifySM2(cert string) error {
+	_, err := sm2.ReadCertificateFromMem([]byte(cert))
+	return err
+}
+
 func GetSm2PubKeyFromPrivKey(privKey string) ([]byte, error) {
 	priv, err := sm2.ReadPrivateKeyFromMem([]byte(privKey), nil)
 	if err != nil {

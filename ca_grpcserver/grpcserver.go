@@ -3,10 +3,16 @@ package ca_grpcserver
 import (
 	pb "ca/goweb/ca_grpc"
 	"ca/goweb/models"
+	"ca/goweb/utils"
 	"context"
+	"crypto/x509"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net"
+	"strings"
 
+	"github.com/tjfoc/gmsm/sm2"
 	"google.golang.org/grpc"
 )
 
@@ -42,6 +48,58 @@ func (s *server) GetAddressList(ctx context.Context, in *pb.Empty) (*pb.AddressL
 	}
 	return &pb.AddressList{Addresslist: addresslist}, nil
 }
+
+func (s *server) VerifyCert(ctx context.Context, in *pb.Cert) (*pb.IsPermissionReply, error) {
+	cacertinfo := models.QueryData("ca where enabled = 'enabled'")
+	cacertstr := cacertinfo[0]["cacert"]
+	in.Keytype = strings.ToLower(in.Keytype)
+	if in.Keytype == "sm2" {
+		cacert, err := sm2.ReadCertificateFromMem([]byte(cacertstr))
+		if err != nil {
+			fmt.Println("parse sm2 cert err:", err)
+			panic(err)
+		}
+		var peercert sm2.Certificate
+		err = json.Unmarshal(in.Cert, &peercert)
+		//peercert, err := sm2.ReadCertificateFromMem(in.Cert)
+		if err != nil {
+			return &pb.IsPermissionReply{IsPermission: false}, err
+		}
+		err = cacert.CheckSignature(peercert.SignatureAlgorithm, peercert.RawTBSCertificate, peercert.Signature)
+		if err != nil {
+			fmt.Println("check signature err:", err)
+			return &pb.IsPermissionReply{IsPermission: false}, err
+		}
+		fmt.Println("check cert success!")
+		fmt.Println("==========sm2============")
+		return &pb.IsPermissionReply{IsPermission: true}, nil
+	} else if in.Keytype == "ecdsa" {
+		cacert, err := utils.ReadECDSACertFromMen([]byte(cacertstr))
+		if err != nil {
+			fmt.Println("parse ecdsa cert err:", err)
+			panic(err)
+		}
+		var peercert x509.Certificate
+		err = json.Unmarshal(in.Cert, &peercert)
+		//peercert, err := utils.ReadECDSACertFromMen(in.Cert)
+		if err != nil {
+			fmt.Println("parse ecdsa cert err:", err)
+			return &pb.IsPermissionReply{IsPermission: false}, err
+		}
+		err = cacert.CheckSignature(peercert.SignatureAlgorithm, peercert.RawTBSCertificate, peercert.Signature)
+		if err != nil {
+			fmt.Println("check signature err:", err)
+			fmt.Println("==========ECDSA============")
+			return &pb.IsPermissionReply{IsPermission: false}, err
+		}
+		fmt.Println("check cert success!")
+		fmt.Println("==========ECDSA============")
+		return &pb.IsPermissionReply{IsPermission: true}, nil
+	}
+	return &pb.IsPermissionReply{IsPermission: false}, nil
+
+}
+
 func CAGrpcRun() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {

@@ -17,6 +17,11 @@ message AddressList {
   repeated string addresslist = 1;
 }
 
+message Cert{
+  bytes cert = 1;
+  string keytype = 2;
+}
+
 message Empty{
 
 }
@@ -32,4 +37,7 @@ service Greeter {
 
     //获取冻结地址的列表
     rpc GetAddressList (Empty) returns (AddressList) {}
+
+    //验证节点证书的签名
+    rpc VerifyCert(Cert)returns (IsPermissionReply){}
   }

@@ -41,9 +41,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 		accountId := r.FormValue("username")
 		password := r.FormValue("password")
+		password = utils.GetMD5(password)
 		//请求的是登陆数据，那么执行登陆的逻辑判断
 		realpassword := models.QueryPasswordByAccount(accountId)
-		fmt.Println(realpassword)
+		//fmt.Println(realpassword)
 		if password == realpassword.Password && realpassword.Enable == "enabled" {
 			//str, _ := json.Marshal(realpassword)
 			//设置session
@@ -247,6 +248,7 @@ func addaccount(w http.ResponseWriter, r *http.Request) {
 		accountId := r.FormValue("accountId")
 		accountPassword := r.FormValue("accountPassword")
 		organization := r.FormValue("organization")
+		accountPassword = utils.GetMD5(accountPassword)
 		models.InsertData("account", []string{accountId, organization, accountPassword, "11", "enabled"})
 	}
 }
@@ -309,7 +311,9 @@ func changepwd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		accountId := sess.Get("username")
 		oldpwd := r.FormValue("oldpwd")
+		oldpwd = utils.GetMD5(oldpwd)
 		newpwd := r.FormValue("newpwd")
+		newpwd = utils.GetMD5(newpwd)
 		//请求的是登陆数据，那么执行登陆的逻辑判断
 		realpassword := models.QueryPasswordByAccount(accountId.(string))
 		fmt.Println(realpassword)
@@ -432,6 +436,7 @@ func changepwd_ca(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		accountId := r.FormValue("cgaccountId")
 		newpwd := r.FormValue("newpwd")
+		newpwd = utils.GetMD5(newpwd)
 		models.UpdatePassword(accountId, newpwd)
 		io.WriteString(w, "修改成功")
 

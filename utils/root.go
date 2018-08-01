@@ -278,6 +278,15 @@ func OneTouch(KeyType string) []string {
 	return []string{string(key), string(pub), string(req)}
 }
 
+func ReadECDSACertFromMen(certdata []byte) (*x509.Certificate, error) {
+	p, err := pem.Decode(certdata)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return x509.ParseCertificate(p.Bytes)
+}
+
 func GetCAKey(KeyType string) (string, string) {
 	Cfg.Cert.KeyType = KeyType
 	var pub []byte

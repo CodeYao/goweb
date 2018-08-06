@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Bootstrap</title>
+    <title>CA管理系统</title>
     <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
     <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
     <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -27,7 +27,7 @@
                 </div>
                 <div id="errorcode_username">
                     <span class="help-block">账号不能为空</span>
-                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                    <!-- <span class="glyphicon glyphicon-remove form-control-feedback"></span> -->
                 </div>
             </div>
             <div class="form-group ">
@@ -38,7 +38,7 @@
                 </div>
                 <div id="errorcode_password">
                     <span class="help-block">密码不能为空</span>
-                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
+                    <!-- <span class="glyphicon glyphicon-remove form-control-feedback"></span> -->
                 </div>
             </div>
             <div class="form-group" style="margin-top: 45px">
@@ -50,6 +50,12 @@
     </div>
 </body>
 <script>
+    $("body").keydown(function() {
+        if (event.keyCode == "13") { //keyCode=13是回车键
+            $('#loginbtn').click();
+        };
+    });
+
     $("#errorcode_username").hide()
     $("#errorcode_password").hide()
     $("#loginbtn").click(function() {

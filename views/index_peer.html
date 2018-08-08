@@ -242,7 +242,7 @@
                 <div class="modal-body">
                     <form id="certForm" class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="certName" class="col-sm-3 control-label">证书名*</label>
+                            <label for="certName" class="col-sm-3 control-label">证书名&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="certName" name="certName" placeholder="可以是任意不重复的证书名，如：银行证书1">
                             </div>
@@ -257,20 +257,20 @@
                             </div>
                         </div> -->
                         <div class="form-group">
-                            <label for="notAfter" class="col-sm-3 control-label">证书有效期*</label>
+                            <label for="notAfter" class="col-sm-3 control-label">证书有效期&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="notAfter" name="notAfter" placeholder="请输入证书有效期，如180">
                             </div>
                             <label class="col-sm-1 control-label">天</label>
                         </div>
                         <div class="form-group">
-                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的IP*</label>
+                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的IP&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="ipAddress" name="ipAddress" placeholder="若输入多个请用英文分号隔开，如10.1.1.1;10.2.2.2">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴证书请求*</label>
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴证书请求&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
                                 <textarea id="reqcertxt" name="reqcertxt" class="form-control"></textarea>
                             </div>
@@ -402,7 +402,7 @@
                 data: new FormData($('#changepwdForm')[0]),
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         alert(data)
@@ -422,10 +422,12 @@
     );
 
     function pageJump() {
-        var pagestr = $("#jumpstr").val()
+        var pagestr = $.trim($("#jumpstr").val())
             //alert(pagestr)
         var totalpageNum = $("#totalpageNum").text()
-        if (pagestr > totalpageNum) {
+        if (isNaN(pagestr)) {
+            alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
+        } else if (Number(pagestr) > Number(totalpageNum)) {
             alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
         } else {
             getcertList(pagestr)
@@ -442,7 +444,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     var con = ""
@@ -535,7 +537,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     data = JSON.parse(data)
@@ -559,10 +561,10 @@
     })
     $("#commitreqcertbtn").click(function() {
         //var KeyType = $("#certselect").val()
-        var CertName = $("#certName").val()
-        var NotAfter = $("#notAfter").val()
-        var IpAddress = $("#ipAddress").val()
-        var Reqcertxt = $('#reqcertxt').val()
+        var CertName = $.trim($("#certName").val())
+        var NotAfter = $.trim($("#notAfter").val())
+        var IpAddress = $.trim($("#ipAddress").val())
+        var Reqcertxt = $.trim($("#reqcertxt").val())
         if (CertName == "") {
             alert("证书名不能为空")
         } else if (NotAfter == "") {
@@ -572,11 +574,32 @@
         } else if (Reqcertxt == "") {
             alert("证书请求不能为空")
         } else {
+            if (isNaN(NotAfter)) {
+                alert("有效期字段，请输入阿拉伯数字")
+                return
+            }
+            //alert(CertName.length)
+            if (CertName.length > Number(45)) {
+                alert("证书名不要超出45个字符")
+                return
+            }
+            if (NotAfter.length > Number(45)) {
+                alert("有效期不要超出45个字符")
+                return
+            }
+            if (IpAddress.length > Number(45)) {
+                alert("证书名不要超出45个字符")
+                return
+            }
+            // if (IpAddress.indexOf(";") < 0) {
+            //     alert("请使用英文分号分隔IP地址")
+            //     return
+            // }
             var ips = IpAddress.split(";")
             for (let index = 0; index < ips.length; index++) {
                 //alert(ips[index])
                 if (!isValidIP(ips[index])) {
-                    alert("IP格式错误，" + ips[index] + "不是正确的IP格式！")
+                    alert("IP格式错误，请检查" + ips[index] + "分隔符是否为英文分号,是否录入了正确的IP")
                     return
                 }
             }
@@ -588,11 +611,13 @@
                 data: new FormData($('#certForm')[0]),
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         if (data == "0") {
                             alert("证书名已存在！")
+                        } else if (data == "1") {
+                            alert("证书请求有误，请录入国密算法sm2生成的证书请求！")
                         } else {
                             $("#reqcert").modal("hide")
                             alert("申请成功，等待审批！")
@@ -610,11 +635,15 @@
         if (ipAddress == "") {
             alert("申请证书的IP不能为空！")
         } else {
+            // if (IpAddress.indexOf(";") < 0) {
+            //     alert("请使用英文分号分隔IP地址")
+            //     return
+            // }
             var ips = ipAddress.split(";")
             for (let index = 0; index < ips.length; index++) {
-                alert(ips[index])
+                //alert(ips[index])
                 if (!isValidIP(ips[index])) {
-                    alert("ip格式错误，" + ips[index] + "不是正确的IP格式！")
+                    alert("IP格式错误，请检查" + ips[index] + "分隔符是否为英文分号,是否录入了正确的IP")
                     return
                 }
             }
@@ -626,7 +655,7 @@
                 },
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         alert("生成成功")

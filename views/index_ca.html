@@ -135,7 +135,7 @@
                     <!--<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a>-->
                     <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
                         <li>
-                            <a id="changepwd_menu" href="javascript:void(0)" onclick="changepassword('{{.}}')" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/修改密码black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
+                            <a id="changepwd_menu" href="javascript:void(0)" onclick="changeCApassword()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/修改密码black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
                         </li>
                         <li>
                             <a id="logout_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="logout_menu_img" src="/static/img/退出登录black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
@@ -774,14 +774,12 @@
     <!-- /.modal -->
 
     <!--申请CA证书 模态框（Modal） -->
-    <div class="modal fade" id="reqcacert" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+    <div class="modal fade" id="reqcacert" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="reqcertModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                            </button>
                     <h4 class="modal-title" id="reqcertModalLabel">
-                        请填写证书相关信息
+                        请填写根证书相关信息
                     </h4>
                 </div>
                 <div class="modal-body">
@@ -802,14 +800,14 @@
                             </div>
                         </div> -->
                         <div class="form-group">
-                            <label for="notAfter" class="col-sm-3 control-label">证书有效期*</label>
+                            <label for="notAfter" class="col-sm-3 control-label">证书有效期&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="canotAfter" name="canotAfter" placeholder="请输入证书有效期，如180">
                             </div>
                             <label class="col-sm-1 control-label">天</label>
                         </div>
                         <div class="form-group">
-                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的IP*</label>
+                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的IP&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
                                 <input type="text" class="form-control" id="caipAddress" name="caipAddress" placeholder="若输入多个请用英文分号隔开，如10.1.1.1;10.2.2.2">
                             </div>
@@ -864,26 +862,24 @@
 
 
     <!--导入CA证书 模态框（Modal） -->
-    <div class="modal fade" id="importCAcertModel" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+    <div class="modal fade" id="importCAcertModel" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                            </button>
                     <h4 class="modal-title" id="reqcertModalLabel">
-                        请录入CA证书和公钥
+                        请录入CA证书和私钥
                     </h4>
                 </div>
                 <div class="modal-body">
                     <form id="" class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴CA私钥*</label>
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴CA私钥&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-8">
                                 <textarea id="caprivkeytext" name="caprivkeytext" class="form-control"></textarea>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴CA证书*</label>
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴CA证书&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-8">
                                 <textarea id="cacertxt" name="cacertxt" class="form-control"></textarea>
                             </div>
@@ -908,6 +904,58 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
+
+    <!--修改密码 模态框（Modal） -->
+    <div class="modal fade" id="changeCApwdModle" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                                </button>
+                    <h4 class="modal-title" id="reqcertModalLabel">
+                        请账号密码相关信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="changeCApwdForm" class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="accountId" class="col-sm-3 control-label">账号名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="accountId" name="accountId" readonly="readonly" value="{{.}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notAfter" class="col-sm-3 control-label">原密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="oldCApwd" name="oldpwd" placeholder="请输入该账号原密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ipAddress" class="col-sm-3 control-label">新密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="newCApwd" name="newpwd" placeholder="请输入新密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">确认密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="checkCAnewpwd" name="checknewpwd" placeholder="请再次输入新密码">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="commitCApwd" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6">
+                                        确认修改
+                                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
 </body>
 <script>
     $(document).ready(function() {
@@ -916,7 +964,7 @@
             url: "/checkca",
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else if (data == 0) {
                     $("#reqcacert").modal("show")
@@ -938,18 +986,37 @@
         })
     })
     $("#commitreqcertbtn").click(function() {
-        var NotAfter = $("#canotAfter").val()
-        var IpAddress = $("#caipAddress").val()
+        $.trim($("#caipAddress").val())
+        var NotAfter = $.trim($("#canotAfter").val())
+        var IpAddress = $.trim($("#caipAddress").val())
         if (NotAfter == "") {
             alert("有效期不能为空")
         } else if (IpAddress == "") {
             alert("IP不能为空")
         } else {
+            if (isNaN(NotAfter)) {
+                alert("有效期请输入阿拉伯数字")
+                return
+            }
+            if (NotAfter.length > 45) {
+                alert("请输入小于45位的阿拉伯数字")
+                return
+            }
+            if (IpAddress.length > 45) {
+                alert("请输入小于45位以下的IP地址")
+                return
+            }
             var ips = IpAddress.split(";")
+                // if (ips.length == 1) {
+                //     if (IpAddress.indexOf(";") < 0) {
+                //         alert("请使用英文分号分隔IP地址")
+                //         return
+                //     }
+                // }
             for (let index = 0; index < ips.length; index++) {
                 //alert(ips[index])
                 if (!isValidIP(ips[index])) {
-                    alert("IP格式错误，" + ips[index] + "不是正确的IP格式！")
+                    alert("IP格式错误，请检查" + ips[index] + "分隔符是否为英文分号,是否录入了正确的IP")
                     return
                 }
             }
@@ -961,7 +1028,7 @@
                 data: new FormData($('#cacertFrom')[0]),
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         alert("根证书生成成功")
@@ -998,13 +1065,15 @@
                 },
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         if (data == "err1") {
                             alert("私钥格式不正确，需要使用sm2格式的私钥")
                         } else if (data == "err2") {
                             alert("证书格式不正确，需要使用sm2格式的证书")
+                        } else if (data == "err0") {
+                            alert("证书和私钥不匹配")
                         } else {
                             alert("根证书生成成功")
                             window.location.reload()
@@ -1022,7 +1091,7 @@
             success: function(data) {
                 //alert("吊销成功")
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     var link = document.createElement('a')
@@ -1049,15 +1118,24 @@
     $(document).ready(getaccountList(1));
 
     function accoountpageJump() {
-        var pagestr = $("#accountjumpstr").val()
+        // var pagestr = $("#accountjumpstr").val()
+        //     //alert(pagestr)
+        // var totalpageNum = $("#totalpageNum").text()
+        // if (pagestr > totalpageNum) {
+        //     alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
+        // } else {
+        //     getaccountList(pagestr)
+        // }
+        var pagestr = $.trim($("#accountjumpstr").val())
             //alert(pagestr)
         var totalpageNum = $("#totalpageNum").text()
-        if (pagestr > totalpageNum) {
+        if (isNaN(pagestr)) {
+            alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
+        } else if (Number(pagestr) > Number(totalpageNum)) {
             alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
         } else {
             getaccountList(pagestr)
         }
-
     }
 
     function getaccountList(currentpage) {
@@ -1069,7 +1147,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     // alert(data)
@@ -1137,10 +1215,12 @@
     $(document).ready(getaddress(1))
 
     function addresspageJump() {
-        var pagestr = $("#addressjumpstr").val()
+        var pagestr = $.trim($("#addressjumpstr").val())
             //alert(pagestr)
         var addrtotalpageNum = $("#addrtotalpageNum").text()
-        if (pagestr > addrtotalpageNum) {
+        if (isNaN(pagestr)) {
+            alert("输入的页码有误，请输入小于" + addrtotalpageNum + "的数字")
+        } else if (Number(pagestr) > Number(addrtotalpageNum)) {
             alert("输入的页码有误，请输入小于" + addrtotalpageNum + "的数字")
         } else {
             getaddress(pagestr)
@@ -1156,7 +1236,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     // alert(data)
@@ -1224,10 +1304,12 @@
     $(document).ready(getcodeaddress(1))
 
     function codeaddresspageJump() {
-        var pagestr = $("#codeaddressjumpstr").val()
+        var pagestr = $.trim($("#codeaddressjumpstr").val())
             //alert(pagestr)
         var codeaddrtotalpageNum = $("#codeaddrtotalpageNum").text()
-        if (pagestr > codeaddrtotalpageNum) {
+        if (isNaN(pagestr)) {
+            alert("输入的页码有误，请输入小于" + codeaddrtotalpageNum + "的数字")
+        } else if (Number(pagestr) > Number(codeaddrtotalpageNum)) {
             alert("输入的页码有误，请输入小于" + codeaddrtotalpageNum + "的数字")
         } else {
             getcodeaddress(pagestr)
@@ -1245,7 +1327,7 @@
             success: function(data) {
                 // alert(data)
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     var con = ""
@@ -1311,10 +1393,12 @@
     $(document).ready(getcertList(1))
 
     function pageJump() {
-        var pagestr = $("#jumpstr").val()
+        var pagestr = $.trim($("#jumpstr").val())
             //alert(pagestr)
         var certtotalpageNum = $("#certtotalpageNum").text()
-        if (pagestr > certtotalpageNum) {
+        if (isNaN(pagestr)) {
+            alert("输入的页码有误，请输入小于" + certtotalpageNum + "的数字")
+        } else if (Number(pagestr) > Number(certtotalpageNum)) {
             alert("输入的页码有误，请输入小于" + certtotalpageNum + "的数字")
         } else {
             getcertList(pagestr)
@@ -1334,7 +1418,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     var con = ""
@@ -1429,7 +1513,7 @@
             success: function(data) {
                 //alert(data)
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     data = JSON.parse(data)
@@ -1456,7 +1540,7 @@
                 },
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         alert("吊销成功")
@@ -1466,7 +1550,7 @@
                 }
             });
         } else {
-            alert("已取消")
+            //alert("已取消")
         }
     });
     $("tbody").on('click', "[name='aprovcertbtn']", function() {
@@ -1479,7 +1563,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     data = JSON.parse(data)
@@ -1497,37 +1581,71 @@
             }
         });
     });
+    $("#commitCApwd").click(function() {
+        var newpwd = $("#newCApwd").val()
+        var checknewpwd = $("#checkCAnewpwd").val()
+        if (newpwd != checknewpwd) {
+            alert("新密码两次输入不一致！")
+        } else {
+            if (newpwd.length > 18 || newpwd.length < 6) {
+                alert("密码长度不符，请输入长度在6~18的字符")
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/changepwd",
+                    processData: false,
+                    contentType: false,
+                    data: new FormData($('#changeCApwdForm')[0]),
+                    success: function(data) {
+                        if (data == "Timeout") {
+                            alert("会话已失效，请重新登录")
+                            window.location.href = "login"
+                        } else {
+                            alert(data)
+                            if (data == "修改成功，请重新登录") {
+                                window.location.href = "login"
+                            }
+                        }
+                    }
+                })
+            }
+        }
+    })
     $("#commitpwd").click(function() {
         var newpwd = $("#newpwd").val()
         var checknewpwd = $("#checknewpwd").val()
         if (newpwd != checknewpwd) {
             alert("新密码两次输入不一致！")
         } else {
-            $.ajax({
-                type: "POST",
-                url: "/changepwd_ca",
-                processData: false,
-                contentType: false,
-                data: new FormData($('#changepwdForm')[0]),
-                success: function(data) {
-                    if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
-                        window.location.href = "login"
-                    } else {
-                        alert(data)
-                        $("#changepwdModle").modal("hide")
-                        $("#newpwd").val("")
-                        $("#checknewpwd").val("")
-                        getaccountList(1)
-                            //window.location.reload()
-                            // if (data == "修改成功，请重新登录") {
-                            //     window.location.href = "login"
-                            // }
+            if (newpwd.length > 18 || newpwd.length < 6) {
+                alert("密码长度不符，请输入长度在6~18的字符")
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/changepwd_ca",
+                    processData: false,
+                    contentType: false,
+                    data: new FormData($('#changepwdForm')[0]),
+                    success: function(data) {
+                        if (data == "Timeout") {
+                            alert("会话已失效，请重新登录")
+                            window.location.href = "login"
+                        } else {
+                            alert(data)
+                            $("#changepwdModle").modal("hide")
+                            $("#newpwd").val("")
+                            $("#checknewpwd").val("")
+                            getaccountList(1)
+                                //window.location.reload()
+                                // if (data == "修改成功，请重新登录") {
+                                //     window.location.href = "login"
+                                // }
+                        }
+
+
                     }
-
-
-                }
-            })
+                })
+            }
         }
 
     })
@@ -1541,8 +1659,11 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
+                } else if (data == "0") {
+                    alert("CA没有根证书！！")
+                    window.location.reload()
                 } else {
                     alert("审批成功")
                     window.location.reload()
@@ -1561,7 +1682,7 @@
             },
             success: function(data) {
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     alert("驳回成功")
@@ -1575,7 +1696,7 @@
     $("#errorcode_address").hide()
     $("#errorcode_codeaddress").hide()
     $("#codeaddaddressbtn").click(function() {
-            var address = $("#codeaddress").val()
+            var address = $.trim($("#codeaddress").val())
             var descript = $("#codedescript").val()
             if (address == "") {
                 $("#errorcode_codeaddress").show()
@@ -1592,7 +1713,7 @@
                     },
                     success: function(data) {
                         if (data == "Timeout") {
-                            alert("登录超时，请重新登录！")
+                            alert("会话已失效，请重新登录")
                             window.location.href = "login"
                         } else {
                             alert(data)
@@ -1609,7 +1730,7 @@
         })
         // $("#errorcode_descript").hide()
     $("#addaddressbtn").click(function() {
-        var address = $("#address").val()
+        var address = $.trim($("#address").val())
         var descript = $("#descript").val()
         if (address == "") {
             $("#errorcode_address").show()
@@ -1626,7 +1747,7 @@
                 },
                 success: function(data) {
                     if (data == "Timeout") {
-                        alert("登录超时，请重新登录！")
+                        alert("会话已失效，请重新登录")
                         window.location.href = "login"
                     } else {
                         alert(data)
@@ -1672,6 +1793,9 @@
                 } else {
                     $("#errorcode_newpassword2").hide()
                     $("#errorcode_newpassword2").parent().removeClass("has-error has-feedback")
+                    if (organization.length > 45) {
+                        alert("组织机构名称过长,请输入45个字符以下的名称")
+                    }
                     $.ajax({
                         type: "POST",
                         url: "/addaccount",
@@ -1682,7 +1806,7 @@
                         },
                         success: function(data) {
                             if (data == "Timeout") {
-                                alert("登录超时，请重新登录！")
+                                alert("会话已失效，请重新登录")
                                 window.location.href = "login"
                             } else {
                                 if (data == "err1") {
@@ -1799,7 +1923,7 @@
                         },
                         success: function(data) {
                             if (data == "Timeout") {
-                                alert("登录超时，请重新登录！")
+                                alert("会话已失效，请重新登录")
                                 window.location.href = "login"
                             } else {
 
@@ -1811,7 +1935,7 @@
                 getaddress(1)
                     // window.location.reload()
             } else {
-                alert("已取消")
+                // alert("已取消")
             }
 
         }
@@ -1835,7 +1959,7 @@
                         },
                         success: function(data) {
                             if (data == "Timeout") {
-                                alert("登录超时，请重新登录！")
+                                alert("会话已失效，请重新登录")
                                 window.location.href = "login"
                             } else {
 
@@ -1846,7 +1970,7 @@
                 alert("删除成功")
                 getcodeaddress(1)
             } else {
-                alert("已取消")
+                // alert("已取消")
             }
             // window.location.reload()
         }
@@ -1869,7 +1993,7 @@
                         },
                         success: function(data) {
                             if (data == "Timeout") {
-                                alert("登录超时，请重新登录！")
+                                alert("会话已失效，请重新登录")
                                 window.location.href = "login"
                             } else {
 
@@ -1881,7 +2005,7 @@
                 getaccountList(1)
                     // window.location.reload()
             } else {
-                alert("已取消")
+                // alert("已取消")
             }
         }
     })
@@ -1892,7 +2016,7 @@
             success: function(data) {
                 //alert("吊销成功")
                 if (data == "Timeout") {
-                    alert("登录超时，请重新登录！")
+                    alert("会话已失效，请重新登录")
                     window.location.href = "login"
                 } else {
                     var link = document.createElement('a')
@@ -1914,6 +2038,10 @@
     function changepassword(accoutid) {
         $("#cgaccountId").val(accoutid)
         $("#changepwdModle").modal("show")
+    }
+
+    function changeCApassword() {
+        $("#changeCApwdModle").modal("show")
     }
     $("#changepwd_menu").hover(function() {
         $("#changepwd_menu_img").attr("src", "/static/img/修改密码white.png")

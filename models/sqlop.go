@@ -269,7 +269,7 @@ func UpdateCertRevoke(state string, revoker string, revokeDate string, certid st
 }
 
 //获取证书字符串
-func QuerycertById(id string) string {
+func QuerycertById(id string) (string, string) {
 	db.mysql_open()
 	//查询数据，取所有字段
 	rows, err := db.db.Query("select * from cert where id =?", id)
@@ -305,7 +305,7 @@ func QuerycertById(id string) string {
 		result = row
 		i++
 	}
-	return result["cert"]
+	return result["cert"], result["certname"]
 }
 
 func GetTableNum(table string) int {

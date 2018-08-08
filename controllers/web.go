@@ -26,6 +26,8 @@ func init() {
 func logout(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		sess := globalSessions.SessionStart(w, r)
+		//globalSessions.SessionDestroy(w, r)
+
 		sess.Delete("username")
 	}
 }
@@ -43,7 +45,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 		password = utils.GetMD5(password)
 		//请求的是登陆数据，那么执行登陆的逻辑判断
 		realpassword := models.QueryPasswordByAccount(accountId)
-		//fmt.Println(realpassword)
+		fmt.Println(realpassword)
+
 		if password == realpassword.Password && realpassword.Enable == "enabled" {
 			//str, _ := json.Marshal(realpassword)
 			//设置session
@@ -184,15 +187,20 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 			} else if KeyType == "ecdsa" {
 				newpubkey = string(utils.GetEcdsaPubKey(reqcertxt))
 			}
-
-			dataNum := models.GetTableNum("cert where certname = '" + certName + "'")
-			if dataNum == 0 {
-				newcert := string(utils.GenerateCert(notAfter, ipAddress, country, organization, commonName, reqcertxt, KeyType))
-				fmt.Println("newpubkey:", newpubkey)
-				fmt.Println("newcert:", newcert)
-				models.InsertData("cert", []string{certName, r.FormValue("ipAddress"), newcert, newpubkey, userName.(string), reqcertxt, time.Now().Format("2006-01-02 15:04:05"), "待审批", "", "", "", ""})
+			//fmt.Println("************chenyao**********", newpubkey)
+			if newpubkey == "" {
+				//fmt.Println("************chenyao**********")
+				io.WriteString(w, "1")
 			} else {
-				io.WriteString(w, "0")
+				dataNum := models.GetTableNum("cert where certname = '" + certName + "'")
+				if dataNum == 0 {
+					newcert := string(utils.GenerateCert(notAfter, ipAddress, country, organization, commonName, reqcertxt, KeyType))
+					//fmt.Println("newpubkey:", newpubkey)
+					//fmt.Println("newcert:", newcert)
+					models.InsertData("cert", []string{certName, r.FormValue("ipAddress"), newcert, newpubkey, userName.(string), reqcertxt, time.Now().Format("2006-01-02 15:04:05"), "待审批", "", "", "", ""})
+				} else {
+					io.WriteString(w, "0")
+				}
 			}
 
 			//fmt.Println("chenyao*************", ipPath, ipAddress)
@@ -322,9 +330,22 @@ func removeaccount(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if r.Method == "POST" {
 			id, _ := strconv.Atoi(r.FormValue("id"))
-			fmt.Println("chenyao**********", id)
+			//fmt.Println("chenyao**********", id)
 			//models.DeleteDateById("account", id)
 			models.DeleteAccountById(id)
+			accountInfo := models.QueryDataById("account", r.FormValue("id"))
+			var sessionId string
+			sessionMG := globalSessions.GetProvide()
+			for k, v := range sessionMG.GetSession() {
+				account := v.Value.(*SessionStore).GetValue()["username"]
+				//fmt.Println(k, account)
+				fmt.Println(accountInfo["accountId"])
+				if account.(string) == accountInfo["accountId"] {
+					fmt.Println("同时关闭session")
+					sessionId = k
+				}
+			}
+			sessionMG.SessionDestroy(sessionId)
 		}
 	}
 
@@ -415,7 +436,7 @@ func changepwd(w http.ResponseWriter, r *http.Request) {
 			newpwd = utils.GetMD5(newpwd)
 			//请求的是登陆数据，那么执行登陆的逻辑判断
 			realpassword := models.QueryPasswordByAccount(accountId.(string))
-			fmt.Println(realpassword)
+			//fmt.Println(realpassword)
 			if oldpwd == realpassword.Password {
 				models.UpdatePassword(accountId.(string), newpwd)
 				io.WriteString(w, "修改成功，请重新登录")
@@ -450,7 +471,13 @@ func aprovecert(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			aprover := sess.Get("username")
 			id := r.FormValue("id")
-			models.UpdateCertAprove("已审批", aprover.(string), time.Now().Format("2006-01-02 15:04:05"), id)
+			dataNum := models.GetTableNum("ca where enabled = 'enabled'")
+			if dataNum == 0 {
+				io.WriteString(w, strconv.Itoa(dataNum))
+			} else {
+				models.UpdateCertAprove("已审批", aprover.(string), time.Now().Format("2006-01-02 15:04:05"), id)
+			}
+
 		}
 	}
 }
@@ -556,14 +583,15 @@ func downloadcert(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fileName := strconv.FormatInt(time.Now().Unix(), 10)
 		certId := r.FormValue("certId")
-		certstr := models.QuerycertById(certId)
+		certstr, certName := models.QuerycertById(certId)
+		fileName = certName + "_" + fileName
 		//utils.ZipByte([]byte(certstr), "conf/cert.zip")
 		ioutil.WriteFile("conf/"+fileName+".pem", []byte(certstr), 0666)
 		f1, _ := os.Open("conf/" + fileName + ".pem")
 		defer f1.Close()
 		var files = []*os.File{f1}
 		utils.Compress(files, "conf/"+fileName+".zip")
-		fmt.Println("chenyao***************", certId, certstr)
+		//fmt.Println("chenyao***************", certId, certstr)
 		file, _ := ioutil.ReadFile("conf/" + fileName + ".zip")
 		w.Write(file)
 		err := os.Remove("conf/" + fileName + ".pem")
@@ -660,7 +688,7 @@ func removeadderss(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if r.Method == "POST" {
 			id, _ := strconv.Atoi(r.FormValue("id"))
-			fmt.Println("chenyao**********", id)
+			//fmt.Println("chenyao**********", id)
 			models.DeleteAddressById(id)
 		}
 	}
@@ -687,29 +715,35 @@ func checkca(w http.ResponseWriter, r *http.Request) {
 }
 func generateCA(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
-	if r.Method == "POST" {
-		accountId := sess.Get("username")
-		//	keyType := r.FormValue("KeyType")
-		keyType := "sm2"
-		//caNotAfter := r.FormValue("canotAfter")
-		caNotAfter, _ := strconv.Atoi(r.FormValue("canotAfter"))
-		//caIPAddress := r.FormValue("caipAddress")
-		caIPAddress := strings.Split(r.FormValue("caipAddress"), ";")
-		//caCountry := r.FormValue("cacountry")
-		caCountry := strings.Split(r.FormValue("cacountry"), ";")
-		//caOrganization := r.FormValue("caorganization")
-		caOrganization := strings.Split(r.FormValue("caorganization"), ";")
-		caCommonName := r.FormValue("cacommonName")
-		fmt.Println("***chenyao***:", accountId, keyType, caNotAfter, caIPAddress, caCountry, caOrganization, caCommonName)
-		caprivKey, capubKey := utils.GetCAKey(keyType)
-		fmt.Println(caprivKey, capubKey)
-		newcert := string(utils.GenerateCACert(caNotAfter, caIPAddress, caCountry, caOrganization, caCommonName, caprivKey, keyType))
-		//utils.GenerateCACert(keyType)
-		fmt.Println("capubKey:", capubKey)
-		fmt.Println("caprivKey:", caprivKey)
-		fmt.Println("newcert:", newcert)
-		models.InsertData("ca", []string{capubKey, caprivKey, newcert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+	userName := sess.Get("username")
+	if userName == nil {
+		io.WriteString(w, "Timeout")
+	} else {
+		if r.Method == "POST" {
+			accountId := sess.Get("username")
+			//	keyType := r.FormValue("KeyType")
+			keyType := "sm2"
+			//caNotAfter := r.FormValue("canotAfter")
+			caNotAfter, _ := strconv.Atoi(r.FormValue("canotAfter"))
+			//caIPAddress := r.FormValue("caipAddress")
+			caIPAddress := strings.Split(r.FormValue("caipAddress"), ";")
+			//caCountry := r.FormValue("cacountry")
+			caCountry := strings.Split(r.FormValue("cacountry"), ";")
+			//caOrganization := r.FormValue("caorganization")
+			caOrganization := strings.Split(r.FormValue("caorganization"), ";")
+			caCommonName := r.FormValue("cacommonName")
+			//fmt.Println("***chenyao***:", accountId, keyType, caNotAfter, caIPAddress, caCountry, caOrganization, caCommonName)
+			caprivKey, capubKey := utils.GetCAKey(keyType)
+			//fmt.Println(caprivKey, capubKey)
+			newcert := string(utils.GenerateCACert(caNotAfter, caIPAddress, caCountry, caOrganization, caCommonName, caprivKey, keyType))
+			//utils.GenerateCACert(keyType)
+			//fmt.Println("capubKey:", capubKey)
+			//fmt.Println("caprivKey:", caprivKey)
+			//fmt.Println("newcert:", newcert)
+			models.InsertData("ca", []string{capubKey, caprivKey, newcert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+		}
 	}
+
 }
 
 func createcacert(w http.ResponseWriter, r *http.Request) {
@@ -720,27 +754,33 @@ func createcacert(w http.ResponseWriter, r *http.Request) {
 }
 func importCA(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
-	if r.Method == "POST" {
-		accountId := sess.Get("username")
-		//	keyType := r.FormValue("KeyType")
-		keyType := "sm2"
-		caprivkey := r.FormValue("caprivkeytext")
-		cacert := r.FormValue("cacertxt")
-		capubkey, err := utils.GetSm2PubKeyFromPrivKey(caprivkey)
-
-		if err != nil {
-			fmt.Println(err, caprivkey)
-			io.WriteString(w, "err1")
-		} else {
-			err = utils.VerifySM2(cacert)
-			if err != nil {
-				fmt.Println(err)
-				io.WriteString(w, "err2")
+	userName := sess.Get("username")
+	if userName == nil {
+		io.WriteString(w, "Timeout")
+	} else {
+		if r.Method == "POST" {
+			accountId := sess.Get("username")
+			//	keyType := r.FormValue("KeyType")
+			keyType := "sm2"
+			caprivkey := r.FormValue("caprivkeytext")
+			cacert := r.FormValue("cacertxt")
+			capubkey, err := utils.GetSm2PubKeyFromPrivKey(caprivkey)
+			if !(utils.CheckPrivAndCert([]byte(cacert), capubkey)) {
+				io.WriteString(w, "err0")
+			} else if err != nil {
+				fmt.Println(err, caprivkey)
+				io.WriteString(w, "err1")
 			} else {
-				models.InsertData("ca", []string{string(capubkey), caprivkey, cacert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+				err = utils.VerifySM2(cacert)
+				if err != nil {
+					fmt.Println(err)
+					io.WriteString(w, "err2")
+				} else {
+					models.InsertData("ca", []string{string(capubkey), caprivkey, cacert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
+				}
 			}
-		}
 
+		}
 	}
 }
 
@@ -815,7 +855,7 @@ func removecodeadderss(w http.ResponseWriter, r *http.Request) {
 	} else {
 		if r.Method == "POST" {
 			id, _ := strconv.Atoi(r.FormValue("id"))
-			fmt.Println("chenyao**********", id)
+			//fmt.Println("chenyao**********", id)
 			models.DeletecodeAddressById(id)
 		}
 	}
@@ -868,7 +908,7 @@ func RunWeb() {
 	// var address = new(carpc.Address)
 	// rpc.Register(address)
 	// rpc.HandleHTTP() //将Rpc绑定到HTTP协议上。
-	fmt.Println("启动服务...")
+	fmt.Println("启动服务...输入crtl+c退出服务")
 	err := http.ListenAndServe(":9093", nil) //设置监听的端口
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

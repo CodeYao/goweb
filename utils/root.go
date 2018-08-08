@@ -74,6 +74,35 @@ func Creatdir(dir string) {
 	}
 }
 
+func CheckPrivAndCert(certdata []byte, privPubdata []byte) bool {
+	cert, err := sm2.ReadCertificateFromMem(certdata)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	privPub, err := sm2.ReadPublicKeyFromMem(privPubdata, nil)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	certpub := cert.PublicKey.(*ecdsa.PublicKey)
+	smPub := &sm2.PublicKey{
+		Curve: certpub.Curve,
+		X:     certpub.X,
+		Y:     certpub.Y,
+	}
+	fmt.Println(privPub.X)
+	fmt.Println(smPub.X)
+	fmt.Println(privPub.Y)
+	fmt.Println(smPub.Y)
+
+	if privPub.X.Cmp(smPub.X) == 0 && privPub.Y.Cmp(smPub.Y) == 0 {
+		fmt.Println("证书和私钥成功匹配")
+		return true
+	}
+	return false
+}
+
 func GetEcdsaPubKey(reqdata string) []byte {
 	req, err := parseECDSAReq([]byte(reqdata))
 	if err != nil {
@@ -114,8 +143,8 @@ func GetSm2PubKeyFromPrivKey(privKey string) ([]byte, error) {
 func GetSm2PubKey(reqdata string) []byte {
 	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqdata))
 	if err != nil {
-		panic(err)
-		//return nil
+		fmt.Println(err)
+		return nil
 	}
 	pubkey := req.PublicKey.(*ecdsa.PublicKey)
 	smPub := &sm2.PublicKey{

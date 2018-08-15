@@ -32,7 +32,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method) //获取请求的方法
+	//fmt.Println("method:", r.Method) //获取请求的方法
 	r.ParseForm()
 	if r.Method == "GET" {
 		t, _ := template.ParseFiles("views/login.html")
@@ -45,7 +45,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		password = utils.GetMD5(password)
 		//请求的是登陆数据，那么执行登陆的逻辑判断
 		realpassword := models.QueryPasswordByAccount(accountId)
-		fmt.Println(realpassword)
+		//fmt.Println(realpassword)
 
 		if password == realpassword.Password && realpassword.Enable == "enabled" {
 			//str, _ := json.Marshal(realpassword)
@@ -60,7 +60,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 func index_ca(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
-	fmt.Println("method:", r.Method) //获取请求的方法
+	//fmt.Println("method:", r.Method) //获取请求的方法
 	r.ParseForm()
 	if r.Method == "GET" {
 		userName := sess.Get("username")
@@ -76,7 +76,7 @@ func index_ca(w http.ResponseWriter, r *http.Request) {
 }
 func index_peer(w http.ResponseWriter, r *http.Request) {
 	sess := globalSessions.SessionStart(w, r)
-	fmt.Println("method:", r.Method) //获取请求的方法
+	//fmt.Println("method:", r.Method) //获取请求的方法
 	r.ParseForm()
 	if r.Method == "GET" {
 		userName := sess.Get("username")
@@ -339,9 +339,9 @@ func removeaccount(w http.ResponseWriter, r *http.Request) {
 			for k, v := range sessionMG.GetSession() {
 				account := v.Value.(*SessionStore).GetValue()["username"]
 				//fmt.Println(k, account)
-				fmt.Println(accountInfo["accountId"])
+				//fmt.Println(accountInfo["accountId"])
 				if account.(string) == accountInfo["accountId"] {
-					fmt.Println("同时关闭session")
+					//fmt.Println("同时关闭session")
 					sessionId = k
 				}
 			}
@@ -768,12 +768,12 @@ func importCA(w http.ResponseWriter, r *http.Request) {
 			if !(utils.CheckPrivAndCert([]byte(cacert), capubkey)) {
 				io.WriteString(w, "err0")
 			} else if err != nil {
-				fmt.Println(err, caprivkey)
+				//fmt.Println(err, caprivkey)
 				io.WriteString(w, "err1")
 			} else {
 				err = utils.VerifySM2(cacert)
 				if err != nil {
-					fmt.Println(err)
+					//fmt.Println(err)
 					io.WriteString(w, "err2")
 				} else {
 					models.InsertData("ca", []string{string(capubkey), caprivkey, cacert, keyType, time.Now().Format("2006-01-02 15:04:05"), accountId.(string), "enabled"})
@@ -865,7 +865,8 @@ func removecodeadderss(w http.ResponseWriter, r *http.Request) {
 func RunWeb() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static")))) //设置静态文件路径
 	http.Handle("/conf/", http.StripPrefix("/conf/", http.FileServer(http.Dir("conf"))))       //设置静态文件路径
-	http.HandleFunc("/login", login)                                                           //设置访问的路由
+
+	http.HandleFunc("/login", login) //设置访问的路由
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/changepwd", changepwd)
 	http.HandleFunc("/index_ca", index_ca)

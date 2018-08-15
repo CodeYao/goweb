@@ -225,7 +225,7 @@ func RevokedCertificates(path []string) {
 	caInfo := models.QueryData("ca where enabled = 'enabled'")
 
 	cert, err := sm2.ReadCertificateFromMem([]byte(caInfo[0]["cacert"]))
-	fmt.Println("***chenyao***", caInfo)
+	// fmt.Println("***chenyao***", caInfo)
 	if err != nil {
 		panic(err)
 	}
@@ -276,7 +276,7 @@ func RevokedCertificates(path []string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("吊销成功")
+	//fmt.Println("吊销成功")
 }
 
 // func EasyGen(ipAddress []string) {

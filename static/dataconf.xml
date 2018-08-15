@@ -2,6 +2,6 @@
 <resource>
     <dbhostsip>10.1.4.115</dbhostsip>
     <dbusername>root</dbusername>
-    <dbpassword>root</dbpassword>
+    <dbpassword>123456</dbpassword>
     <dbname>tjfoc_ca</dbname>
 </resource>

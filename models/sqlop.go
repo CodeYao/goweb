@@ -10,10 +10,16 @@ var db mysql_db
 func Queryaccountlist() []map[string]string {
 	db.mysql_open()
 	//查询数据，取所有字段
-	rows, _ := db.db.Query("select * from account where accountLevel = ? and enabled = 'enabled'", "11")
+	rows, err := db.db.Query("select * from account where accountLevel = ? and enabled = 'enabled'", "11")
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows.Columns()
+	cols, err := rows.Columns()
+	if err != nil {
+		panic(err)
+	}
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -45,10 +51,16 @@ func Queryaccountlist() []map[string]string {
 func QuerycertlistByPage(accountId string, start string, pageNum string) []map[string]string {
 	db.mysql_open()
 	//查询数据，取所有字段
-	rows, _ := db.db.Query("select * from cert where accountId = ? limit ?,?", accountId, start, pageNum)
+	rows, err := db.db.Query("select * from cert where accountId = ? limit ?,?", accountId, start, pageNum)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows.Columns()
+	cols, err := rows.Columns()
+	if err != nil {
+		panic(err)
+	}
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -80,10 +92,16 @@ func QuerycertlistByPage(accountId string, start string, pageNum string) []map[s
 func QuerycertlistByAccountId(accountId string) []map[string]string {
 	db.mysql_open()
 	//查询数据，取所有字段
-	rows, _ := db.db.Query("select * from cert where accountId = ?", accountId)
+	rows, err := db.db.Query("select * from cert where accountId = ?", accountId)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows.Columns()
+	cols, err := rows.Columns()
+	if err != nil {
+		panic(err)
+	}
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -117,9 +135,13 @@ func QueryData(tableName string) []map[string]string {
 	db.mysql_open()
 	//查询数据，取所有字段
 	rows, _ := db.db.Query("select * from " + tableName)
+
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows.Columns()
+	cols, err := rows.Columns()
+	if err != nil {
+		panic(err)
+	}
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -151,48 +173,65 @@ func QueryData(tableName string) []map[string]string {
 
 func DeleteDateById(tableName string, id string) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("delete from "+tableName+" where id = ?", id)
+	ret, err := db.db.Exec("delete from "+tableName+" where id = ?", id)
+	if err != nil {
+		panic(err)
+	}
 	//获取影响行数
 	db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println(del_nums)
+	fmt.Println("删除成功，受影响行数为：", del_nums)
 }
 
 //将账号更新为不可用
 func DeleteAccountById(id int) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update account set enabled = 'disabled' where Id = ?", id)
+	ret, err := db.db.Exec("update account set enabled = 'disabled' where Id = ?", id)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
-	fmt.Println("删除成功", ret.RowsAffected)
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("删除成功，受影响行数为：", del_nums)
 }
 
 //将钱包地址更新为不可用
 func DeleteAddressById(id int) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update address set enabled = 'disabled' where Id = ?", id)
+	ret, err := db.db.Exec("update address set enabled = 'disabled' where Id = ?", id)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
-	fmt.Println("删除成功", ret.RowsAffected)
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("删除成功，受影响行数为：", del_nums)
 }
 
 //将冻结钱包地址更新为不可用
 func DeletecodeAddressById(id int) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update codeaddress set enabled = 'disabled' where Id = ?", id)
+	ret, err := db.db.Exec("update codeaddress set enabled = 'disabled' where Id = ?", id)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
-	fmt.Println("删除成功", ret.RowsAffected)
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("删除成功，受影响行数为：", del_nums)
 }
 
 func InsertData(tableName string, insertdata []string) {
 	db.mysql_open()
 	sql := "insert into " + tableName + " values(null,'" + strings.Join(insertdata, "','") + "')"
-	fmt.Println(sql)
+	//fmt.Println(sql)
 	ret, err := db.db.Exec(sql)
-	db.mysql_close()
 	if err != nil {
 		panic(err)
 	}
+	db.mysql_close()
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("插入成功，受影响行数为：", del_nums)
 	//获取插入ID
-	fmt.Println("插入成功", ret, sql)
+	//fmt.Println("插入成功", ret, sql)
 }
 
 func QueryDataById(tableName string, id string) map[string]string {
@@ -204,7 +243,10 @@ func QueryDataById(tableName string, id string) map[string]string {
 	}
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows.Columns()
+	cols, err := rows.Columns()
+	if err != nil {
+		panic(err)
+	}
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -240,32 +282,50 @@ func QueryPasswordByAccount(accountId string) Account {
 	db.mysql_open()
 	row := db.db.QueryRow("select accountId,organization,password,accountLevel,enabled from account where accountId = '" + accountId + "'")
 	db.mysql_close()
-	row.Scan(&account.AccountId, &account.Organization, &account.Password, &account.AccountLevel, &account.Enable)
+	err := row.Scan(&account.AccountId, &account.Organization, &account.Password, &account.AccountLevel, &account.Enable)
+	if err != nil {
+		panic(err)
+	}
 	return account
 }
 
 //修改账号密码
 func UpdatePassword(accountId string, password string) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update account set password = ? where accountId = ?", password, accountId)
+	ret, err := db.db.Exec("update account set password = ? where accountId = ?", password, accountId)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
-	fmt.Println("修改成功", ret)
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("插入成功，受影响行数为：", del_nums)
+	//fmt.Println("修改成功", ret)
 }
 
 //修改审批状态
 func UpdateCertAprove(state string, aprover string, aproveDate string, certid string) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update cert set state =? , approver = ? , approvaldate = ? where id = ?", state, aprover, aproveDate, certid)
+	ret, err := db.db.Exec("update cert set state =? , approver = ? , approvaldate = ? where id = ?", state, aprover, aproveDate, certid)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
-	fmt.Println("修改状态成功", ret)
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("插入成功，受影响行数为：", del_nums)
+	//fmt.Println("修改状态成功", ret)
 }
 
 //修改审批状态
 func UpdateCertRevoke(state string, revoker string, revokeDate string, certid string) {
 	db.mysql_open()
-	ret, _ := db.db.Exec("update cert set state =? , revoker = ? , revokedate = ? where id = ?", state, revoker, revokeDate, certid)
+	ret, err := db.db.Exec("update cert set state =? , revoker = ? , revokedate = ? where id = ?", state, revoker, revokeDate, certid)
+	if err != nil {
+		panic(err)
+	}
 	db.mysql_close()
-	fmt.Println("吊销成功", ret)
+	del_nums, _ := ret.RowsAffected()
+	fmt.Println("插入成功，受影响行数为：", del_nums)
+	//fmt.Println("吊销成功", ret)
 }
 
 //获取证书字符串
@@ -278,7 +338,7 @@ func QuerycertById(id string) (string, string) {
 	}
 	db.mysql_close()
 	//返回所有列
-	cols, _ := rows.Columns()
+	cols, err := rows.Columns()
 	//这里表示一行所有列的值，用[]byte表示
 	vals := make([][]byte, len(cols))
 	//这里表示一行填充数据
@@ -287,7 +347,9 @@ func QuerycertById(id string) (string, string) {
 	for k, _ := range vals {
 		scans[k] = &vals[k]
 	}
-
+	if err != nil {
+		panic(err)
+	}
 	i := 0
 	var result map[string]string
 	for rows.Next() {
@@ -313,11 +375,12 @@ func GetTableNum(table string) int {
 	db.mysql_open()
 	//查询数据，取所有字段
 	row := db.db.QueryRow("select count(-1) from " + table)
-	db.mysql_close()
+
 	err := row.Scan(&dataCount)
 	if err != nil {
 		panic(err)
 	}
+	db.mysql_close()
 	// return strconv.Itoa(dataCount)
 	return dataCount
 }

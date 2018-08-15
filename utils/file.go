@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -31,7 +30,7 @@ func write(filename string, b string) {
 		panic(err)
 	}
 
-	fmt.Println(string(context))
+	//fmt.Println(string(context))
 
 	context = append(context, []byte(b)...)
 

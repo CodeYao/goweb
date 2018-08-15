@@ -131,14 +131,14 @@
             <div style="margin-top: 13px">
                 <div class="navbar-text navbar-right" style="margin-right:7%">
                     <span style="color: #dddddd;">你好，{{.}}!</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="#" data-toggle="dropdown"><img src="/static/img/用户.png"></a>
+                    <a href="#" data-toggle="dropdown"><img src="/static/img/user.png"></a>
                     <!--<a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a>-->
                     <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
                         <li>
-                            <a id="changepwd_menu" href="javascript:void(0)" onclick="changeCApassword()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/修改密码black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
+                            <a id="changepwd_menu" href="javascript:void(0)" onclick="changeCApassword()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/changepwdblack.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
                         </li>
                         <li>
-                            <a id="logout_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="logout_menu_img" src="/static/img/退出登录black.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
+                            <a id="logout_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="logout_menu_img" src="/static/img/logoutblack.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
                         </li>
                     </ul>
                 </div>
@@ -148,7 +148,7 @@
         </div>
     </nav>
     <div style="width: 70%;margin: 0 auto; ">
-        <img class="pull-left" src="/static/img/位置.png">
+        <img class="pull-left" src="/static/img/position.png">
         <span class="pull-left" style="font-size:x-large;margin-left: 5px">CA管理系统</span>
     </div>
     <div style="width: 70%;margin: 0 auto;background: #ffffff;margin-top: 65px">
@@ -181,7 +181,7 @@
                 </div>
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">证书列表</label>
-                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" id="crlbtn"><img src="/static/img/下载吊销证书文件.png" style="width: 20px"> &nbsp;下载吊销证书文件</button>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" id="crlbtn"><img src="/static/img/downloadcrl.png" style="width: 20px"> &nbsp;下载吊销证书文件</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
@@ -240,7 +240,7 @@
             <div class="tab-pane fade" id="accountMG">
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">账号列表</label>
-                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaccount"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加账号</button>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaccount"><img src="/static/img/addaccount.png" style="width: 20px"> &nbsp;添加账号</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
@@ -308,7 +308,7 @@
             <div class="tab-pane fade" id="addressMG">
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">UTXO Token账号地址列表</label>
-                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加UTXO Token账号</button>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#addaddress"><img src="/static/img/addaccount.png" style="width: 20px"> &nbsp;添加UTXO Token账号</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
@@ -346,7 +346,7 @@
             <div class="tab-pane fade" id="codeaddressMG">
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">UTXO冻结账号</label>
-                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#codeaddaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;添加冻结账号</button>
+                    <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" data-toggle="modal" data-target="#codeaddaddress"><img src="/static/img/addaccount.png" style="width: 20px"> &nbsp;添加冻结账号</button>
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
                             <tr style="background: #f4f4f4;height:80px">
@@ -386,7 +386,7 @@
                 <div style="width: 96%;margin: 0 auto;">
                     <label style="margin-top: 20px">证书信息</label>
                     <!-- <button type="button" class="btn pull-right" style="margin-top: 11px;" data-toggle="modal" data-target="#addaddress"><img src="/static/img/添加账号.png" style="width: 20px"> &nbsp;导入</button> -->
-                    <button type="button" class="btn pull-right" style=" background: #1082ed; color: #f6f6f6;margin-top: 11px" id="exportCAcert"><img src="/static/img/导出.png" style="width: 20px"> &nbsp;导出</button>
+                    <button type="button" class="btn pull-right" style=" background: #1082ed; color: #f6f6f6;margin-top: 11px" id="exportCAcert"><img src="/static/img/export.png" style="width: 20px"> &nbsp;导出</button>
 
                     <table class="table table-hover" style="margin-top: 16px">
                         <thead>
@@ -921,7 +921,7 @@
                         <div class="form-group">
                             <label for="accountId" class="col-sm-3 control-label">账号名</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="accountId" name="accountId" readonly="readonly" value="{{.}}">
+                                <input type="text" class="form-control" name="accountId" readonly="readonly" value="{{.}}">
                             </div>
                         </div>
                         <div class="form-group">
@@ -1159,7 +1159,7 @@
                         con += " <td>" + item.accountId + "</td>"
                         con += " <td>" + item.organization + "</td>"
                             // con += '<td><button type="button" class="btn btn-default" style="background: #1082ed; color: #dddddd;" >修改密码</button></td></tr>'
-                        con += '<td><button type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/修改密码.png\'); background-color: transparent; border: 0;width: 22px;height: 22px" onclick="changepassword(\'' + item.accountId + '\')"></button>'
+                        con += '<td><button type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/changepwd.png\'); background-color: transparent; border: 0;width: 22px;height: 22px" onclick="changepassword(\'' + item.accountId + '\')"></button>'
                             //alert(item.ipStr + index)
                     });
                     //alert(con)
@@ -1437,16 +1437,16 @@
                         con += "<td>" + item.revoker + "</td>"
                         con += "<td>" + item.revokedate + "</td>"
                         if (item.state == "待审批") {
-                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-                            con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default " title="审批" style="background:url(\'/static/img/审批.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                            con += '<button id="' + item.id + '" name="aprovcertbtn" type="button" class="btn btn-default " title="审批" style="background:url(\'/static/img/approve.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                         } else if (item.state == "已审批") {
-                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-                            con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" title="吊销证书" style="background:url(\'/static/img/吊销.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
-                            con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default "title="下载证书" style="background:url(\'/static/img/下载.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                            con += '<button id="' + item.id + '" type="button" class="btn btn-default " name="revokecert" title="吊销证书" style="background:url(\'/static/img/revoke.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                            con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default "title="下载证书" style="background:url(\'/static/img/download.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                         } else if (item.state == "已吊销") {
-                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn" title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn" title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                         } else if (item.state == "已驳回") {
-                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/查看.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
                         }
                         con += "</td></tr>"
                             //alert(item.ipStr + index)
@@ -2044,14 +2044,14 @@
         $("#changeCApwdModle").modal("show")
     }
     $("#changepwd_menu").hover(function() {
-        $("#changepwd_menu_img").attr("src", "/static/img/修改密码white.png")
+        $("#changepwd_menu_img").attr("src", "/static/img/changepwdwhite.png")
     }, function() {
-        $("#changepwd_menu_img").attr("src", "/static/img/修改密码black.png")
+        $("#changepwd_menu_img").attr("src", "/static/img/changepwdblack.png")
     })
     $("#logout_menu").hover(function() {
-        $("#logout_menu_img").attr("src", "/static/img/退出登录white.png")
+        $("#logout_menu_img").attr("src", "/static/img/logoutwhite.png")
     }, function() {
-        $("#logout_menu_img").attr("src", "/static/img/退出登录black.png")
+        $("#logout_menu_img").attr("src", "/static/img/logoutblack.png")
     })
 </script>
 

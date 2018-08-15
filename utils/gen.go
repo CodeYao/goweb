@@ -52,7 +52,7 @@ func genSM2Cert(reqData string) []byte {
 	//ca读私钥
 	caInfo := models.QueryData("ca where enabled = 'enabled'")
 	privKey, err := sm2.ReadPrivateKeyFromMem([]byte(caInfo[0]["caprivkey"]), nil)
-	fmt.Println("*****chenyao*****", caInfo)
+	//fmt.Println("*****chenyao*****", caInfo)
 	if err != nil {
 		fmt.Println("read priv key err:", err)
 	}

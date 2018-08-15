@@ -40,15 +40,15 @@ func (f *mysql_db) mysql_open() { //打开
 	xml.Unmarshal(buffer, &resource)
 	Odb, err := sql.Open("mysql", resource.Dbusername+":"+resource.Dbpassowrd+"@tcp("+resource.Dbhostsip+")/"+resource.Dbname)
 	if err != nil {
-		fmt.Println("链接失败")
+		fmt.Println("数据库链接失败", err)
 	}
-	fmt.Println("链接数据库成功...........已经打开")
+	//fmt.Println("链接数据库成功...........已经打开")
 	f.db = Odb
 }
 
 func (f *mysql_db) mysql_close() { //关闭
 	defer f.db.Close()
-	fmt.Println("链接数据库成功...........已经关闭")
+	//fmt.Println("链接数据库成功...........已经关闭")
 }
 
 func (f *mysql_db) mysql_select(sql_data string) {

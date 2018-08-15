@@ -29,23 +29,26 @@ type server struct{}
 // }
 
 func (s *server) VerifyAddress(ctx context.Context, in *pb.AddressRequest) (*pb.IsPermissionReply, error) {
-	addresslist := models.QueryData("address")
+	addresslist := models.QueryData("address where enabled = 'enabled'")
 	for _, v := range addresslist {
 		if in.Addr == v["address"] {
 			//fmt.Println("chenyao**************true")
+			fmt.Println("***token address verify success***")
 			return &pb.IsPermissionReply{IsPermission: true}, nil
 		}
 	}
+	fmt.Println("***token address verify failed***")
 	//fmt.Println("chenyao**************false")
 	return &pb.IsPermissionReply{IsPermission: false}, nil
 }
 
 func (s *server) GetAddressList(ctx context.Context, in *pb.Empty) (*pb.AddressList, error) {
-	addresstable := models.QueryData("codeaddress")
+	addresstable := models.QueryData("codeaddress where enabled = 'enabled'")
 	addresslist := []string{}
 	for _, v := range addresstable {
 		addresslist = append(addresslist, v["address"])
 	}
+	fmt.Println("***get code address success***")
 	return &pb.AddressList{Addresslist: addresslist}, nil
 }
 

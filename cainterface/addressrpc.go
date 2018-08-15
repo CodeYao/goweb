@@ -17,7 +17,7 @@ type Address struct {
 }
 
 func (address *Address) JudgeAddress(args *Args, result *Result) error {
-	fmt.Println("chenyao ******************* successfully", args.Args[0])
+	//fmt.Println("chenyao ******************* successfully", args.Args[0])
 	result.Value = false
 	return nil
 }

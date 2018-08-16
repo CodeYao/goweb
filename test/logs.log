@@ -1,0 +1,3 @@
+[Info]2018/08/16 15:15:28 D:/0_chenyao/git/src/ca/goweb/test/gologtest.go:36: xx%!(EXTRA string=def, string=ghijk)
+[Warning]2018/08/16 15:15:28 D:/0_chenyao/git/src/ca/goweb/test/gologtest.go:37: xxxx%!(EXTRA string=def, string=ghijk)
+[Error]2018/08/16 15:15:28 D:/0_chenyao/git/src/ca/goweb/test/gologtest.go:38: xxxxx%!(EXTRA string=def, string=ghijk)

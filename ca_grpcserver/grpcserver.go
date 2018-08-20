@@ -1,7 +1,6 @@
 package ca_grpcserver
 
 import (
-	"context"
 	"crypto/x509"
 	"encoding/json"
 	"net"
@@ -10,6 +9,8 @@ import (
 	"wutongMG/goweb/controllers"
 	"wutongMG/goweb/models"
 	"wutongMG/goweb/utils"
+
+	context "golang.org/x/net/context"
 
 	"github.com/tjfoc/gmsm/sm2"
 	"google.golang.org/grpc"

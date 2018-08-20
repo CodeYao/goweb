@@ -15,7 +15,6 @@
 package utils
 
 import (
-	"ca/goweb/models"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/x509"
@@ -26,6 +25,7 @@ import (
 	"io/ioutil"
 	"os"
 	"time"
+	"wutongMG/goweb/models"
 
 	"github.com/tjfoc/gmsm/sm2"
 )
@@ -186,7 +186,7 @@ func GenerateCert(notAfter int, ipAddress []string, country []string, organizati
 	//设定证书的keytype与CA的相同
 	caInfo, err := models.QueryData("ca where enabled = 'enabled'")
 	if err != nil {
-		fmt.Println("Get CA info error:", err)
+		models.Errorf("Get CA info error: %v", err)
 		return nil
 	}
 	Cfg.Cert.KeyType = caInfo[0]["keytype"]
@@ -212,7 +212,7 @@ func GenerateCert(notAfter int, ipAddress []string, country []string, organizati
 	//genKey(path)
 
 	//genCetReq(path)
-	fmt.Println(Cfg.Cert)
+	models.Debugf("%v", Cfg.Cert)
 	return genCert(reqData)
 	//os.RemoveAll("conf/req")
 }

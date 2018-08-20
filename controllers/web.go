@@ -1,25 +1,48 @@
 package controllers
 
 import (
-	"ca/goweb/models"
-	"ca/goweb/utils"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
+	"wutongMG/goweb/models"
+	"wutongMG/goweb/utils"
 )
 
 var globalSessions *utils.Manager
+var WebConfig models.WebConfig
 
-//初始化session
 func init() {
+	//初始化配置文件
+	file, err := os.Open("static/webconf.xml")
+	if err != nil {
+		panic(err)
+	}
+	d := xml.NewDecoder(file)
+	err = d.Decode(&WebConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	//初始化log等级
+	if WebConfig.LogLevel == "DEBUG" {
+		models.Config("logDebug.log", models.DebugLevel)
+	} else if WebConfig.LogLevel == "INFO" {
+		models.Config("logInfo.log", models.InfoLevel)
+	} else if WebConfig.LogLevel == "WARNING" {
+		models.Config("logWarn.log", models.WarnLevel)
+	} else if WebConfig.LogLevel == "ERROR" {
+		models.Config("logError.log", models.ErrorLevel)
+	}
+
+	//初始化session
 	globalSessions, _ = utils.NewManager("memory", "gosessionid", 3600)
 	go globalSessions.GC()
 }
@@ -27,8 +50,8 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		sess := globalSessions.SessionStart(w, r)
 		//globalSessions.SessionDestroy(w, r)
-
 		sess.Delete("username")
+
 	}
 }
 func login(w http.ResponseWriter, r *http.Request) {
@@ -44,15 +67,18 @@ func login(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		password = utils.GetMD5(password)
 		//请求的是登陆数据，那么执行登陆的逻辑判断
-		realpassword := models.QueryPasswordByAccount(accountId)
+		accountInfo, err := models.QueryData("account where accountId = '" + accountId + "' and enabled = 'enabled'")
+		if err != nil{
+			models.Errorf("login err : %v",err)
+		}
 		//fmt.Println(realpassword)
 
-		if password == realpassword.Password && realpassword.Enable == "enabled" {
+		if password == accountInfo[0]["password"] {
 			//str, _ := json.Marshal(realpassword)
 			//设置session
 			sess.Set("username", accountId)
 			//http.Redirect(w, r, "/", 302)
-			io.WriteString(w, realpassword.AccountLevel)
+			io.WriteString(w, accountInfo[0]["accountLevel"])
 		} else {
 			io.WriteString(w, "账号或者密码错误")
 		}
@@ -140,7 +166,7 @@ func certlist(w http.ResponseWriter, r *http.Request) {
 			} else {
 				startPage = currentPage/showPage*showPage + 1
 			}
-
+			models.Debugf("startPage :%d,currentPage: %d", startPage, currentPage)
 			//fmt.Println(startPage, "chenyao********************", currentPage)
 			pagevo.StartPage = strconv.Itoa(startPage)
 			pagevo.EntityList, _ = models.QuerycertlistByPage(userName.(string), strconv.Itoa(start), pagevo.PageNum)
@@ -180,6 +206,7 @@ func reqcert(w http.ResponseWriter, r *http.Request) {
 			organization := strings.Split(r.FormValue("organization"), ";")
 			commonName := r.FormValue("commonName")
 			//ipPath := r.FormValue("ipAddress")
+			models.Debugf("userName :%v,certName: %v,notAfter: %v,ipAddress: %v", userName, certName, notAfter, ipAddress)
 			//fmt.Println(userName, certName, notAfter, ipAddress, reqcertxt, country, organization, commonName, ipPath, KeyType)
 			var newpubkey string
 			if KeyType == "sm2" {
@@ -279,6 +306,7 @@ func accountlist(w http.ResponseWriter, r *http.Request) {
 			//fmt.Println(startPage, "chenyao********************", currentPage)
 			pagevo.StartPage = strconv.Itoa(startPage)
 			//fmt.Println("chenyao*************************", pagevo.CurrentPage, pagevo.TotalPage)
+			models.Debugf("startPage :%d,currentPage: %d", startPage, currentPage)
 			pagevo.EntityList, _ = models.QueryData("account where accountLevel = '11' and enabled = 'enabled' limit " + strconv.Itoa(start) + "," + pagevo.PageNum)
 			dataNum = models.GetTableNum("account where accountLevel = '11' and enabled = 'enabled'")
 
@@ -909,9 +937,11 @@ func RunWeb() {
 	// var address = new(carpc.Address)
 	// rpc.Register(address)
 	// rpc.HandleHTTP() //将Rpc绑定到HTTP协议上。
-	fmt.Println("启动服务...输入crtl+c退出服务")
-	err := http.ListenAndServe(":9093", nil) //设置监听的端口
+	models.Infof("Service startup...... And Enter ctrl+c to exit")
+	err := http.ListenAndServe(WebConfig.CaWebPort, nil) //设置监听的端口
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		models.Fatalf("web port failed to listen [%s]", err)
+		//log.Fatal("ListenAndServe: ", err)
 	}
+
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webconf>
+    <grpcport>:9002</grpcport>
+    <cawebport>:9003</cawebport>
+    <!-- 
+    <loglevel>DEBUG</loglevel> 
+    <loglevel>INFO</loglevel>
+    <loglevel>WARNING</loglevel>
+    <loglevel>ERROR</loglevel>
+    -->
+    <loglevel>DEBUG</loglevel>
+</webconf>

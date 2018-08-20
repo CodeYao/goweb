@@ -1,10 +1,10 @@
 package main
 
 import (
-	"ca/goweb/controllers"
 	"fmt"
 	"log"
 	"os"
+	"wutongMG/goweb/controllers"
 )
 
 func test_deferfatal() {

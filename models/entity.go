@@ -18,6 +18,13 @@ type Resource struct {
 	Dbname     string   `xml:"dbname"`
 }
 
+type WebConfig struct {
+	XMLName   xml.Name `xml:"webconf"`
+	GrpcPort  string   `xml:"grpcport"`
+	CaWebPort string   `xml:"cawebport"`
+	LogLevel  string   `xml:"loglevel"`
+}
+
 type CertVO struct {
 	//IpReq     string `json:ipReq`
 	CertName     string `json:"certName"`

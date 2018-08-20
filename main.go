@@ -1,8 +1,8 @@
 package main
 
 import (
-	"ca/goweb/ca_grpcserver"
-	"ca/goweb/controllers"
+	"wutongMG/goweb/ca_grpcserver"
+	"wutongMG/goweb/controllers"
 )
 
 func main() {

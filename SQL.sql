@@ -142,7 +142,7 @@ DROP TABLE IF EXISTS `codeaddress`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `codeaddress` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `address` varchar(45) DEFAULT NULL,
+  `address` varchar(512) DEFAULT NULL,
   `addDate` varchar(45) DEFAULT NULL,
   `addPeople` varchar(45) DEFAULT NULL,
   `descript` varchar(256) DEFAULT NULL,

@@ -15,7 +15,6 @@
 package utils
 
 import (
-	"ca/goweb/models"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/x509"
@@ -26,6 +25,7 @@ import (
 	"math/big"
 	"net"
 	"time"
+	"wutongMG/goweb/models"
 
 	"github.com/tjfoc/gmsm/sm2"
 )
@@ -36,31 +36,31 @@ var PrivK string = "key.pem"
 func genCert(reqdata string) []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
-		fmt.Println("use sm2 cert")
+		models.Infof("use sm2 cert")
 		return genSM2Cert(reqdata)
 	case "ecdsa":
-		fmt.Println("use ECDSA cert")
+		models.Infof("use ECDSA cert")
 		return genECDSACert(reqdata)
 	default:
-		fmt.Println("err key type!")
+		models.Errorf("err key type!")
 	}
 	return nil
 }
 
 func genSM2Cert(reqData string) []byte {
-	fmt.Println("==========SM2============")
+	models.Infof("==========SM2============")
 	//ca读私钥
 	caInfo, err := models.QueryData("ca where enabled = 'enabled'")
 	if err != nil {
-		fmt.Println("get CA info error:", err)
+		models.Errorf("get CA info error: %v", err)
 	}
 	privKey, err := sm2.ReadPrivateKeyFromMem([]byte(caInfo[0]["caprivkey"]), nil)
 	//fmt.Println("*****chenyao*****", caInfo)
 	if err != nil {
-		fmt.Println("read priv key err:", err)
+		models.Errorf("read priv key err: %v", err)
 	}
 
-	fmt.Println("create node cert!")
+	models.Infof("create node cert!")
 	//privKey, err := sm2.ReadPrivateKeyFromPem(PrivK, nil)
 	//if err != nil {
 	//	fmt.Println("read priv key err:", err)
@@ -70,7 +70,7 @@ func genSM2Cert(reqData string) []byte {
 	//读取证书生成请求
 	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqData))
 	if err != nil {
-		fmt.Println("read req err:", err)
+		models.Errorf("read req err: %v", err)
 		return nil
 	}
 	//设置证书路径
@@ -86,7 +86,7 @@ func genSM2Cert(reqData string) []byte {
 
 	v, ok := pub.(*ecdsa.PublicKey)
 	if !ok {
-		fmt.Println("err pub key type")
+		models.Errorf("err pub key type")
 		return nil
 	}
 
@@ -106,37 +106,37 @@ func genSM2Cert(reqData string) []byte {
 	 */
 	newcert, err := sm2.CreateCertificateToMem(tmp, cert, smPub, privKey)
 	if err != nil {
-		fmt.Println("create cert err!", err)
+		models.Errorf("create cert err : %v", err)
 		return nil
 	}
 
 	cert1, err := sm2.ReadCertificateFromMem(newcert)
 	if err != nil {
-		fmt.Println("read cert err:", err)
+		models.Errorf("read cert err: %v", err)
 		return nil
 	}
 	err = cert.CheckSignature(cert1.SignatureAlgorithm, cert1.RawTBSCertificate, cert1.Signature)
 	if err != nil {
-		fmt.Println("check signature err:", err)
+		models.Errorf("check signature err: %v", err)
 		return nil
 	}
 
-	fmt.Println("********success!********")
-	fmt.Println("==========SM2============")
+	models.Infof("********success!********")
+	models.Infof("==========SM2============")
 	return newcert
 }
 
 func genECDSACert(data string) []byte {
-	fmt.Println("==========ECDSA============")
+	models.Infof("==========ECDSA============")
 	caInfo, err := models.QueryData("ca where enabled = 'enabled'")
 	if err != nil {
-		fmt.Println("get CA info err:", err)
+		models.Errorf("get CA info err:%v", err)
 		return nil
 	}
 	privKey, err := ecdsaPrivKeyFromMen([]byte(caInfo[0]["caprivkey"]))
 	if err != nil {
 
-		fmt.Println("read ecdsa priv err:", err)
+		models.Errorf("read ecdsa priv err:%v", err)
 		return nil
 	}
 	// req = ./req/priv?_req.pem
@@ -144,7 +144,7 @@ func genECDSACert(data string) []byte {
 
 	req, err := parseECDSAReq([]byte(data))
 	if err != nil {
-		panic(err)
+		models.Fatalf("%v", err)
 	}
 
 	//req -> x509.Certificate
@@ -156,7 +156,7 @@ func genECDSACert(data string) []byte {
 	cert, err := parseECDSACert([]byte(caInfo[0]["cacert"]))
 	//	fmt.Println("cert:", cert)
 	if err != nil {
-		fmt.Println("parse ecdsa cert err:", err)
+		models.Errorf("parse ecdsa cert err: %v", err)
 		return nil
 	}
 	//gen node cert!
@@ -164,11 +164,11 @@ func genECDSACert(data string) []byte {
 	//	fmt.Printf("pub:%x\n", pub)
 	v, ok := pub.(*ecdsa.PublicKey)
 	if !ok {
-		fmt.Println("key type err")
+		models.Errorf("key type err")
 	}
 	cert1, certbyte, err := ecdsaCert(tmp, cert, v, privKey)
 	if err != nil {
-		fmt.Println("create cert err!", err)
+		models.Errorf("create cert err : %v", err)
 		return nil
 	}
 	//parse priv?_cert.pem
@@ -186,13 +186,13 @@ func genECDSACert(data string) []byte {
 	// }
 	err = cert.CheckSignature(cert1.SignatureAlgorithm, cert1.RawTBSCertificate, cert1.Signature)
 	if err != nil {
-		fmt.Println("check signature err:", err)
-		fmt.Println("==========ECDSA============")
+		models.Errorf("check signature err: %v", err)
+		models.Errorf("==========ECDSA============")
 		return nil
 	}
 
-	fmt.Println("create node cert success!")
-	fmt.Println("==========ECDSA============")
+	models.Infof("create node cert success!")
+	models.Infof("==========ECDSA============")
 	return certbyte
 }
 

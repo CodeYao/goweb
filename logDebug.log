@@ -1,0 +1,6 @@
+[Info]2018/08/20 14:12:04 D:/0_chenyao/git/src/wutongMG/goweb/controllers/web.go:936: Service startup...... And Enter ctrl+c to exit
+[Debug]2018/08/20 14:12:40 D:/0_chenyao/git/src/wutongMG/goweb/controllers/web.go:166: startPage :1,currentPage: 1
+[Debug]2018/08/20 14:13:05 D:/0_chenyao/git/src/wutongMG/goweb/controllers/web.go:206: userName :007,certName: wqw,notAfter: 123,ipAddress: [1.1.1.1]
+[Debug]2018/08/20 14:13:23 D:/0_chenyao/git/src/wutongMG/goweb/controllers/web.go:166: startPage :1,currentPage: 1
+[Debug]2018/08/20 14:13:32 D:/0_chenyao/git/src/wutongMG/goweb/controllers/web.go:166: startPage :1,currentPage: 2
+[Debug]2018/08/20 14:13:35 D:/0_chenyao/git/src/wutongMG/goweb/controllers/web.go:166: startPage :1,currentPage: 1

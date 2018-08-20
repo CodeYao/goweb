@@ -1,6 +1,7 @@
 package models
 
 import (
+	"CAWeb/models"
 	"fmt"
 	"strings"
 )
@@ -11,8 +12,9 @@ func init() {
 	var err error
 	db, err = newDBEngine("static/dataconf.xml")
 	if err != nil {
-		panic(err)
+		Fatalf("database connection failed [%v]", err)
 	}
+
 }
 
 func Queryaccountlist() ([]map[string]string, error) {
@@ -190,13 +192,14 @@ func DeleteDateById(tableName string, id string) error {
 	// db.mysql_open()
 	ret, err := db.db.Exec("delete from "+tableName+" where id = ?", id)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	//获取影响行数
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("删除成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by delete success is %v", del_nums)
+	//fmt.Println("删除成功，受影响行数为：", del_nums)
 	return nil
 }
 
@@ -209,7 +212,8 @@ func DeleteAccountById(id int) error {
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("删除成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by delete success is %v", del_nums)
+	//fmt.Println("删除成功，受影响行数为：", del_nums)
 	return nil
 }
 
@@ -222,7 +226,7 @@ func DeleteAddressById(id int) error {
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("删除成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by delete success is %v", del_nums)
 	return nil
 }
 
@@ -236,7 +240,8 @@ func DeletecodeAddressById(id int) error {
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("删除成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by delete success is %v", del_nums)
+	//fmt.Println("删除成功，受影响行数为：", del_nums)
 	return nil
 }
 
@@ -251,7 +256,8 @@ func InsertData(tableName string, insertdata []string) error {
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("插入成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by insertion success is %v", del_nums)
+	//fmt.Println("插入成功，受影响行数为：", del_nums)
 	//获取插入ID
 	//fmt.Println("插入成功", ret, sql)
 	return nil
@@ -309,7 +315,7 @@ func QueryPasswordByAccount(accountId string) Account {
 	// db.mysql_close()
 	err := row.Scan(&account.AccountId, &account.Organization, &account.Password, &account.AccountLevel, &account.Enable)
 	if err != nil {
-		fmt.Println("query pwd error:", err)
+		models.Errorf("query pwd error: %s", err)
 	}
 	return account
 }
@@ -319,11 +325,11 @@ func UpdatePassword(accountId string, password string) {
 	// db.mysql_open()
 	ret, err := db.db.Exec("update account set password = ? where accountId = ?", password, accountId)
 	if err != nil {
-		fmt.Println("update pwd error:", err)
+		models.Errorf("update pwd error: %s", err)
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("插入成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by update success is %v", del_nums)
 	//fmt.Println("修改成功", ret)
 }
 
@@ -332,11 +338,11 @@ func UpdateCertAprove(state string, aprover string, aproveDate string, certid st
 	// db.mysql_open()
 	ret, err := db.db.Exec("update cert set state =? , approver = ? , approvaldate = ? where id = ?", state, aprover, aproveDate, certid)
 	if err != nil {
-		fmt.Println("update approval status error:", err)
+		models.Errorf("update approval status error: %s", err)
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("插入成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by update success is %d", del_nums)
 	//fmt.Println("修改状态成功", ret)
 }
 
@@ -345,11 +351,13 @@ func UpdateCertRevoke(state string, revoker string, revokeDate string, certid st
 	// db.mysql_open()
 	ret, err := db.db.Exec("update cert set state =? , revoker = ? , revokedate = ? where id = ?", state, revoker, revokeDate, certid)
 	if err != nil {
+
 		fmt.Println("update approval status error:", err)
 	}
 	// db.mysql_close()
 	del_nums, _ := ret.RowsAffected()
-	fmt.Println("插入成功，受影响行数为：", del_nums)
+	models.Infof("The number of rows affected by insertion success is %d", del_nums)
+	//fmt.Println("插入成功，受影响行数为：", del_nums)
 	//fmt.Println("吊销成功", ret)
 }
 
@@ -405,7 +413,7 @@ func GetTableNum(table string) int {
 
 	err := row.Scan(&dataCount)
 	if err != nil {
-		fmt.Println("get table num error:", err)
+		models.Errorf("get table num error:", err)
 	}
 	// db.mysql_close()
 	// return strconv.Itoa(dataCount)

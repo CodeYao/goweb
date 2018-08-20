@@ -1,0 +1,43 @@
+syntax = "proto3";
+ 
+option objc_class_prefix = "CA_ADDRESS";
+ 
+package ca_grpc;
+ 
+message IsPermissionReply {
+    bool IsPermission = 1;
+}
+// The request message containing the user's name.
+message AddressRequest {
+  string addr = 1;
+}
+
+message AddressList {
+  //strings addresslist = 1;
+  repeated string addresslist = 1;
+}
+
+message Cert{
+  bytes cert = 1;
+  string keytype = 2;
+}
+
+message Empty{
+
+}
+// The response message containing the greetings
+
+// The greeting service definition.
+service Greeter {
+    // Sends a greeting
+    //rpc JudgeAddress (AddressRequest) returns (AddressReply) {}
+
+    //验证发行token的地址
+    rpc VerifyAddress (AddressRequest) returns (IsPermissionReply) {}
+
+    //获取冻结地址的列表
+    rpc GetAddressList (Empty) returns (AddressList) {}
+
+    //验证节点证书的签名
+    rpc VerifyCert(Cert)returns (IsPermissionReply){}
+  }

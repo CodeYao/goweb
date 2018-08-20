@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"container/list"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -16,6 +17,7 @@ type Provider interface {
 	SessionRead(sid string) (Session, error)
 	SessionDestroy(sid string) error
 	SessionGC(maxLifeTime int64)
+	GetSession() map[string]*list.Element
 }
 
 type Session interface {
@@ -23,6 +25,7 @@ type Session interface {
 	Get(key interface{}) interface{}  //get session value
 	Delete(key interface{}) error     //delete session value
 	SessionID() string                //back current sessionID
+	GetValue() map[interface{}]interface{}
 }
 
 type Manager struct {
@@ -91,6 +94,10 @@ func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
 		cookie := http.Cookie{Name: manager.cookieName, Path: "/", HttpOnly: true, Expires: expiration, MaxAge: -1}
 		http.SetCookie(w, &cookie)
 	}
+}
+
+func (manager *Manager) GetProvide() Provider {
+	return manager.provider
 }
 
 func NewManager(provideName, cookieName string, maxlifetime int64) (*Manager, error) {

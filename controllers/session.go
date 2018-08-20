@@ -40,6 +40,9 @@ func (st *SessionStore) Delete(key interface{}) error {
 func (st *SessionStore) SessionID() string {
 	return st.sid
 }
+func (st *SessionStore) GetValue() map[interface{}]interface{} {
+	return st.value
+}
 
 type Provider struct {
 	lock     sync.Mutex               //用来锁
@@ -104,7 +107,9 @@ func (pder *Provider) SessionUpdate(sid string) error {
 	}
 	return nil
 }
-
+func (pder *Provider) GetSession() map[string]*list.Element {
+	return pder.sessions
+}
 func init() {
 	pder.sessions = make(map[string]*list.Element, 0)
 	utils.Register("memory", pder)

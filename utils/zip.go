@@ -2,7 +2,11 @@ package utils
 
 import (
 	"archive/zip"
+	"bytes"
+	"crypto/md5"
+	"fmt"
 	"io"
+	"log"
 	"os"
 )
 
@@ -61,6 +65,46 @@ func compress(file *os.File, prefix string, zw *zip.Writer) error {
 		}
 	}
 	return nil
+}
+
+func ZipByte(certByte []byte, path string) {
+	buf := new(bytes.Buffer)
+
+	w := zip.NewWriter(buf)
+
+	var files = []struct {
+		Name, Body string
+	}{
+		{"cert.pem", string(certByte)},
+	}
+	for _, file := range files {
+		f, err := w.Create(file.Name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = f.Write([]byte(file.Body))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	err := w.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	buf.WriteTo(f)
+}
+
+func GetMD5(str string) string {
+	data := []byte(str)
+	has := md5.Sum(data)
+	md5str1 := fmt.Sprintf("%x", has) //将[]byte转成16进制
+	return md5str1
 }
 
 // func main() {

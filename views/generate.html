@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CA管理系统</title>
+    <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
+    <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="static/bootstrap-3.3.7/js/clipboard.min.js"></script>
+</head>
+
+<style>
+    .dropdown-menu::before {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid #CCC;
+        position: absolute;
+        top: -13px;
+        left: 117px;
+    }
+    
+    .nav>li>a {
+        color: #000000;
+        border: 0
+    }
+    
+    .nav>li>a:hover {
+        background-color: #ffffff;
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        background-color: #f6fbff;
+        border-color: #ddd
+    }
+    
+    .dropdown-menu::after {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid white;
+        position: absolute;
+        top: -12px;
+        left: 117px;
+    }
+    
+    .table tbody tr td {
+        height: 80px;
+        vertical-align: middle;
+        border-bottom: 1px solid #ddd
+        /* text-align: center; */
+    }
+    
+    .table>thead>tr>th {
+        border-bottom: 1px solid #ddd
+    }
+    
+    .table>thead:first-child>tr:first-child>th {
+        border-top: 1px solid #ddd
+    }
+    
+    .dropdown-menu>li>a:hover {
+        color: #f6f6f6
+    }
+    
+    .pagination>li>a {
+        color: #000000
+    }
+    
+    .pagination>li>a:hover {
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        color: #1082ed
+    }
+    
+    .app-footer {
+        margin-top: 100px;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
+    }
+</style>
+
+<body>
+    <nav class="navbar" style="background: #1c294b ;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div style="height:68px; margin-top: 26px; margin-left: 50%">
+                    <img src="/static/img/logo.png">
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+    <div style="width: 70%;margin: 0 auto">
+        <!-- <div style="height: 100px;border-bottom: 1px solid #ddd">
+            <label class="pull-left " for=" name " style="margin-left: 3%;margin-top: 3%;">加密算法</label>
+            <div class="col-sm-10" style="margin-left: 2%;margin-top: 2.5%">
+                <select class="form-control" onchange="getpem()" id="KeyType" style="cursor:pointer;">
+                    <option value="sm2">国密算法sm2</option>
+                    <option value="ecdsa">ecdsa</option>
+                </select>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br> -->
+        <table class="table table-hover">
+            <label>公钥</label> <button type="button" class="btn btn-default pull-right" id="cppubkey" data-clipboard-target="#pubkey" style="background: #1082ed; color: #f6f6f6;">复制公钥</button>
+            <textarea id="pubkey" class="form-control" rows="5"></textarea>
+
+        </table>
+
+        <table class="table table-bordered table-hover">
+            <label>私钥</label><button type="button" class="btn btn-default pull-right" id="cpprivkey" data-clipboard-target="#privkey" style="background: #1082ed; color: #f6f6f6;">复制私钥</button>
+            <textarea id="privkey" class="form-control" rows="5"></textarea>
+
+        </table>
+
+        <table class="table table-bordered table-hover">
+            <label>证书请求</label><button type="button" class="btn btn-default pull-right" id="cpreq" data-clipboard-target="#req" style="background: #1082ed; color: #f6f6f6;">复制证书请求</button>
+            <textarea id="req" class="form-control" rows="5"></textarea>
+
+        </table>
+    </div>
+
+</body>
+<script>
+    var clipboard1 = new ClipboardJS('#cppubkey');
+    clipboard1.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+        alert("复制成功")
+    });
+
+    clipboard1.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        alert("复制失败，换个浏览器试试")
+    });
+
+    var clipboard2 = new ClipboardJS('#cpprivkey');
+    clipboard2.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+        alert("复制成功")
+    });
+
+    clipboard2.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        alert("复制失败，换个浏览器试试")
+    });
+    var clipboard3 = new ClipboardJS('#cpreq');
+    clipboard3.on('success', function(e) {
+        console.info('Action:', e.action);
+        console.info('Text:', e.text);
+        console.info('Trigger:', e.trigger);
+
+        e.clearSelection();
+        alert("复制成功")
+    });
+
+    clipboard3.on('error', function(e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+        alert("复制失败，换个浏览器试试")
+    });
+    $(document).ready(getpem())
+
+    function getpem() {
+        // var KeyType = $("#KeyType").val()
+        //alert(KeyType)
+        $.ajax({
+            type: "POST",
+            url: "/onetouch",
+            data: {
+                //KeyType: KeyType
+                KeyType: "sm2"
+            },
+            success: function(data) {
+                //alert(data)
+                data = JSON.parse(data)
+                $("#pubkey").val(data[1])
+                $("#privkey").val(data[0])
+                $("#req").val(data[2])
+                    // $("#hellotext").text("你好，" + date[3] + "!")
+            }
+        });
+    }
+</script>
+
+</html>

@@ -3,101 +3,223 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Bootstrap</title>
+    <title>CA管理系统</title>
     <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
     <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
     <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <style>
-
+    .dropdown-menu::before {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid #CCC;
+        position: absolute;
+        top: -13px;
+        left: 117px;
+    }
+    
+    .form-ctrl-diy {
+        height: 34px;
+        font-size: 14px;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    
+    .nav>li>a {
+        color: #000000;
+        border: 0
+    }
+    
+    .nav>li>a:hover {
+        background-color: #ffffff;
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        background-color: #f6fbff;
+        border-color: #ddd
+    }
+    
+    .dropdown-menu::after {
+        content: '';
+        display: inline-block;
+        border-left: 9px solid transparent;
+        border-right: 9px solid transparent;
+        border-bottom: 12px solid white;
+        position: absolute;
+        top: -12px;
+        left: 117px;
+    }
+    
+    .table tbody tr td {
+        height: 80px;
+        vertical-align: middle;
+        border-bottom: 1px solid #ddd
+        /* text-align: center; */
+    }
+    
+    .table>thead>tr>th {
+        border-bottom: 1px solid #ddd
+    }
+    
+    .table>thead:first-child>tr:first-child>th {
+        border-top: 1px solid #ddd
+    }
+    
+    .dropdown-menu>li>a:hover {
+        color: #f6f6f6
+    }
+    
+    .pagination>li>a {
+        color: #000000
+    }
+    
+    .pagination>li>a:hover {
+        color: #1082ed
+    }
+    
+    .btn-default:hover {
+        color: #1082ed
+    }
+    
+    .app-footer {
+        margin-top: 100px;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #aaa;
+    }
+    
+    .checkbox-info input[type="checkbox"]:checked+label::before {
+        background-color: #1082ed;
+        border-color: #1082ed;
+    }
 </style>
 
-<body>
-    <nav class="navbar navbar-inverse">
+<body style="background: #f6f6f6">
+    <nav class="navbar" style="background: #1c294b ;">
         <div class="container-fluid">
             <div class="navbar-header">
-                <h4 class="navbar-text" style=" color: #dddddd;">
-                    ca管理系统
-                </h4>
+                <div style="height:68px; margin-top: 26px; margin-left: 50%">
+                    <img src="/static/img/logo.png">
+                </div>
             </div>
-            <p class="navbar-text navbar-right" style="margin-right: 1%"><span style="color: #dddddd;">欢迎，{{.}}！</span> <a href="javascript:void(0)" onclick="logout()" class="navbar-link">退出</a></p>
+            <div style="margin-top: 13px">
+                <div class="navbar-text navbar-right" style="margin-right:7%">
+                    <span style="color: #dddddd;">你好，{{.}}!</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="#" data-toggle="dropdown"><img src="/static/img/user.png"></a>
+                    <ul class="dropdown-menu" style="margin:0;padding:0;margin-right: 7%; background-size: 10px; ">
+                        <li>
+                            <a id="changepwd_menu" href="javascript:void(0)" onclick="changepassword('{{.}}')" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="changepwd_menu_img" src="/static/img/changepwdblack.png" style="width: 20px">&nbsp;&nbsp;&nbsp;修改密码</a>
+                        </li>
+                        <li>
+                            <a id="logout_menu" href="javascript:void(0)" onclick="logout()" style="height: 50px; width: 160px; text-align:center;vertical-align: middle;display: table-cell;"><img id="logout_menu_img" src="/static/img/logoutblack.png" style="width: 20px">&nbsp;&nbsp;&nbsp;退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
-
-    <div style="width: 70%;margin: 0 auto">
-        <table class="table table-bordered table-hover">
-            <caption>ip列表</caption>
-            <thead>
-                <tr>
-                    <th class="col-sm-1"><input type="checkbox" id="selectAll">全选</th>
-                    <th>名称</th>
-                    <th>ip</th>
-                </tr>
-            </thead>
-            <tbody id="iplist">
-                <!-- <tr>
-                    <td><input type="checkbox"></td>
-                    <td>银行节点1</td>
-                    <td>10.1.1.1</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>银行节点2</td>
-                    <td>10.2.2.2</td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>银行节点3</td>
-                    <td>10.3.3.3</td>
-                </tr> -->
-            </tbody>
-        </table>
-        <button type="button" class="btn btn-default pull-right" id="reqcertbtn" style="background: #333333; color: #dddddd;">申请证书</button>
-        <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#addip" style="background: #333333; color: #dddddd;">添加ip</button>
-        <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;" id="removeIp">移除ip</button>
-        <!-- <button type="button" class="btn btn-default pull-right" style="background: #333333; color: #dddddd;">查看信息</button> -->
+    <div style="width: 70%;margin: 0 auto; ">
+        <img class="pull-left" src="/static/img/position.png">
+        <span class="pull-left" style="font-size:x-large;margin-left: 5px">CA管理系统</span>
     </div>
-    <!--添加ip 模态框（Modal） -->
-    <div class="modal fade" id="addip" tabindex="-1" role="dialog" aria-labelledby="addipModalLabel" aria-hidden="true">
+    <div style="width: 70%;margin: 0 auto;background: #ffffff;margin-top: 65px">
+        <div style="width: 96%;margin: 0 auto;">
+            <label style="margin-top: 20px">证书列表</label>
+            <button type="button" class="btn pull-right" style="background: #1082ed; color: #f6f6f6;margin-top: 11px" id="reqcertbtn" data-toggle="modal" data-target="#addaccount"><img src="/static/img/reqcert.png" style="width: 20px"> &nbsp;申请证书</button>
+            <table class="table table-hover" style="margin-top: 16px">
+                <thead>
+                    <tr style="background: #f4f4f4;height:80px">
+                        <!-- <th class="col-sm-1"><input type="checkbox" id="selectAll">全选</th> -->
+                        <th style='vertical-align: middle;'>证书名称</th>
+                        <th style='vertical-align: middle;'>证书对应IP</th>
+                        <th style='vertical-align: middle;'>申请时间</th>
+                        <th style='vertical-align: middle;'>状态</th>
+                        <th style='vertical-align: middle;'>审批人</th>
+                        <th style='vertical-align: middle;'>审批时间</th>
+                        <th style='vertical-align: middle;'>吊销人</th>
+                        <th style='vertical-align: middle;'>吊销时间</th>
+                        <th style='vertical-align: middle;'>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="certlist">
+                </tbody>
+            </table>
+            <div style="text-align: right">
+                <ul class="pagination" id="pageNumList">
+                </ul>
+                <div class="pagination pull-right" style="margin-top: 20px;margin-left: 5px" id="pageText">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--查看证书 模态框（Modal） -->
+    <div class="modal fade" id="watchcertmodel" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
-                    </button>
-                    <h4 class="modal-title" id="addipModalLabel">
-                        请填写ip相关信息
+                            </button>
+                    <h4 class="modal-title" id="reqcertModalLabel">
+                        查看证书相关信息
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal" action="login">
+                    <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <div class="col-sm-12">
-                                <input type="text" class="form-control" id="ipname" name="ipname" placeholder="名称">
-                                <div id="errorcode_ipname">
-                                    <span class="help-block">名称不能为空</span>
-                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-                                </div>
+                            <label for="certName" class="col-sm-3 control-label">证书名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchcertName" name="watchcertName" readonly="readonly">
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="col-sm-12">
-                                <input type="text" class="form-control" id="ipstr" name="ipstr" placeholder="ip">
-                                <div id="errorcode_ipstr">
-                                    <span class="help-block" id="errortext_ipstr">ip不能为空</span>
-                                    <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-                                </div>
+                            <label for="notAfter" class="col-sm-3 control-label">证书失效日期</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchnotAfter" name="watchnotAfter" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">申请证书的IP</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchipAddress" name="watchipAddress" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">国家</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchcountry" name="watchcountry" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">公司名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchorganization" name="watchorganization" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">域名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchcommonName" name="watchcommonName" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-sm-3 control-label">证书状态</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="watchstate" name="watchstate" readonly="readonly">
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        关闭
-                    </button>
-                    <button type="button" id="addipbtn" class="btn btn-primary" style="background: #333333; color: #dddddd;">
-                        提交
-                    </button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -118,31 +240,48 @@
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <form id="certForm" class="form-horizontal" enctype="multipart/form-data" role="form">
+                    <form id="certForm" class="form-horizontal" role="form">
                         <div class="form-group">
-                            <label for="firstname" class="col-sm-3 control-label">证书有效期*</label>
+                            <label for="certName" class="col-sm-3 control-label">证书名&nbsp;<span style="color: red">*</span></label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="notAfter" name="notAfter" placeholder="请输入证书有效期">
-                            </div>
-                            <label for="lastname" class="col-sm-1 control-label">天</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastname" class="col-sm-3 control-label">申请证书的ip*</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" id="ipAddress" name="ipAddress" readonly="readonly">
+                                <input type="text" class="form-control" id="certName" name="certName" placeholder="可以是任意不重复的证书名，如：银行证书1">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="pubKeyFile" class="col-sm-3 control-label">上传证书请求*</label>
-                            <div class="col-sm-3">
-                                <input type="file" id="pubKeyFile" name="pubKeyFile">
+                        <!-- <div class="form-group">
+                            <label for="certName" class="col-sm-3 control-label">加密类型*</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="KeyType" name="KeyType" style="cursor:pointer;">
+                                    <option value="sm2">国密算法sm2</option>
+                                    <option value="ecdsa">ecdsa</option>
+                                </select>
                             </div>
-                            <label for="inputfile" class="col-sm-4 control-label">没有文件?<a href="/static/tool.rar" download="tool.rar">下载工具</a></label>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="notAfter" class="col-sm-3 control-label">证书有效期&nbsp;<span style="color: red">*</span></label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="notAfter" name="notAfter" placeholder="请输入证书有效期，如180">
+                            </div>
+                            <label class="col-sm-1 control-label">天</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="ipAddress" class="col-sm-3 control-label">申请证书的IP&nbsp;<span style="color: red">*</span></label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="ipAddress" name="ipAddress" placeholder="若输入多个请用英文分号隔开，如10.1.1.1;10.2.2.2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">粘贴证书请求&nbsp;<span style="color: red">*</span></label>
+                            <div class="col-sm-7">
+                                <textarea id="reqcertxt" name="reqcertxt" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputfile" class="col-sm-offset-3 col-sm-7 control-label">没有文件?<a href="/static/tool.zip" download="tool.rar">下载工具</a>或者<a target="view_window" href="genreatePage">在线生成</a></label>
                         </div>
                         <div class="form-group">
                             <label for="lastname" class="col-sm-3 control-label">国家</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" id="country" name="country" placeholder="例如：china">
+                                <input type="text" class="form-control" id="country" name="country" placeholder="例如：China">
                             </div>
                         </div>
                         <div class="form-group">
@@ -163,12 +302,13 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                             关闭
                         </button>
-                    <button type="button" id="easygenbtn" class="btn btn-default" data-dismiss="modal">
-                                一键生成
+                    <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6;">
+                                提交
                             </button>
-                    <button type="button" id="commitreqcertbtn" class="btn btn-primary" style="background: #333333; color: #dddddd;">
-                            提交
-                        </button>
+                    <!-- <button type="button" id="easygenbtn" class="btn btn-default pull-left" data-toggle="tooltip" data-placement="bottom" title="此操作私钥由服务器生成">
+                        一键生成
+                            </button> -->
+
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -177,8 +317,64 @@
     </div>
     <!-- /.modal -->
 
+    <!--修改密码 模态框（Modal） -->
+    <div class="modal fade" id="changepwdModle" tabindex="-1" role="dialog" aria-labelledby="reqcertModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×
+                            </button>
+                    <h4 class="modal-title" id="reqcertModalLabel">
+                        请账号密码相关信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="changepwdForm" class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="accountId" class="col-sm-3 control-label">账号名</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="accountId" name="accountId" readonly="readonly" value="{{.}}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notAfter" class="col-sm-3 control-label">原密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="oldpwd" name="oldpwd" placeholder="请输入该账号原密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ipAddress" class="col-sm-3 control-label">新密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="newpwd" name="newpwd" placeholder="请输入新密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reqcertxt" class="col-sm-3 control-label">确认密码</label>
+                            <div class="col-sm-7">
+                                <input type="password" class="form-control" id="checknewpwd" name="checknewpwd" placeholder="请再次输入新密码">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="commitpwd" class="btn btn-primary" style="background: #1082ed; color: #f6f6f6">
+                                    确认修改
+                                </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <div class="app-footer">Copyright © 2018 苏州同济区块链研究院</div>
 </body>
 <script>
+    $(function() {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+
     function logout() {
         $.ajax({
             type: "POST",
@@ -188,177 +384,308 @@
             }
         })
     }
-    $(document).ready(function() {
-        $.ajax({
-            type: "POST",
-            url: "/iplist",
-            success: function(data) {
-                var con = ""
-                data = JSON.parse(data)
-                    //alert(data)
-                $.each(data, function(index, item) {
-                    con += "<tr><td><input type='checkbox' name='iplistcheckbox' id='" + item.Id + "'></td>"
-                    con += " <td>" + item.ipName + "</td>"
-                    con += " <td>" + item.ipStr + "</td></tr>"
-                        //alert(item.ipStr + index)
-                });
-                $("#iplist").append(con)
-            }
-        });
-    });
-    $("#errorcode_ipname").hide()
-    $("#errorcode_ipstr").hide()
-    $("#selectAll").click(function() {
-        var allcheck = $(this).prop("checked")
-        var check = $("input[name='iplistcheckbox']").prop("checked", allcheck)
-    })
-    $("tbody").on('click', "[name='iplistcheckbox']", function() {
-        var checkAll = $("#selectAll").prop("checked")
-        var check = $("input[name='iplistcheckbox']")
-        var checknum = 0
-            //  alert(check.length)
-        for (var index = 0; index < check.length; index++) {
-            //alert($(check[index]).prop("checked"))
-            if (checkAll != $(check[index]).prop("checked")) {
-                $("#selectAll").prop("checked", false)
-            }
-            if ($(check[index]).prop("checked") == true) {
-                checknum++
-            }
-        }
-        if (checknum == check.length) {
-            $("#selectAll").prop("checked", true)
-        }
-    });
-    $("#removeIp").click(function() {
-        var check = $("input[name='iplistcheckbox']:checked")
-        if (check.length == 0) {
-            alert("请选中至少一条记录")
+
+    function changepassword() {
+        $("#changepwdModle").modal("show")
+    }
+    $("#commitpwd").click(function() {
+        var newpwd = $("#newpwd").val()
+        var checknewpwd = $("#checknewpwd").val()
+        if (newpwd != checknewpwd) {
+            alert("新密码两次输入不一致！")
         } else {
-            for (var index = 0; index < check.length; index++) {
-                //alert($(check[index]).attr("id"))
-                var id = $(check[index]).attr("id")
-                $.ajax({
-                    type: "POST",
-                    url: "/removeip",
-                    data: {
-                        id: id,
-                    },
-                    success: function(data) {}
-                });
-            }
-            alert("移除成功")
-            window.location.reload()
+            $.ajax({
+                type: "POST",
+                url: "/changepwd",
+                processData: false,
+                contentType: false,
+                data: new FormData($('#changepwdForm')[0]),
+                success: function(data) {
+                    if (data == "Timeout") {
+                        alert("会话已失效，请重新登录")
+                        window.location.href = "login"
+                    } else {
+                        alert(data)
+                        if (data == "修改成功，请重新登录") {
+                            window.location.href = "login"
+                        }
+                    }
+
+
+                }
+            })
         }
 
     })
-    $("#addipbtn").click(function() {
-        var ipname = $("#ipname").val()
-        var ipstr = $("#ipstr").val()
-        if (ipname == "") {
-            $("#errorcode_ipname").show()
-            $("#errorcode_ipname").parent().addClass("has-error has-feedback")
+    $(document).ready(
+        getcertList(1)
+    );
+
+    function pageJump() {
+        var pagestr = $.trim($("#jumpstr").val())
+            //alert(pagestr)
+        var totalpageNum = $("#totalpageNum").text()
+        if (isNaN(pagestr)) {
+            alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
+        } else if (Number(pagestr) > Number(totalpageNum)) {
+            alert("输入的页码有误，请输入小于" + totalpageNum + "的数字")
         } else {
-            $("#errorcode_ipname").hide()
-            $("#errorcode_ipname").parent().removeClass("has-error has-feedback")
-            if (ipstr == "") {
-                $("#errorcode_ipstr").show()
-                $("#errortext_ipstr").text("ip地址不能为空")
-                $("#errorcode_ipstr").parent().addClass("has-error has-feedback")
-            } else {
-                if (!isValidIP(ipstr)) {
-                    $("#errorcode_ipstr").show()
-                    $("#errorcode_ipstr").parent().addClass("has-error has-feedback")
-                    $("#errortext_ipstr").text("ip地址格式有错误")
+            getcertList(pagestr)
+        }
+
+    }
+
+    function getcertList(currentpage) {
+        $.ajax({
+            type: "POST",
+            url: "/certlist",
+            data: {
+                currentpage: currentpage,
+            },
+            success: function(data) {
+                if (data == "Timeout") {
+                    alert("会话已失效，请重新登录")
+                    window.location.href = "login"
                 } else {
-                    $("#errorcode_ipstr").hide()
-                    $("#errorcode_ipstr").parent().removeClass("has-error has-feedback")
-                    $.ajax({
-                        type: "POST",
-                        url: "/addip",
-                        data: {
-                            ipname: ipname,
-                            ipstr: ipstr
-                        },
-                        success: function(data) {
-                            alert("添加成功")
-                            window.location.reload()
+                    var con = ""
+                    data = JSON.parse(data)
+                        //alert(data)
+                    $.each(data.entityList, function(index, item) {
+                        con += "<tr><td>" + item.certname + "</td>"
+                        con += "<td>" + item.ipstr + "</td>"
+                        con += "<td>" + item.reqdate + "</td>"
+                        con += "<td>" + item.state + "</td>"
+                        con += "<td>" + item.approver + "</td>"
+                        con += "<td>" + item.approvaldate + "</td>"
+                        con += "<td>" + item.revoker + "</td>"
+                        con += "<td>" + item.revokedate + "</td>"
+                        if (item.state == "待审批") {
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        } else if (item.state == "已审批") {
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                            con += '<button id="' + item.id + '" name ="downloadcert" type="button" class="btn btn-default "title="下载证书" style="background:url(\'/static/img/download.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>'
+                                // con += '<button type="button" class="btn btn-default " id="' + item.id + '" name="downloadcert" style="background: #333333; color: #dddddd;">下载</button>'
+                        } else if (item.state == "已吊销") {
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
+                        } else if (item.state == "已驳回") {
+                            con += '<td><button id="' + item.id + '" name="watchcert" type="button" class="btn btn-default " title="查看证书" style="background:url(\'/static/img/watch.png\'); background-color: transparent; border: 0;width: 22px;height: 22px"></button>&nbsp;'
                         }
+                        con += "</td></tr>"
+                            //alert(item.ipStr + index)
                     });
+                    $("#certlist").html("")
+                    $("#certlist").append(con)
+                    var pagecon = ""
+                    var showPage = 5
+                    var currentPage = data.currentPage //当前页
+                    var pageNum = data.pageNum //一页显示多少条
+                    var totalPage = data.totalPage //总页数
+                    var startPage = data.startPage //起始页
+                    var endPage = 0
+                    if ((Number(startPage) + Number(showPage) - 1) >= Number(totalPage)) {
+                        endPage = totalPage
+                    } else {
+                        endPage = Number(startPage) + Number(showPage) - 1
+                    }
+                    var previous = currentPage - 1
+                    var next = Number(currentPage) + Number(1)
+                    pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getcertList(1)">首页</a></li>'
+                    if (previous == 0) {
+                        pagecon += '<li class="page-item disabled"><a href="#">上一页</a></li>'
+                    } else {
+                        pagecon += '<li class="page-item"><a href="javascript:void(0)" onclick="getcertList(' + previous + ')">上一页</a></li>'
+                    }
+                    // alert(startPage + endPage)
+                    for (var index = startPage; index <= endPage; index++) {
+
+                        if (index == currentPage) {
+                            pagecon += '<li class="page-item active"><a class="page-link" href="#">' + index + '</a></li>'
+                        } else {
+                            pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcertList(' + index + ')">' + index + '</a></li>'
+                        }
+                    }
+                    if (next > totalPage) {
+                        pagecon += '<li class="page-item disabled"><a class="page-link" href="#">下一页</a></li>'
+                    } else {
+                        pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcertList(' + next + ')">下一页</a></li>'
+                    }
+
+                    pagecon += '<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="getcertList(' + totalPage + ')">尾页</a></li>'
+                        // alert(pagecon)
+                    $("#pageNumList").html("")
+                    $("#pageNumList").append(pagecon)
+                    var pageTextcon = ""
+                    pageTextcon += '共<span id="totalpageNum">' + data.totalPage + '</span>页&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;跳转到&nbsp;<input class="form-ctrl-diy" style="width: 25px" id="jumpstr" type="text">&nbsp;页 <button class="btn btn-default" onclick="pageJump()">确定</button>'
+                    $("#pageText").html("")
+                    $("#pageText").append(pageTextcon)
                 }
+
             }
-        }
-    })
+        });
+    }
+
+    $("tbody").on('click', "[name='downloadcert']", function() {
+        window.location.href = "downloadcert?certId=" + $(this).attr("id")
+    });
+    $("tbody").on('click', "[name='watchcert']", function() {
+        var certId = $(this).attr("id")
+        $.ajax({
+            type: "POST",
+            url: "/showcertInfo",
+            data: {
+                id: certId,
+            },
+            success: function(data) {
+                if (data == "Timeout") {
+                    alert("会话已失效，请重新登录")
+                    window.location.href = "login"
+                } else {
+                    data = JSON.parse(data)
+                    $("#watchcertName").val(data.certName)
+                    $("#watchipAddress").val(data.ipAddress)
+                    $("#watchnotAfter").val(data.certDay)
+                    $("#watchcountry").val(data.country)
+                    $("#watchorganization").val(data.organization)
+                    $("#watchcommonName").val(data.commonName)
+                    $("#watchstate").val(data.state)
+                    $("#watchcertmodel").modal("show")
+                }
+
+            }
+        });
+    });
     $("#reqcertbtn").click(function() {
-        var check = $("input[name='iplistcheckbox']:checked")
-        if (check.length == 0) {
-            alert("请选中至少一条记录")
-        } else {
-            var tdtext = ""
-            for (var index = 0; index < check.length; index++) {
-                //alert($(check[index]).attr("id"))
-                tdtext += $(check[index]).parent().next().next().text() + ","
-            }
-            tdtext = tdtext.substring(0, tdtext.length - 1)
-            $("#ipAddress").val(tdtext)
-            $("#reqcert").modal("show")
-        }
+
+        $("#reqcert").modal("show")
+
     })
     $("#commitreqcertbtn").click(function() {
-        var NotAfter = $("#notAfter").val()
-        var pubKeyFile = $('#pubKeyFile').val();
-        if (NotAfter == "") {
+        //var KeyType = $("#certselect").val()
+        var CertName = $.trim($("#certName").val())
+        var NotAfter = $.trim($("#notAfter").val())
+        var IpAddress = $.trim($("#ipAddress").val())
+        var Reqcertxt = $.trim($("#reqcertxt").val())
+        if (CertName == "") {
+            alert("证书名不能为空")
+        } else if (NotAfter == "") {
             alert("有效期不能为空")
-        } else if (pubKeyFile == "") {
-            alert("公钥不能为空")
+        } else if (IpAddress == "") {
+            alert("IP不能为空")
+        } else if (Reqcertxt == "") {
+            alert("证书请求不能为空")
         } else {
-            var fileType = pubKeyFile.substr(pubKeyFile.length - 4, pubKeyFile.length)
-            if (fileType == ".pem") {
-                $.ajax({
-                    url: '/reqcert',
-                    type: 'POST',
-                    processData: false,
-                    contentType: false,
-                    data: new FormData($('#certForm')[0]),
-                    success: function(data) {
-                        alert("生成成功")
-                            //alert(data)
-                        var link = document.createElement('a')
-                        link.setAttribute("download", "")
-                        link.href = data
-                        link.click()
-                        window.location.reload()
-                            // window.open("conf/cert.pem")
-                    }
-                });
-            } else {
-                alert("上传文件类型错误,需要.pem文件")
+            if (isNaN(NotAfter)) {
+                alert("有效期字段，请输入阿拉伯数字")
+                return
             }
+            //alert(CertName.length)
+            if (CertName.length > Number(45)) {
+                alert("证书名不要超出45个字符")
+                return
+            }
+            if (NotAfter.length > Number(45)) {
+                alert("有效期不要超出45个字符")
+                return
+            }
+            if (IpAddress.length > Number(45)) {
+                alert("证书名不要超出45个字符")
+                return
+            }
+            // if (IpAddress.indexOf(";") < 0) {
+            //     alert("请使用英文分号分隔IP地址")
+            //     return
+            // }
+            var ips = IpAddress.split(";")
+            for (let index = 0; index < ips.length; index++) {
+                //alert(ips[index])
+                if (!isValidIP(ips[index])) {
+                    alert("IP格式错误，请检查" + ips[index] + "分隔符是否为英文分号,是否录入了正确的IP")
+                    return
+                }
+            }
+            $.ajax({
+                url: '/reqcert',
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                data: new FormData($('#certForm')[0]),
+                success: function(data) {
+                    if (data == "Timeout") {
+                        alert("会话已失效，请重新登录")
+                        window.location.href = "login"
+                    } else {
+                        if (data == "0") {
+                            alert("证书名已存在！")
+                        } else if (data == "1") {
+                            alert("证书请求有误，请录入国密算法sm2生成的证书请求！")
+                        } else {
+                            $("#reqcert").modal("hide")
+                            alert("申请成功，等待审批！")
+                            window.location.reload()
+                        }
+                    }
+
+
+                }
+            });
         }
     })
     $("#easygenbtn").click(function() {
         var ipAddress = $("#ipAddress").val()
-        $.ajax({
-            url: '/easygen',
-            type: 'POST',
-            data: {
-                ipAddress: ipAddress
-            },
-            success: function(data) {
-                alert("生成成功")
-                var link = document.createElement('a')
-                link.setAttribute("download", "")
-                link.href = "conf/" + ipAddress + ".zip"
-                link.click()
-                    // window.open("conf/cert.pem")
+        if (ipAddress == "") {
+            alert("申请证书的IP不能为空！")
+        } else {
+            // if (IpAddress.indexOf(";") < 0) {
+            //     alert("请使用英文分号分隔IP地址")
+            //     return
+            // }
+            var ips = ipAddress.split(";")
+            for (let index = 0; index < ips.length; index++) {
+                //alert(ips[index])
+                if (!isValidIP(ips[index])) {
+                    alert("IP格式错误，请检查" + ips[index] + "分隔符是否为英文分号,是否录入了正确的IP")
+                    return
+                }
             }
-        });
+            $.ajax({
+                url: '/easygen',
+                type: 'POST',
+                data: {
+                    ipAddress: ipAddress
+                },
+                success: function(data) {
+                    if (data == "Timeout") {
+                        alert("会话已失效，请重新登录")
+                        window.location.href = "login"
+                    } else {
+                        alert("生成成功")
+                        var link = document.createElement('a')
+                        link.setAttribute("download", "")
+                        link.href = "conf/" + ipAddress + ".zip"
+                        link.click()
+                    }
+
+                    // window.open("conf/cert.pem")
+                }
+            });
+        }
     })
 
     function isValidIP(ip) {
         var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
         return reg.test(ip);
     }
+
+    $("#changepwd_menu").hover(function() {
+        $("#changepwd_menu_img").attr("src", "/static/img/changepwdwhite.png")
+    }, function() {
+        $("#changepwd_menu_img").attr("src", "/static/img/changepwdblack.png")
+    })
+    $("#logout_menu").hover(function() {
+        $("#logout_menu_img").attr("src", "/static/img/logoutblackwhite.png")
+    }, function() {
+        $("#logout_menu_img").attr("src", "/static/img/logoutblackblack.png")
+    })
 </script>
 
 </html>

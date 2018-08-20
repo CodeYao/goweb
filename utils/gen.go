@@ -15,6 +15,7 @@
 package utils
 
 import (
+	"ca/goweb/models"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/x509"
@@ -24,8 +25,6 @@ import (
 	"fmt"
 	"math/big"
 	"net"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/tjfoc/gmsm/sm2"
@@ -34,108 +33,31 @@ import (
 var oidExtensionSubjectKeyId = []int{2, 5, 29, 14}
 var PrivK string = "key.pem"
 
-func genCert(path string) {
+func genCert(reqdata string) []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
-		genSM2Cert(path)
+		fmt.Println("use sm2 cert")
+		return genSM2Cert(reqdata)
 	case "ecdsa":
-		genECDSACert(path)
+		fmt.Println("use ECDSA cert")
+		return genECDSACert(reqdata)
 	default:
 		fmt.Println("err key type!")
 	}
+	return nil
 }
 
-func genSM2Cert(path string) {
+func genSM2Cert(reqData string) []byte {
 	fmt.Println("==========SM2============")
 	//ca读私钥
-	privKey, err := sm2.ReadPrivateKeyFromPem("./conf/ca/key.pem", nil)
+	caInfo, err := models.QueryData("ca where enabled = 'enabled'")
+	if err != nil {
+		fmt.Println("get CA info error:", err)
+	}
+	privKey, err := sm2.ReadPrivateKeyFromMem([]byte(caInfo[0]["caprivkey"]), nil)
+	//fmt.Println("*****chenyao*****", caInfo)
 	if err != nil {
 		fmt.Println("read priv key err:", err)
-	}
-	//检查ca证书是否存在
-	if !CheckIsExist("./conf/ca/ca.pem") {
-
-		var ip []net.IP
-		for _, v := range Cfg.Cert.IPAddress {
-			ip = append(ip, net.ParseIP(v))
-
-		}
-
-		template := sm2.Certificate{
-			SerialNumber: big.NewInt(-1),
-			Subject: pkix.Name{
-				CommonName:   Cfg.Cert.CommonName,
-				Organization: Cfg.Cert.Organization,
-				Country:      Cfg.Cert.Country,
-				ExtraNames: []pkix.AttributeTypeAndValue{
-					{
-						Type:  []int{2, 5, 4, 42},
-						Value: "Gopher",
-					},
-
-					{
-						Type:  []int{2, 5, 4, 6},
-						Value: "NL",
-					},
-				},
-			},
-			//			NotBefore: time.Unix(int64(Cfg.Cert.NotBefore), 0),
-			NotBefore: time.Unix(time.Now().Unix()-int64(3600*24*Cfg.Cert.NotBefore), 0),
-			NotAfter:  time.Unix(time.Now().Unix()+int64(3600*24*Cfg.Cert.NotAfter), 0),
-
-			SignatureAlgorithm: sm2.SignatureAlgorithm(Cfg.Cert.SM2SignatureAlgorithm),
-
-			SubjectKeyId: []byte{1, 2, 3, 4},
-			KeyUsage:     sm2.KeyUsageCertSign,
-
-			ExtKeyUsage:        []sm2.ExtKeyUsage{sm2.ExtKeyUsageClientAuth, sm2.ExtKeyUsageServerAuth},
-			UnknownExtKeyUsage: []asn1.ObjectIdentifier{[]int{1, 2, 3}, []int{2, 59, 1}},
-
-			BasicConstraintsValid: true,
-			IsCA: true,
-
-			OCSPServer:            []string{"http://ocsp.example.com"},
-			IssuingCertificateURL: []string{"http://crt.example.com/ca1.crt"},
-
-			DNSNames:       Cfg.Cert.DNSNames,
-			EmailAddresses: Cfg.Cert.EmailAddresses,
-
-			//		IPAddresses: []net.IP{net.ParseIP("2001:4860:0:2001::68")},
-			IPAddresses: ip,
-
-			PolicyIdentifiers:   []asn1.ObjectIdentifier{[]int{1, 2, 3}},
-			PermittedDNSDomains: Cfg.Cert.PermittedDNSDomains,
-
-			CRLDistributionPoints: Cfg.Cert.CRLDistributionPoints,
-
-			ExtraExtensions: []pkix.Extension{
-				{
-					Id:    []int{1, 2, 3, 4},
-					Value: []byte("extra extension"),
-				},
-
-				{
-					Id:       oidExtensionSubjectKeyId,
-					Critical: false,
-					Value:    []byte{0x04, 0x04, 4, 3, 2, 1},
-				},
-			},
-		}
-
-		fmt.Println("create ca cert!")
-
-		// _, err = sm2.WritePrivateKeytoPem("privv.pem", privKey, nil)
-		// if err != nil {
-		// 	fmt.Println("----------------------------")
-		// }
-		template.IsCA = true
-		//生成ca证书
-		ok, _ := sm2.CreateCertificateToPem("conf/ca/ca.pem", &template, &template, &privKey.PublicKey, privKey)
-		if !ok {
-			fmt.Println("sm create cert err")
-			return
-		}
-
 	}
 
 	fmt.Println("create node cert!")
@@ -143,26 +65,29 @@ func genSM2Cert(path string) {
 	//if err != nil {
 	//	fmt.Println("read priv key err:", err)
 	//}
-	s := fmt.Sprintf(path+"/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
+	//s := fmt.Sprintf(path+"/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
 
 	//读取证书生成请求
-	req, err := sm2.ReadCertificateRequestFromPem(s)
+	req, err := sm2.ReadCertificateRequestFromMem([]byte(reqData))
 	if err != nil {
 		fmt.Println("read req err:", err)
-		return
+		return nil
 	}
 	//设置证书路径
-	cert, err := sm2.ReadCertificateFromPem("conf/ca/ca.pem")
+	cert, err := sm2.ReadCertificateFromMem([]byte(caInfo[0]["cacert"]))
 	tmp := sm2CsrToCert(req)
 	//filepath := "./" + path + "/" + PrivK
 	//s = fmt.Sprintf("%s_cert.pem", strings.TrimSuffix(filepath, ".pem"))
-	s = "./" + path + "/cert.pem"
+	//s = "./" + path + "/cert.pem"
+	tmp.Subject.CommonName = Cfg.Cert.CommonName
+	tmp.Subject.Country = Cfg.Cert.Country
+	tmp.Subject.Organization = Cfg.Cert.Organization
 	pub := req.PublicKey
 
 	v, ok := pub.(*ecdsa.PublicKey)
 	if !ok {
 		fmt.Println("err pub key type")
-		return
+		return nil
 	}
 
 	smPub := &sm2.PublicKey{
@@ -179,53 +104,47 @@ func genSM2Cert(path string) {
 	*smPub:节点公钥
 	*privKey:ca私钥
 	 */
-	ok, err = sm2.CreateCertificateToPem(s, tmp, cert, smPub, privKey)
-	if !ok {
+	newcert, err := sm2.CreateCertificateToMem(tmp, cert, smPub, privKey)
+	if err != nil {
 		fmt.Println("create cert err!", err)
-		return
+		return nil
 	}
 
-	cert1, err := sm2.ReadCertificateFromPem(s)
+	cert1, err := sm2.ReadCertificateFromMem(newcert)
 	if err != nil {
 		fmt.Println("read cert err:", err)
-		return
+		return nil
 	}
 	err = cert.CheckSignature(cert1.SignatureAlgorithm, cert1.RawTBSCertificate, cert1.Signature)
 	if err != nil {
 		fmt.Println("check signature err:", err)
-		return
+		return nil
 	}
 
 	fmt.Println("********success!********")
 	fmt.Println("==========SM2============")
+	return newcert
 }
 
-func genECDSACert(path string) {
+func genECDSACert(data string) []byte {
 	fmt.Println("==========ECDSA============")
-	privKey, err := ecdsaPrivKeyFromPem("./ca/key.pem")
+	caInfo, err := models.QueryData("ca where enabled = 'enabled'")
+	if err != nil {
+		fmt.Println("get CA info err:", err)
+		return nil
+	}
+	privKey, err := ecdsaPrivKeyFromMen([]byte(caInfo[0]["caprivkey"]))
 	if err != nil {
 
 		fmt.Println("read ecdsa priv err:", err)
-		return
+		return nil
 	}
-	if !CheckIsExist("./ca/ca.pem") {
-		template := x509Template()
-		template.IsCA = true
-		_, err := ecdsaCert("./ca/ca.pem", &template, &template, &privKey.PublicKey, privKey)
-		if err != nil {
-			fmt.Println("gen ca cert err:", err)
-			return
-		}
-		fmt.Println("create ca cert success!")
-	}
-
 	// req = ./req/priv?_req.pem
-	s := fmt.Sprintf("./req/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
+	//s := fmt.Sprintf("./req/%s_req.pem", strings.TrimSuffix(PrivK, ".pem"))
 
-	req, err := parseECDSAReq(s)
+	req, err := parseECDSAReq([]byte(data))
 	if err != nil {
-		fmt.Println("parse ecdsa req err:", err)
-		return
+		panic(err)
 	}
 
 	//req -> x509.Certificate
@@ -233,12 +152,12 @@ func genECDSACert(path string) {
 	//s = priv?_cert.pem
 	//filepath := "./" + path + "/" + PrivK
 	//s = fmt.Sprintf("%s_cert.pem", strings.TrimSuffix(filepath, ".pem"))
-	s = "./" + path + "/cert.pem"
-	cert, err := parseECDSACert("./ca/ca.pem")
+	//s = "./" + path + "/cert.pem"
+	cert, err := parseECDSACert([]byte(caInfo[0]["cacert"]))
 	//	fmt.Println("cert:", cert)
 	if err != nil {
 		fmt.Println("parse ecdsa cert err:", err)
-		return
+		return nil
 	}
 	//gen node cert!
 	pub := req.PublicKey
@@ -247,10 +166,10 @@ func genECDSACert(path string) {
 	if !ok {
 		fmt.Println("key type err")
 	}
-	cert1, err := ecdsaCert(s, tmp, cert, v, privKey)
+	cert1, certbyte, err := ecdsaCert(tmp, cert, v, privKey)
 	if err != nil {
 		fmt.Println("create cert err!", err)
-		return
+		return nil
 	}
 	//parse priv?_cert.pem
 	// certb, err := parseCert(s)
@@ -269,39 +188,33 @@ func genECDSACert(path string) {
 	if err != nil {
 		fmt.Println("check signature err:", err)
 		fmt.Println("==========ECDSA============")
-		return
+		return nil
 	}
 
 	fmt.Println("create node cert success!")
 	fmt.Println("==========ECDSA============")
+	return certbyte
 }
 
-func ecdsaCert(fileName string, tmp, parent *x509.Certificate, pub *ecdsa.PublicKey, priv interface{}) (*x509.Certificate, error) {
+func ecdsaCert(tmp, parent *x509.Certificate, pub *ecdsa.PublicKey, priv interface{}) (*x509.Certificate, []byte, error) {
 	b, err := x509.CreateCertificate(rand.Reader, tmp, parent, pub, priv)
 	if err != nil {
 		fmt.Println("create cert err:", err)
-		return nil, err
+		return nil, nil, err
 	}
 
-	certFile, err := os.Create(fileName)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	defer certFile.Close()
-
-	err = pem.Encode(certFile, &pem.Block{Type: "CERTIFICATE", Bytes: b})
+	certbyte := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: b})
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	x509Cert, err := x509.ParseCertificate(b)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return x509Cert, nil
+	return x509Cert, certbyte, nil
 
 }
 

@@ -3,53 +3,70 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Bootstrap</title>
+    <title>CA管理系统</title>
     <link rel="stylesheet" href="static/bootstrap-3.3.7/css/bootstrap.min.css">
     <script src="static/bootstrap-3.3.7/js/jquery-3.3.1.min.js"></script>
     <script src="static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <style>
-    body {
+    body,
+    html {
         text-align: center;
     }
 </style>
 
-<body>
-    <div class="col-sm-3" style="margin-left:37%;margin-top: 15%">
-        <div class="panel panel-default">
-            <div class="panel-heading" style="background: #333333; color: #dddddd;">CA管理系统</div>
-            <div class="panel-body">
-                <form class="form-horizontal" action="login">
-                    <div class="form-group">
-                        <div class="col-sm-12">
-                            <input type="text" class="form-control" id="username" name="username" placeholder="账号">
-                            <div id="errorcode_username">
-                                <span class="help-block">账号不能为空</span>
-                                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-12">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="密码">
-                            <div id="errorcode_password">
-                                <span class="help-block">密码不能为空</span>
-                                <span class="glyphicon glyphicon-remove form-control-feedback"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-12">
-                            <button id="loginbtn" type="button" class="btn form-control" style="background: #333333; color: #dddddd;">登录</button>
-                        </div>
-                    </div>
-                </form>
+<body style="background-image: url('static/img/background.jpg');">
+    <div style="width:460px; height:380px;margin-top: 276px;margin-left: 976px;padding-top: 60px;padding-left: 40px;padding-right: 65px">
+        <h3>CA管理系统</h3>
+        <form class="form-horizontal" action="login" style="margin-top: 40px">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="请输入账号" style=" padding-left: 60px;height: 45px; background-image: url('/static/img/account.png');background-size: 24px;background-repeat: no-repeat;background-position:4%;">
+
+                </div>
+                <div id="errorcode_username">
+                    <span class="help-block">账号不能为空</span>
+                    <!-- <span class="glyphicon glyphicon-remove form-control-feedback"></span> -->
+                </div>
             </div>
-        </div>
+            <div class="form-group ">
+                <div class="col-sm-12">
+                    <!-- <span class="input-group-addon" style="background: #ffffff"><img style="height: 30px;" src="/static/img/密码.png"></span> -->
+                    <input type="password" class="form-control" id="password" name="password" placeholder="请输入密码" style=" padding-left: 60px;height: 45px; background-image: url('/static/img/pwd.png');background-size: 24px; background-repeat: no-repeat;background-position:4%;">
+
+                </div>
+                <div id="errorcode_password">
+                    <span class="help-block">密码不能为空</span>
+                    <!-- <span class="glyphicon glyphicon-remove form-control-feedback"></span> -->
+                </div>
+            </div>
+            <div class="form-group" style="margin-top: 45px">
+                <div class="col-sm-12">
+                    <button id="loginbtn" type="button" class="btn form-control" style="height: 45px; background: #1082ed; color: #ffffff;">登录</button>
+                </div>
+            </div>
+        </form>
     </div>
 </body>
 <script>
+    // $("body").keydown(function() {
+    //     if (event.keyCode == "13") { //keyCode=13是回车键
+    //         $('#loginbtn').click();
+    //     };
+    // });
+    // window.onkeydown = keydown;
+
+    // function keydown() {
+    //     alert("keydown event detected!");
+    // }
+    document.onkeydown = function(event) {
+        e = event ? event : (window.event ? window.event : null);
+        if (e.keyCode == 13) {
+            //执行的方法
+            $('#loginbtn').click();
+        }
+    }
     $("#errorcode_username").hide()
     $("#errorcode_password").hide()
     $("#loginbtn").click(function() {

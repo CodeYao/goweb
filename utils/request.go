@@ -21,8 +21,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"net"
-	"os"
-	"strings"
 
 	"github.com/tjfoc/gmsm/sm2"
 )
@@ -32,19 +30,20 @@ var EMailAddr []string
 var IPAddr []net.IP
 var PrivateKey string = "key.pem"
 
-func genCetReq(path string) {
+func genCetReq(key []byte) []byte {
 	switch Cfg.Cert.KeyType {
 	case "sm2":
-		genSM2Req(path)
+		return genSM2Req(key)
 	case "ecdsa":
-		genECDSAReq(path)
+		return genECDSAReq(key)
 	default:
 		fmt.Println("err key type!")
 	}
+	return nil
 }
 
-func genSM2Req(path string) {
-	privKey, err := sm2.ReadPrivateKeyFromPem(("./" + path + "/" + PrivateKey), nil)
+func genSM2Req(key []byte) []byte {
+	privKey, err := sm2.ReadPrivateKeyFromMem(key, nil)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -68,19 +67,19 @@ func genSM2Req(path string) {
 		EmailAddresses: EMailAddr,
 		IPAddresses:    IPAddr,
 	}
-	s := fmt.Sprintf("./"+path+"/%s_req.pem", strings.TrimSuffix(PrivateKey, ".pem"))
-	_, err = sm2.CreateCertificateRequestToPem(s, &tmpReq, privKey)
+	//s := fmt.Sprintf("./"+path+"/%s_req.pem", strings.TrimSuffix(PrivateKey, ".pem"))
+	ok, err := sm2.CreateCertificateRequestToMem(&tmpReq, privKey)
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	return ok
 }
 
-func genECDSAReq(path string) {
+func genECDSAReq(data []byte) []byte {
 	DNames = Cfg.Cert.DNSNames
 	EMailAddr = Cfg.Cert.EmailAddresses
 
-	priv, err := ecdsaPrivKeyFromPem(("./" + path + "/" + PrivateKey))
+	priv, err := ecdsaPrivKeyFromMen(data)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -106,16 +105,5 @@ func genECDSAReq(path string) {
 		Type:  "CERTIFICATE REQUEST",
 		Bytes: der,
 	}
-	s := fmt.Sprintf("./req/%s_req.pem", strings.TrimSuffix(PrivateKey, ".pem"))
-	file, err := os.Create(s)
-	if err != nil {
-		panic(err)
-
-	}
-	defer file.Close()
-	err = pem.Encode(file, block)
-	if err != nil {
-		panic(err)
-	}
-
+	return pem.EncodeToMemory(block)
 }

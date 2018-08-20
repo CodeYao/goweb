@@ -56,6 +56,7 @@ func (f *mysql_db) mysql_select(sql_data string) {
 	if err != nil {
 		println(err)
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var in_param string
 
